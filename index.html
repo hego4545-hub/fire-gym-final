@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Fire Gym | Visual Edition</title>
+    <title>Fire Gym | Universal Pro</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
@@ -14,66 +14,55 @@
         .hidden { display:none !important; }
         .card { background:var(--surface); padding:20px; border-radius:20px; margin-bottom:20px; border:1px solid #333; position:relative; }
         .btn-full { width:100%; padding:15px; border-radius:12px; border:none; background:linear-gradient(45deg, var(--primary), var(--primary-dark)); color:#fff; font-size:18px; font-weight:900; cursor:pointer; }
-        
-        /* Auth Screen */
-        #auth-screen { height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; background:linear-gradient(rgba(18,18,18,0.8),var(--bg)), url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=80') center/cover; }
+        #auth-screen { height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; background:linear-gradient(rgba(18,18,18,0.8),var(--bg)), url('https://images.unsplash.com/photo-1541534741688-6078c64b5903?auto=format&fit=crop&w=800&q=80') center/cover; }
         .auth-card { background:var(--surface); padding:35px; border-radius:24px; width:100%; max-width:400px; text-align:center; border:1px solid rgba(229,57,53,0.3); }
         .input-group { margin:20px 0; text-align:right; }
         .input-group label { display:block; margin-bottom:8px; color:var(--text-muted); }
         .input-group input, .input-group select { width:100%; padding:12px; border-radius:12px; border:1px solid #333; background:#121212; color:#fff; font-size:16px; outline:none; }
-
-        /* Dashboard */
         header { padding:30px 20px 60px; text-align:center; background:var(--surface); border-bottom-left-radius:40px; border-bottom-right-radius:40px; }
-        .main-sections { padding:0 15px; margin-top:-30px; padding-bottom:100px; }
+        .main-sections { padding:0 15px; margin-top:-30px; padding-bottom:120px; }
         .tracker-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
         .track-btn { background:#222; padding:15px; border-radius:15px; text-align:center; border:1px solid #444; color:#fff; cursor:pointer; display:flex; flex-direction:column; align-items:center; }
-        .track-btn b { font-size:20px; margin-bottom:5px; }
-
-        /* History */
+        .track-btn b { font-size:24px; margin-bottom:5px; font-style:normal; }
         .history-item { background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; margin-bottom:10px; border-right:4px solid #444; position:relative; }
-        .del-btn { position:absolute; left:10px; top:10px; color:#ff3b30; cursor:pointer; font-style:normal; font-size:18px; }
-        .log-img { width:100%; max-width:200px; border-radius:10px; margin-top:10px; border:1px solid #444; display:block; }
-
-        /* Navigation */
-        .bottom-tabs { position:fixed; bottom:0; width:100%; background:rgba(30,30,30,0.98); display:flex; justify-content:space-around; padding:15px 0 30px; border-top:1px solid #333; z-index:100; }
-        .tab { color:var(--text-muted); font-size:12px; text-align:center; text-decoration:none; filter: grayscale(1); }
-        .tab.active { color:var(--primary); filter: grayscale(0); font-weight:bold; }
-        .tab span { display:block; font-size:20px; }
-
-        /* Tech Section */
-        .tech-card { display:flex; align-items:center; gap:15px; background:#222; padding:12px; border-radius:12px; margin-bottom:10px; text-decoration:none; color:inherit; }
-        .tech-icon { font-size:24px; background:var(--surface); padding:10px; border-radius:10px; }
-
-        .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:1000; padding:20px; overflow-y:auto; }
+        .del-btn { position:absolute; left:10px; top:12px; color:#ff3b30; cursor:pointer; font-style:normal; font-size:18px; }
+        .log-img { width:100%; max-width:250px; border-radius:12px; margin-top:10px; border:1px solid #444; }
+        .bottom-tabs { position:fixed; bottom:0; width:100%; background:rgba(30,30,30,0.98); display:flex; justify-content:space-around; padding:15px 0 35px; border-top:1px solid #333; z-index:100; }
+        .tab { color:var(--text-muted); font-size:11px; text-align:center; text-decoration:none; display:flex; flex-direction:column; align-items:center; gap:5px; }
+        .tab.active { color:var(--primary); font-weight:bold; }
+        .tab span { font-size:22px; }
+        .tech-card { display:flex; align-items:center; gap:15px; background:#222; padding:12px; border-radius:15px; margin-bottom:10px; border:1px solid #333; }
+        .tech-icon { font-size:24px; background:var(--surface); padding:10px; border-radius:12px; }
+        .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); z-index:1000; padding:20px; overflow-y:auto; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-card" id="login-form">
-            <h2>FIRE GYM</h2><p style="color:var(--text-muted);">عصابة الوحوش 🔞</p>
+            <h1 style="color:var(--primary); font-weight:900;">FIRE GYM</h1><p style="color:var(--text-muted); margin-bottom:10px;">عالم الوحوش 🔥</p>
             <div class="input-group"><label>رقم الموبايل</label><input type="tel" id="login-phone" placeholder="01xxxxxxxxx"></div>
             <button class="btn-full" onclick="login()">دخول 🔥</button>
-            <p style="margin-top:15px;"><a href="javascript:void(0)" onclick="toggleAuth('register')" style="color:var(--accent); text-decoration:none;">بطل جديد؟ سجل 📝</a></p>
-            <button onclick="localStorage.clear(); location.reload();" style="margin-top:20px; background:none; border:none; color:#333; font-size:10px;">تحديث النسخة</button>
+            <p style="margin-top:20px;"><a href="javascript:void(0)" onclick="toggleAuth('register')" style="color:var(--accent); text-decoration:none;">بطل جديد؟ سجل بياناتك</a></p>
+            <button onclick="localStorage.clear(); location.reload();" style="margin-top:25px; background:none; border:none; color:#333; font-size:10px;">إعادة تهيين يدوي (Update Fix)</button>
         </div>
         <div class="auth-card hidden" id="register-form">
-            <h2>سجل يا وحش 📝</h2>
+            <h2>سجل يا بطل 📝</h2>
             <div class="input-group"><label>الاسم</label><input type="text" id="reg-name"></div>
             <div class="input-group"><label>الموبايل</label><input type="tel" id="reg-phone"></div>
-            <div class="input-group"><label>هدفك</label><select id="reg-goal"><option value="تنشيف">تنشيف</option><option value="تضخيم">تضخيم</option></select></div>
-            <button class="btn-full" onclick="register()">انضمام 🔥</button>
-            <p style="margin-top:10px;"><a href="javascript:void(0)" onclick="toggleAuth('login')" style="color:var(--text-muted);">رجوع</a></p>
+            <div class="input-group"><label>الهدف</label><select id="reg-goal"><option value="تنشيف">تنشيف ⚔️</option><option value="تضخيم">تضخيم 💪</option></select></div>
+            <button class="btn-full" onclick="register()">انضمام للعصابة 🔥</button>
+            <p style="margin-top:15px;"><a href="javascript:void(0)" onclick="toggleAuth('login')" style="color:var(--text-muted);">رجوع</a></p>
         </div>
     </div>
 
     <div id="app-content" class="hidden">
         <header>
             <div style="display:flex; justify-content:space-between; align-items:start;">
-                <div style="font-size:10px; color:var(--primary);">V.4.3.0 - VISUAL PRO 📸</div>
-                <button onclick="logout()" style="background:rgba(255,0,0,0.1); color:#ff3b30; border:1px solid #ff3b30; padding:5px 12px; border-radius:10px;">خروج</button>
+                <div style="font-size:11px; color:var(--primary); font-weight:bold;">V.4.5.0 - AUTO_SYNC 🚀</div>
+                <button onclick="logout()" style="background:rgba(255,0,0,0.1); color:#ff3b30; border:1px solid #ff3b30; padding:6px 15px; border-radius:10px; font-weight:bold;">خروج</button>
             </div>
-            <h2 style="margin-top:10px;">يا وحش <span id="user-display-name">بطلنا</span> 👋</h2>
+            <h2 style="margin-top:15px;">يا وحش <span id="user-display-name">بطلنا</span> 👋</h2>
         </header>
 
         <div class="main-sections">
@@ -88,7 +77,6 @@
                         <div class="track-btn" onclick="openLogger('صور')"><b>📸</b>صور</div>
                     </div>
                 </div>
-                <!-- Water Tracker -->
                 <div class="card" style="background:linear-gradient(135deg,#1e1e1e,#0d47a1);">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <h3>شرب المية 💧</h3> <span id="water-count" style="font-size:28px; font-weight:900;">0</span>
@@ -98,27 +86,26 @@
                 <!-- Plan Card -->
                 <div class="card" style="border-left:4px solid var(--accent); background:rgba(255,179,0,0.05);">
                     <h3>جدول تمرينك 🏋️‍♂️</h3>
-                    <div id="workout-text" style="margin-top:10px; white-space:pre-line; color:#eee;">اطلب جدولك من الكابتن!</div>
+                    <div id="workout-text" style="margin-top:10px; white-space:pre-line; color:#eee; line-height:1.6;">جاري تحميل جدولك المخصص...</div>
                 </div>
-                <div class="card"><h3>تاريخ البطل 📜</h3><div id="user-history-list"></div></div>
+                <div class="card"><h3>تاريخ الأبطال 📜</h3><div id="user-history-list"></div></div>
             </div>
 
             <!-- Tech Tab (Exercises) -->
             <div id="tech-tab" class="content-tab hidden">
                 <div class="card">
                     <h3>مكتبة التكنيك 📖</h3>
-                    <p style="color:var(--text-muted); margin-bottom:15px;">اتعلم التكنيك الصح عشان متتصابش.</p>
-                    <div class="tech-card"> <span class="tech-icon">🏋️</span> <div class="tech-info"><b>تمارين الصدر</b><p>شرح البنش بريس والتفتيح</p></div></div>
-                    <div class="tech-card"> <span class="tech-icon">🧱</span> <div class="tech-info"><b>تمارين الظهر</b><p>السحب العالي والأرضي</p></div></div>
-                    <div class="tech-card"> <span class="tech-icon">🍗</span> <div class="tech-info"><b>تمارين الرجل</b><p>السكوات واللانج</p></div></div>
+                    <div class="tech-card"> <span class="tech-icon">🏋️</span> <div><b>تمارين الصدر</b><p style="font-size:12px; color:#777;">شرح البنش بريس</p></div></div>
+                    <div class="tech-card"> <span class="tech-icon">🐉</span> <div><b>تمارين الظهر</b><p style="font-size:12px; color:#777;">السحب العالي والأرضي</p></div></div>
+                    <div class="tech-card"> <span class="tech-icon">🍗</span> <div><b>تمارين الرجل</b><p style="font-size:12px; color:#777;">السكوات واللانج</p></div></div>
                 </div>
             </div>
 
             <!-- Admin Tab -->
             <div id="admin-tab" class="content-tab hidden">
-                <div class="card"><h3>طلبات معلقة 🆕</h3><div id="pending-users-list"></div></div>
+                <div class="card"><h3>طلبات انتظار 🆕</h3><div id="pending-users-list"></div></div>
                 <div class="card"><h3>الأبطال 👥</h3><div id="all-users-list"></div></div>
-                <div class="card"><h3>نشاطات الأبطال 🏃‍♂️</h3><div id="admin-logs-list"></div></div>
+                <div class="card"><h3>أحدث النشاطات 🏃‍♂️</h3><div id="admin-logs-list"></div></div>
             </div>
         </div>
 
@@ -136,29 +123,29 @@
             <div id="category-menu" class="hidden"><div id="category-btns" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;"></div></div>
             <div id="log-inputs" class="hidden">
                 <div id="file-wrapper" class="hidden">
-                    <button class="btn-full" onclick="document.getElementById('log-file').click()" style="background:#444; margin-bottom:10px;">📸 الكاميرا / الاستوديو</button>
+                    <button class="btn-full" onclick="document.getElementById('log-file').click()" style="background:#444; margin-bottom:10px;">📸 فتح الكاميرا / الاستوديو</button>
                     <input type="file" id="log-file" accept="image/*" capture="environment" style="display:none;" onchange="previewImg(this)">
                     <canvas id="resize-canvas" class="hidden"></canvas>
                     <img id="img-preview" class="hidden" style="width:100%; border-radius:15px; margin-bottom:15px; border:2px solid var(--primary);">
                 </div>
-                <input type="text" id="log-val" placeholder="اكتب البيانات (وزن، وجبة...)" style="width:100%; padding:14px; background:#121212; border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:10px;">
-                <textarea id="log-note" placeholder="ملاحظات اختيارية..." style="width:100%; padding:14px; background:#121212; border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:15px;"></textarea>
-                <div id="save-status" style="text-align:center; margin-bottom:10px; color:var(--accent);"></div>
-                <button class="btn-full" id="save-btn" onclick="saveLog()">تأكيد الحفظ ✅</button>
+                <input type="text" id="log-val" placeholder="البيانات..." style="width:100%; padding:14px; background:#121212; border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:10px;">
+                <textarea id="log-note" placeholder="ملاحظات..." style="width:100%; padding:14px; background:#121212; border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:15px;"></textarea>
+                <div id="save-status" style="text-align:center; color:var(--accent); font-size:12px; margin-bottom:10px;"></div>
+                <button class="btn-full" id="save-btn" onclick="saveLog()">تأكيد ✅</button>
             </div>
             <button class="btn-full" style="background:#555; margin-top:10px;" onclick="closeLogger()">إلغاء</button>
         </div>
     </div>
 
-    <!-- Admin Profile Modal -->
+    <!-- Admin Modal -->
     <div id="profile-modal" class="modal hidden">
         <div class="card">
             <h3 id="prof-name">اسم المشترك</h3>
             <div style="margin-top:20px;">
-                <label>جدول التمرين المخصص:</label>
+                <label>تعديل جدول التمرين:</label>
                 <textarea id="prof-workout-edit" style="width:100%; height:250px; background:#121212; color:#fff; border:1px solid #444; padding:15px; margin-top:10px; border-radius:12px;"></textarea>
-                <button class="btn-full" onclick="saveWorkout()" style="margin-top:10px;">حفظ الجدول ✅</button>
-                <button class="btn-full" style="background:#d32f2f; margin-top:10px;" onclick="deleteUser()">حذف المشترك 🗑️</button>
+                <button class="btn-full" onclick="saveWorkout()" style="margin-top:10px;">تحديث الجدول 💾</button>
+                <button class="btn-full" style="background:#d32f2f; margin-top:10px;" onclick="deleteUser()">حذف نهائي 🗑️</button>
             </div>
             <button class="btn-full" style="background:#444; margin-top:20px;" onclick="document.getElementById('profile-modal').classList.add('hidden')">رجوع</button>
         </div>
@@ -180,7 +167,7 @@
             if(p === ADMIN) { enterApp({phone:p,name:"كابتن أحمد",role:"admin"}); return; }
             const doc = await db.collection('users').doc(p).get();
             if(doc.exists && doc.data().status==='approved') enterApp({...doc.data(), role:'user'});
-            else alert('الحساب غير موجود أو في انتظار موافقة الكابتن!');
+            else alert('مستني موافقة الكابتن أو الرقم غلط!');
         }
         function loginSilent(p) { if(p === ADMIN) enterApp({phone:p,name:"كابتن أحمد",role:"admin"}); else db.collection('users').doc(p).get().then(d => { if(d.exists) enterApp({...d.data(), role:'user'}); }); }
 
@@ -193,7 +180,7 @@
             else { loadUserLogs(); loadPlan(); }
         }
 
-        async function loadPlan() { const d = await db.collection('users').doc(currentUser.phone).get(); document.getElementById('workout-text').innerText = d.data().workoutPlan || "اطلب جدولك من الكابتن!"; }
+        async function loadPlan() { const d = await db.collection('users').doc(currentUser.phone).get(); document.getElementById('workout-text').innerText = d.data().workoutPlan || "اطلب جدولك!"; }
 
         const CATS = {'وجبة':['فطار','غداء','عشاء','سناك'], 'تمرين':['بنج/صدر','ظهر','أكتاف','دراع','رجل']};
         let cType = "", cSub = "";
@@ -221,16 +208,16 @@
         function previewImg(input) {
             if (input.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = (e) => {
                     const img = new Image();
-                    img.onload = function() {
+                    img.onload = () => {
                         const canvas = document.getElementById('resize-canvas');
                         const ctx = canvas.getContext('2d');
-                        const max = 600; let w = img.width, h = img.height;
+                        const max = 800; let w = img.width, h = img.height;
                         if(w > h) { if(w > max){ h *= max/w; w = max; } } else { if(h > max){ w *= max/h; h = max; } }
                         canvas.width = w; canvas.height = h;
                         ctx.drawImage(img, 0, 0, w, h);
-                        base64Img = canvas.toDataURL('image/jpeg', 0.7);
+                        base64Img = canvas.toDataURL('image/jpeg', 0.6);
                         document.getElementById('img-preview').src = base64Img;
                         document.getElementById('img-preview').classList.remove('hidden');
                     }
@@ -242,7 +229,7 @@
 
         async function saveLog() {
             if(cType!=='صور' && !document.getElementById('log-val').value) return;
-            const btn = document.getElementById('save-btn'); btn.disabled = true; document.getElementById('save-status').innerText = "جاري الحفظ...";
+            const btn = document.getElementById('save-btn'); btn.disabled = true; document.getElementById('save-status').innerText = "جاري الحفظ البصري...";
             try {
                 await db.collection('logs').add({
                     uName: currentUser.name, uPhone: currentUser.phone,
@@ -251,7 +238,7 @@
                     ts: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 closeLogger(); loadUserLogs(); if(currentUser.role==='admin') loadAdmin();
-            } catch(e) { alert('خطأ في الاتصال!'); } finally { btn.disabled = false; document.getElementById('save-status').innerText = ""; }
+            } finally { btn.disabled = false; document.getElementById('save-status').innerText = ""; }
         }
 
         async function loadUserLogs() {
@@ -271,11 +258,11 @@
                     <div style="margin-right:25px;">
                         <small style="color:${color}; font-weight:bold;">${d.type} ${d.sub||''}</small>
                         ${isImg ? `<img src="${d.val}" class="log-img">` : `<div style="font-weight:bold;">${d.val}</div>`}
-                        ${d.note ? `<div style="color:#888; font-size:11px; margin-top:5px;">${d.note}</div>` : ''}
+                        ${d.note ? `<div style="color:#777; font-size:11px; margin-top:5px;">${d.note}</div>` : ''}
                     </div>
                 </div>`;
             });
-            list.innerHTML = h || "لا توجد نشاطات.";
+            list.innerHTML = h || "مفيش سجلات.";
         }
 
         async function loadAdmin() {
@@ -283,18 +270,15 @@
             const snap = await db.collection('logs').orderBy('ts','desc').limit(30).get();
             let h = ""; snap.forEach(d => {
                 const da = d.data(); const isImg = da.val && da.val.startsWith('data:image');
-                h += `<div class="history-item"><i class="del-btn" onclick="deleteLog('${d.id}')">🗑️</i> <div style="margin-right:25px;"><b>${da.uName}:</b> ${da.type} - ${isImg ? 'الصورة 📸' : da.val} ${isImg ? `<br><img src="${da.val}" style="width:50px; border-radius:5px; margin-top:5px;">`:''}</div></div>`;
+                h += `<div class="history-item"><i class="del-btn" onclick="deleteLog('${d.id}')">🗑️</i> <div style="margin-right:25px;"><b>${da.uName}:</b> ${da.type} - ${isImg ? '📸 صورة' : da.val} ${isImg ? `<br><img src="${da.val}" style="width:60px; border-radius:8px; margin-top:5px;">`:''}</div></div>`;
             });
             logs.innerHTML = h;
-
-            const users = document.getElementById('all-users-list');
             const uSnap = await db.collection('users').get();
-            let uh = ""; uSnap.forEach(d => { const u = d.data(); if(u.status==='approved') uh += `<div class="tech-card" onclick="openProfile('${d.id}')"><b>${u.name}</b></div>`; });
-            users.innerHTML = uh;
-
+            let uh = ""; uSnap.forEach(d => { if(d.data().status==='approved') uh += `<div class="tech-card" onclick="openProfile('${d.id}')"><b>${d.data().name}</b></div>`; });
+            document.getElementById('all-users-list').innerHTML = uh;
             const pSnap = await db.collection('users').where('status','==','pending').get();
-            let ph = ""; pSnap.forEach(d => { ph += `<div class="card">${d.data().name} <button onclick="approveUser('${d.id}')">تفعيل</button></div>`; });
-            document.getElementById('pending-users-list').innerHTML = ph || "مفيش حد مستني.";
+            let ph = ""; pSnap.forEach(d => { ph += `<div class="card">${d.data().name} <button onclick="approveUser('${d.id}')">تفعيل ✅</button></div>`; });
+            document.getElementById('pending-users-list').innerHTML = ph || "محّدش مستني.";
         }
 
         async function deleteLog(id) { if(confirm('حذف؟')) { await db.collection('logs').doc(id).delete(); loadUserLogs(); if(currentUser.role==='admin') loadAdmin(); } }
@@ -307,7 +291,21 @@
         function closeLogger() { document.getElementById('logger-modal').classList.add('hidden'); }
         function checkWaterReset() { const td = new Date().toDateString(); if(localStorage.getItem('w_date') !== td) { localStorage.setItem('w_date', td); localStorage.setItem('w_count', "0"); document.getElementById('water-count').innerText = "0"; } else document.getElementById('water-count').innerText = localStorage.getItem('w_count'); }
         async function updateWater(v) { if(!currentUser) return; let c = parseInt(localStorage.getItem('w_count') || "0") + v; localStorage.setItem('w_count', c); document.getElementById('water-count').innerText = c; await db.collection('logs').add({ uName:currentUser.name, uPhone:currentUser.phone, type:'مياه', val:c+' كوب', ts:firebase.firestore.FieldValue.serverTimestamp() }); loadUserLogs(); }
-        async function register() { const n = document.getElementById('reg-name').value; const p = document.getElementById('reg-phone').value; if(!n || !p) return alert('كمل بياناتك'); await db.collection('users').doc(p).set({name:n, phone:p, status:'pending'}); alert('استنى موافقة الكابتن!'); toggleAuth('login'); }
+        async function register() { const n = document.getElementById('reg-name').value; const p = document.getElementById('reg-phone').value; if(!n || !p) return alert('كمل بياناتك'); await db.collection('users').doc(p).set({name:n, phone:p, status:'pending'}); alert('مستني الكابتن!'); toggleAuth('login'); }
+
+        // التحديث التلقائي الإجباري
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    reg.update();
+                    reg.onupdatefound = () => {
+                        const nw = reg.installing;
+                        nw.onstatechange = () => { if (nw.state === 'installed' && navigator.serviceWorker.controller) window.location.reload(); };
+                    };
+                });
+            });
+            navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
+        }
     </script>
 </body>
 </html>
