@@ -3,130 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Fire Gym | Management</title>
+    <title>Fire Gym | Universal System</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #ff3d00; --bg: #000; --card: #111; --text: #fff; }
+        :root { --primary: #ff3d00; --bg: #000; --card: #121212; --text: #fff; }
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
-        body { background:var(--bg); color:var(--text); }
-        .screen { display:none; padding:20px; min-height:100vh; }
+        body { background:var(--bg); color:var(--text); padding-bottom:100px; }
+        
+        .screen { display:none; animation: fadeIn 0.3s; }
         .screen.active { display:block; }
-        .form-group { background:var(--card); padding:20px; border-radius:20px; border:1px solid #222; margin-top:20px; }
-        input, select { width:100%; padding:15px; margin:10px 0; border-radius:12px; background:#000; color:#fff; border:1px solid #333; }
-        .btn { width:100%; padding:18px; border-radius:12px; background:var(--primary); color:#fff; font-weight:900; border:none; cursor:pointer; font-size:16px; box-shadow:0 10px 20px rgba(255,61,0,0.2); }
-        .member-card { background:#111; padding:20px; border-radius:15px; border:1px solid #222; margin-bottom:15px; border-right:4px solid #444; }
-        .status-pending { color: #ff9800; } .status-approved { color: #4caf50; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+        /* UI Elements */
+        .card { background:var(--card); padding:20px; border-radius:20px; border:1px solid #222; margin:15px; }
+        input, select { width:100%; padding:15px; margin:8px 0; border-radius:12px; background:#000; color:#fff; border:1px solid #333; }
+        .btn { width:100%; padding:18px; border-radius:12px; background:var(--primary); color:#fff; font-weight:900; border:none; cursor:pointer; }
+        .nav { position:fixed; bottom:0; width:100%; background:rgba(0,0,0,0.9); display:flex; padding:15px 0 30px; border-top:1px solid #222; }
+        .nav-item { flex:1; text-align:center; color:#555; font-size:12px; }
+        .nav-item.active { color:var(--primary); }
+
+        /* Tabs */
+        .tabs { display:flex; gap:10px; padding:10px 20px; overflow-x:auto; }
+        .tab { padding:10px 20px; border-radius:30px; background:#111; color:#555; white-space:nowrap; }
+        .tab.active { background:var(--primary); color:#fff; }
+
+        .correct { color:#4caf50; font-weight:bold; }
+        .wrong { color:#f44336; font-weight:bold; }
     </style>
 </head>
 <body>
 
-    <!-- الدخول -->
-    <div id="screen-login" class="screen active" style="text-align:center;">
-        <h1 style="color:var(--primary); font-size:45px; margin-top:50px;">FIRE <span>GYM</span></h1>
-        <div class="form-group">
-            <input type="tel" id="login-phone" placeholder="رقم الموبايل المسجل">
-            <button class="btn" onclick="login()">دخول البطل 🔥</button>
-            <p style="margin-top:20px; color:#888;" onclick="showScreen('screen-register')">بطل جديد؟ سجل بياناتك من هنا</p>
+    <!-- 1. LOGIN -->
+    <div id="scr-login" class="screen active" style="padding:40px 20px; text-align:center;">
+        <h1 style="color:var(--primary); font-size:50px; font-weight:900;">FIRE <span style="color:#fff;">GYM</span></h1>
+        <div class="card">
+            <input type="tel" id="l-phone" placeholder="رقم الموبايل">
+            <button class="btn" onclick="login()">دخول للأبطال 🔥</button>
+            <p style="margin-top:20px; color:#666;" onclick="showScreen('scr-reg')">بطل جديد؟ سجل بياناتك من هنا</p>
         </div>
     </div>
 
-    <!-- التسجيل -->
-    <div id="screen-register" class="screen">
-        <h2>نموذج انضمام بطل جديد 📝</h2>
-        <div class="form-group">
-            <input type="text" id="reg-name" placeholder="الاسم بالكامل">
-            <input type="tel" id="reg-phone" placeholder="رقم الموبايل">
-            <input type="number" id="reg-age" placeholder="السن">
-            <input type="number" id="reg-height" placeholder="الطول (سم)">
-            <input type="number" id="reg-weight" placeholder="الوزن (كجم)">
-            <select id="reg-program">
-                <option>تنشيف</option><option>تضخيم</option><option>فتنس</option>
-            </select>
+    <!-- 2. REGISTER -->
+    <div id="scr-reg" class="screen" style="padding:20px;">
+        <h2 style="margin-bottom:20px;">سجل بياناتك يا بطل 👋</h2>
+        <div class="card">
+            <input type="text" id="r-name" placeholder="الاسم بالكامل">
+            <input type="tel" id="r-phone" placeholder="رقم الموبايل">
+            <input type="number" id="r-age" placeholder="السن">
+            <input type="number" id="r-height" placeholder="الطول (سم)">
+            <input type="number" id="r-weight" placeholder="الوزن (كجم)">
+            <select id="r-prog"><option>تنشيف</option><option>تضخيم</option><option>فتنس</option></select>
             <button class="btn" onclick="register()">إرسال الطلب للكابتن 🚀</button>
         </div>
     </div>
 
-    <!-- لوحة الكابتن -->
-    <div id="screen-coach" class="screen">
-        <h1 style="color:var(--primary); margin-bottom:20px;">لوحة القائد 🦁</h1>
-        <div id="members-list">
-            <p style="color:#666;">جارِ الاتصال بالخادم...</p>
+    <!-- 3. USER DASHBOARD -->
+    <div id="scr-user" class="screen">
+        <header style="padding:30px 20px;"><h2>أهلاً يا <span id="u-name" style="color:var(--primary);">...</span> 👋</h2></header>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('days')">يومي</div>
+            <div class="tab" onclick="showTab('months')">شهري</div>
+            <div class="tab" onclick="showTab('years')">سنوي</div>
         </div>
-        <button class="btn" style="background:#222;" onclick="location.reload()">تحديث البيانات 🔄</button>
+
+        <div id="tab-days" class="card" style="display:block;">
+            <h3>تمرين اليوم 🏋️</h3>
+            <p style="color:#666; font-size:14px; margin-top:10px;">سيظهر هنا جدولك المفصل بمجرد اكتماله.</p>
+        </div>
+
+        <div class="card" style="background:#0d47a1;">
+            💧 متابع المية <h1 id="u-wc">0</h1>
+            <button onclick="addW()" style="background:#fff; color:#0d47a1; border:none; width:100%; padding:10px; border-radius:10px; font-weight:900; margin-top:10px;">+1 كوب</button>
+        </div>
     </div>
 
+    <!-- 4. TECHNIQUE -->
+    <div id="scr-tech" class="screen">
+        <header style="padding:20px;"><h2>أسرار التكنيك 🎓</h2></header>
+        <div class="tabs">
+            <div class="tab active">صدر</div><div class="tab">ظهر</div><div class="tab">رجل</div><div class="tab">باي/تراي</div>
+        </div>
+        <div class="card">
+            <p class="correct">✅ الصح: حافظ على استقامة الظهر</p>
+            <p class="wrong">❌ الغلط: مرجحة الوزن للوراء</p>
+            <iframe width="100%" height="200" src="https://www.youtube.com/embed/1O72k07a0Gk" style="border-radius:15px; margin-top:20px;"></iframe>
+        </div>
+    </div>
+
+    <!-- 5. COACH PANEL -->
+    <div id="scr-coach" class="screen" style="padding:20px;">
+        <h1 style="color:var(--primary);">لوحة القائد 🦁</h1>
+        <div id="coach-list" style="margin-top:20px;">جارِ تحميل الأبطال...</div>
+    </div>
+
+    <nav id="main-nav" class="nav" style="display:none;">
+        <div class="nav-item active" onclick="showScreen('scr-user')">🏠<br>حسابي</div>
+        <div class="nav-item" onclick="showScreen('scr-tech')">🎓<br>التكنيك</div>
+    </nav>
+
     <script>
-        // الكابتن
-        const coachPhone = "01100896637"; 
-        
-        // ربط فيربيز
-        try {
-            const firebaseConfig = { projectId: "fire-gym-9c753" };
-            firebase.initializeApp(firebaseConfig);
-            var db = firebase.firestore();
-        } catch(e) { console.log(e); }
+        const coachPhone = "01100896637";
+        const config = { projectId: "fire-gym-9c753" };
+        firebase.initializeApp(config);
+        const db = firebase.firestore();
 
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
+            if(id === 'scr-user' || id === 'scr-tech') document.getElementById('main-nav').style.display = 'flex';
         }
 
         async function login() {
-            const p = document.getElementById('login-phone').value;
-            if(p === coachPhone) { showScreen('screen-coach'); loadMembers(); return; }
-            
+            const p = document.getElementById('l-phone').value;
+            if(p === coachPhone) return showScreen('scr-coach'), loadCoach();
             try {
                 const doc = await db.collection('users').doc(p).get();
-                if(!doc.exists()) return alert("الرقم ده مش متسجل!");
-                if(doc.data().status === 'pending') alert("الكابتن لسه مفقش على طلبك!");
-                else alert("أهلاً بك يا بطل! (جاري فتح حسابك)");
-            } catch(e) { alert("تأكد من فتح Rules في الفيربيز!"); }
+                if(!doc.exists()) return alert("الرقم ده مش مسجل عندنا!");
+                const u = doc.data();
+                if(u.status === 'pending') return alert("طلبك قيد المراجعة يا بطل!");
+                document.getElementById('u-name').innerText = u.name;
+                showScreen('scr-user');
+            } catch(e) { alert("تأكد من فتح Rules في firebase!"); }
         }
 
         async function register() {
-            const p = document.getElementById('reg-phone').value;
-            const n = document.getElementById('reg-name').value;
-            if(!p || !n) return alert("املا البيانات يا بطل!");
-
-            try {
-                await db.collection('users').doc(p).set({
-                    name: n, phone: p,
-                    age: document.getElementById('reg-age').value,
-                    weight: document.getElementById('reg-weight').value,
-                    program: document.getElementById('reg-program').value,
-                    status: 'pending',
-                    timestamp: new Date()
-                });
-                alert("تم الإرسال! كلم الكابتن يوافق عليك.");
-                showScreen('screen-login');
-            } catch(e) { alert("حدث خطأ! اتأكد إنك فاتح الـ Rules"); }
+            const p = document.getElementById('r-phone').value;
+            await db.collection('users').doc(p).set({
+                name: document.getElementById('r-name').value,
+                phone: p,
+                age: document.getElementById('r-age').value,
+                weight: document.getElementById('r-weight').value,
+                program: document.getElementById('r-prog').value,
+                status: 'pending',
+                timestamp: new Date()
+            });
+            alert("تم الإرسال! كلم الكابتن يوافق عليك.");
+            showScreen('scr-login');
         }
 
-        function loadMembers() {
+        function loadCoach() {
             db.collection('users').onSnapshot(snap => {
                 let h = "";
-                if(snap.empty) h = "<p style='color:#666;'>لا يوجد مشتركين حالياً</p>";
                 snap.forEach(doc => {
                     const u = doc.data();
-                    h += `
-                        <div class="member-card" style="border-right-color:${u.status==='pending'?'#ff9800':'#4caf50'}">
-                            <b>${u.name}</b> (${u.phone})<br>
-                            <small>السن: ${u.age} | الوزن: ${u.weight} | ${u.program}</small><br>
-                            <span class="status-${u.status}">${u.status==='pending'?'بانتظار الموافقة ⏳':'مفعل ✅'}</span>
-                            ${u.status==='pending' ? `<button onclick="approve('${u.phone}')" style="background:#4caf50; color:#fff; border:none; padding:5px 10px; border-radius:5px; margin-right:10px;">موافقة</button>` : ''}
-                        </div>
-                    `;
+                    h += `<div class="card">
+                        <b>${u.name}</b> (${u.phone})<br>
+                        ${u.status === 'pending' ? `<button class="btn" style="padding:5px; font-size:12px;" onclick="approve('${u.phone}')">موافقة ✅</button>` : 'مشترك مفعل ✅'}
+                    </div>`;
                 });
-                document.getElementById('members-list').innerHTML = h;
+                document.getElementById('coach-list').innerHTML = h;
             });
         }
 
-        async function approve(p) {
-            await db.collection('users').doc(p).update({ status: 'approved' });
-            alert("تم التفعيل!");
-        }
+        async function approve(p) { await db.collection('users').doc(p).update({ status: 'approved' }); }
+        let w = 0; function addW() { w++; document.getElementById('u-wc').innerText = w; }
     </script>
 </body>
 </html>
