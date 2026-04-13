@@ -3,270 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Fire Gym | المنصة الذكية</title>
+    <title>Fire Gym | Smart Platform</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #e53935;
-            --primary-dark: #b71c1c;
-            --bg: #121212;
-            --surface: #1e1e1e;
-            --text: #ffffff;
-            --text-muted: #aaaaaa;
-            --accent: #ffb300;
-            --success: #4caf50;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Cairo', sans-serif; background-color: var(--bg); color: var(--text); overflow-x: hidden; }
-        #auth-screen { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; background: linear-gradient(rgba(18, 18, 18, 0.8), var(--bg)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80') center/cover; }
-        .auth-card { background: var(--surface); padding: 40px 30px; border-radius: 24px; width: 100%; max-width: 400px; text-align: center; border: 1px solid rgba(229, 57, 53, 0.3); box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        .auth-card h2 { font-weight: 900; color: var(--primary); margin-bottom: 10px; font-size: 32px; }
-        .input-group { margin: 25px 0; text-align: right; }
-        .input-group label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--text-muted); }
-        .input-group input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #333; background: #121212; color: #fff; font-size: 18px; text-align: center; outline: none; }
-        .input-group input:focus { border-color: var(--primary); }
-        .btn-full { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, var(--primary), var(--primary-dark)); color: #fff; font-size: 18px; font-weight: 900; cursor: pointer; box-shadow: 0 5px 15px rgba(229, 57, 53, 0.4); }
-        #app-content { display: none; padding-bottom: 100px; }
-        header { padding: 40px 20px 80px; text-align: center; background: var(--surface); border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; }
-        .user-welcome { font-size: 24px; font-weight: 900; }
-        .user-welcome span { color: var(--accent); }
-        .main-sections { padding: 0 20px; margin-top: -40px; }
-        .card { background: var(--surface); padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px solid #333; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .tracker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        .track-btn { background: #222; padding: 15px; border-radius: 15px; text-align: center; border: 1px solid #444; color: #fff; cursor: pointer; transition: transform 0.1s, background-color 0.2s; }
-        .track-btn span { display: block; font-size: 24px; margin-bottom: 5px; }
-        .track-btn label { font-size: 14px; font-weight: bold; pointer-events: none; }
-        .bottom-tabs { position: fixed; bottom: 0; width: 100%; background: rgba(30, 30, 30, 0.98); display: flex; justify-content: space-around; padding: 15px 0 30px; border-top: 1px solid #333; }
-        .tab { color: var(--text-muted); font-size: 12px; text-align: center; text-decoration: none; display: flex; flex-direction: column; }
-        .tab i { font-size: 20px; margin-bottom: 4px; font-style: normal; }
-        .tab.active { color: var(--primary); }
-        .hidden { display: none; }
-        .log-form { margin-top: 20px; }
-        .log-form input, .log-form textarea { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #444; background: #121212; color: #fff; font-family: inherit; }
-        .loading { opacity: 0.7; pointer-events: none; position: relative; }
-        .loading::after { content: ""; position: absolute; width: 20px; height: 20px; top: 50%; left: 20px; margin-top: -10px; border: 2px solid white; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .history-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 8px; border-right: 4px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .sub-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .sub-btn { background: #333; color: #fff; padding: 12px; border-radius: 10px; border: 1px solid #444; font-size: 14px; cursor: pointer; }
+        :root { --primary:#e53935; --primary-dark:#b71c1c; --bg:#121212; --surface:#1e1e1e; --text:#fff; --text-muted:#aaa; --accent:#ffb300; --success:#4caf50; }
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        body { font-family:'Cairo',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+        .hidden { display:none !important; }
+        .card { background:var(--surface); padding:20px; border-radius:20px; margin-bottom:20px; border:1px solid #333; position:relative; }
+        .btn-full { width:100%; padding:15px; border-radius:12px; border:none; background:linear-gradient(45deg, var(--primary), var(--primary-dark)); color:#fff; font-size:18px; font-weight:900; cursor:pointer; }
+        
+        /* Auth */
+        #auth-screen { height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; background:linear-gradient(rgba(18,18,18,0.8),var(--bg)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80') center/cover; }
+        .auth-card { background:var(--surface); padding:35px; border-radius:24px; width:100%; max-width:400px; text-align:center; border:1px solid rgba(229,57,53,0.3); }
+        .input-group { margin:20px 0; text-align:right; }
+        .input-group label { display:block; margin-bottom:8px; color:var(--text-muted); }
+        .input-group input, .input-group select { width:100%; padding:12px; border-radius:12px; border:1px solid #333; background:#121212; color:#fff; font-size:16px; outline:none; }
+
+        /* Dashboard */
+        header { padding:30px 20px 60px; text-align:center; background:var(--surface); border-bottom-left-radius:40px; border-bottom-right-radius:40px; }
+        .main-sections { padding:0 15px; margin-top:-30px; }
+        .tracker-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
+        .track-btn { background:#222; padding:15px; border-radius:15px; text-align:center; border:1px solid #444; color:#fff; cursor:pointer; }
+        .track-btn span { display:block; font-size:24px; }
+        
+        /* History Items */
+        .history-item { background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; margin-bottom:8px; border-right:4px solid #444; position:relative; }
+        .del-btn { position:absolute; left:10px; top:10px; color:#ff3b30; cursor:pointer; font-style:normal; font-size:18px; }
+
+        /* Navigation */
+        .bottom-tabs { position:fixed; bottom:0; width:100%; background:rgba(30,30,30,0.98); display:flex; justify-content:space-around; padding:15px 0 30px; border-top:1px solid #333; z-index:100; }
+        .tab { color:var(--text-muted); font-size:12px; text-align:center; text-decoration:none; }
+        .tab.active { color:var(--primary); }
+
+        /* Modals */
+        .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:1000; padding:20px; overflow-y:auto; }
+        .sub-menu { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px; }
+        .sub-btn { background:#333; color:#fff; padding:12px; border-radius:10px; border:1px solid #444; cursor:pointer; }
     </style>
 </head>
 <body>
     <div id="auth-screen">
         <div class="auth-card" id="login-form">
-            <h2>FIRE GYM</h2>
-            <p style="color: var(--text-muted); margin-bottom: 20px;">المنصة الذكية للأبطال 🦁</p>
-            <div class="input-group">
-                <label>رقم الموبايل المسجل</label>
-                <input type="tel" id="login-phone" placeholder="01xxxxxxxxx">
-            </div>
+            <h2>FIRE GYM</h2><p style="color:var(--text-muted);">عالم الأبطال 🦁</p>
+            <div class="input-group"><label>رقم الموبايل</label><input type="tel" id="login-phone" placeholder="01xxxxxxxxx"></div>
             <button class="btn-full" onclick="login()">دخول للأرض 🔥</button>
-            <p style="margin-top: 15px; font-size: 14px;"><a href="javascript:void(0)" onclick="toggleAuth('register')" style="color: var(--accent); text-decoration: none;">سجل كبطل جديد معانا 💪</a></p>
+            <p style="margin-top:15px;"><a href="javascript:void(0)" onclick="toggleAuth('register')" style="color:var(--accent); text-decoration:none;">سجل بطل جديد 🔥</a></p>
         </div>
         <div class="auth-card hidden" id="register-form">
             <h2>بطل جديد 🔥</h2>
-            <div class="input-group"><label>الاسم بالكامل</label><input type="text" id="reg-name" placeholder="اكتب اسمك"></div>
-            <div class="input-group"><label>رقم الموبايل</label><input type="tel" id="reg-phone" placeholder="01xxxxxxxxx"></div>
-            <div class="input-group">
-                <label>هدفك إيه؟</label>
-                <select id="reg-goal" style="width:100%; padding:15px; border-radius:12px; background:#121212; color:#fff; border:1px solid #333;">
-                    <option value="تخسيس">تخسيس ونحت</option>
-                    <option value="تضخيم">تضخيم وبناء عضلات</option>
-                    <option value="فتنس">لياقة بدنية</option>
-                </select>
-            </div>
-            <button class="btn-full" onclick="register()">إرسال طلب الانضمام 🚀</button>
-            <p style="margin-top: 15px; font-size: 14px;"><a href="javascript:void(0)" onclick="toggleAuth('login')" style="color: var(--text-muted);">تسجيل دخول</a></p>
+            <div class="input-group"><label>الاسم</label><input type="text" id="reg-name"></div>
+            <div class="input-group"><label>الموبايل</label><input type="tel" id="reg-phone"></div>
+            <div class="input-group"><label>الهدف</label><select id="reg-goal"><option value="تخسيس">تخسيس</option><option value="تضخيم">تضخيم</option></select></div>
+            <button class="btn-full" onclick="register()">انضمام 🚀</button>
         </div>
     </div>
 
-    <div id="app-content">
+    <div id="app-content" class="hidden">
         <header>
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                <div style="font-size: 10px; color: var(--primary); text-align: left;">V3.1.5 - STABLE ✅</div>
-                <button onclick="logout()" style="background: rgba(229, 57, 53, 0.1); border: 1px solid var(--primary); color: var(--primary); padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: bold;">تسجيل خروج ⬅️</button>
+            <div style="display:flex; justify-content:space-between; align-items:start;">
+                <div style="font-size:10px; color:var(--primary);">V.4.0.0 - PRO 👑</div>
+                <button onclick="logout()" style="background:rgba(255,0,0,0.1); color:#ff3b30; border:1px solid #ff3b30; padding:4px 10px; border-radius:8px;">خروج</button>
             </div>
-            <div class="user-welcome">يا مرحب بـ <span id="user-display-name">بطلنا</span> 👋</div>
-            <p id="coach-hint" class="hidden"><span class="coach-badge">أدمن</span> وضـع الكابتن</p>
+            <h2 class="user-welcome">يا وحش <span id="user-display-name">بطلنا</span> 👋</h2>
         </header>
 
         <div class="main-sections">
             <div id="user-tab" class="content-tab">
                 <div class="card">
-                    <h3>أداؤك النهاردة 📈</h3>
+                    <h3>سجل نشاطك 🦁</h3>
                     <div class="tracker-grid">
-                        <button class="track-btn" onclick="openLogger('وزن')"><span>⚖️</span><label>سجل الوزن</label></button>
-                        <button class="track-btn" onclick="openLogger('صور')"><span>📸</span><label>أحدث صورة</label></button>
-                        <button class="track-btn" onclick="openLogger('وجبة')"><span>🥗</span><label>سجل الأكل</label></button>
-                        <button class="track-btn" onclick="openLogger('تمرين')"><span>💪</span><label>سجل الأوزان</label></button>
+                        <button class="track-btn" onclick="openLogger('وزن')"><span>⚖️</span><label>الوزن</label></button>
+                        <button class="track-btn" onclick="openLogger('وجبة')"><span>🥗</span><label>الوجبة</label></button>
+                        <button class="track-btn" onclick="openLogger('تمرين')"><span>💪</span><label>تمرين</label></button>
+                        <button class="track-btn" onclick="openLogger('صور')"><span>📸</span><label>صور</label></button>
                     </div>
                 </div>
-                <div class="card" style="background: linear-gradient(135deg, #1e1e1e, #1a237e);">
-                    <h3>متابع المية 💧</h3>
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 15px;">
-                        <span id="water-count" style="font-size: 32px; font-weight: 900;">0</span>
-                        <button onclick="updateWater(1)" style="background: rgba(255,255,255,0.2); border:none; padding:10px 20px; border-radius:10px; color:#fff;">+1 كوب</button>
+                <div class="card" style="background:linear-gradient(135deg,#1e1e1e,#1a237e);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3>شرب المية 💧</h3> <span id="water-count" style="font-size:24px; font-weight:900;">0</span>
+                        <button onclick="updateWater(1)" style="background:#fff; color:#000; border:none; padding:8px 15px; border-radius:10px;">+1 كوب</button>
                     </div>
                 </div>
-                <div class="card" style="border-top: 2px solid var(--accent);">
-                    <h3>تاريخ نشاطك 💪</h3>
-                    <div id="user-history-list" style="margin-top: 15px;"><p style="text-align:center; color:#666;">جاري التحميل...</p></div>
+                <div class="card" id="workout-plan-card" style="border-left:4px solid var(--accent);">
+                    <h3>جدول تمرينك 🏋️‍♂️</h3>
+                    <div id="workout-text" style="margin-top:10px; color:var(--text-muted); font-size:14px; white-space:pre-line;">جاري تحميل جدولك المخصص...</div>
                 </div>
-            </div>
-
-            <div id="library-tab" class="content-tab hidden">
-                <div class="card"><h3>مكتبة التمارين 🎓</h3><p>شاهد فيديوهات التمارين هنا قريباً.</p></div>
+                <div class="card">
+                    <h3>سجل الهيستوري 📜</h3>
+                    <div id="user-history-list" style="margin-top:15px;"></div>
+                </div>
             </div>
 
             <div id="admin-tab" class="content-tab hidden">
-                <div class="card"><h3>طلبات انضمام 🆕</h3><div id="pending-users-list"></div></div>
-                <div class="card"><h3>نشاط الأبطال 🏃‍♂️</h3><div id="users-list"></div></div>
-            </div>
-        </div>
-
-        <div id="logger-ui" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; padding: 20px 10px; overflow-y: auto;">
-            <div class="card" style="max-width: 500px; margin: auto;">
-                <h3 id="logger-title">تسجيل</h3>
-                <div id="category-menu" class="hidden"><div id="category-btns" class="sub-menu"></div></div>
-                <div id="log-inputs-area" class="hidden">
-                    <div class="log-form">
-                        <div id="text-input-wrapper"><input type="text" id="log-value" placeholder="اكتب هنا..."></div>
-                        <div id="file-input-wrapper" class="hidden">
-                            <button class="track-btn" onclick="document.getElementById('log-file').click()" style="width:100%; background:#121212; border:2px dashed #444;"><span id="file-status">📸 صور نفسك</span></button>
-                            <input type="file" id="log-file" accept="image/*" capture="environment" style="display:none;" onchange="handleFile(this)">
-                        </div>
-                        <textarea id="log-note" placeholder="ملاحظات (اختياري)..."></textarea>
-                        <button class="btn-full" id="save-log-btn" onclick="saveLog()">حفظ ✅</button>
-                    </div>
-                </div>
-                <button class="btn-full" style="background: #444; margin-top: 15px;" onclick="closeLogger()">إلغاء</button>
+                <div class="card"><h3>طلبات معلقة 🆕</h3><div id="pending-users-list"></div></div>
+                <div class="card"><h3>الأبطال المشتركين 👥</h3><div id="all-users-list"></div></div>
+                <div class="card"><h3>أحدث الأنشطة 🏃‍♂️</h3><div id="admin-logs-list"></div></div>
             </div>
         </div>
 
         <div class="bottom-tabs">
-            <a href="javascript:void(0)" class="tab active" onclick="switchTab('user', this)"><i>🏠</i><span>حسابي</span></a>
-            <a href="javascript:void(0)" class="tab" onclick="switchTab('library', this)"><i>🎓</i><span>التكنيك</span></a>
-            <a href="javascript:void(0)" id="admin-nav" class="tab hidden" onclick="switchTab('admin', this)"><i>👑</i><span>الأدمن</span></a>
+            <a href="javascript:void(0)" class="tab active" onclick="switchTab('user', this)">حسابي</a>
+            <a href="javascript:void(0)" id="admin-nav" class="tab hidden" onclick="switchTab('admin', this)">الأدمن 👑</a>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="logger-modal" class="modal hidden">
+        <div class="card">
+            <h3 id="logger-title">تسجيل</h3>
+            <div id="category-menu" class="hidden"><div id="category-btns" class="sub-menu"></div></div>
+            <div id="log-inputs" class="hidden">
+                <div id="file-wrapper" class="hidden">
+                    <button class="btn-full" onclick="document.getElementById('log-file').click()" style="background:#333; margin-bottom:10px;">📸 افتح الكاميرا</button>
+                    <input type="file" id="log-file" accept="image/*" capture="environment" style="display:none;" onchange="previewImg(this)">
+                    <img id="img-preview" class="hidden" style="width:100%; border-radius:10px; margin-bottom:10px;">
+                </div>
+                <input type="text" id="log-val" placeholder="اكتب البيانات..." style="width:100%; padding:12px; background:#222; border:1px solid #444; color:#fff; border-radius:10px; margin-bottom:10px;">
+                <textarea id="log-note" placeholder="ملاحظات..." style="width:100%; padding:12px; background:#222; border:1px solid #444; color:#fff; border-radius:10px; margin-bottom:15px;"></textarea>
+                <button class="btn-full" onclick="saveLog()">تأكيد وحفظ ✅</button>
+            </div>
+            <button class="btn-full" style="background:#555; margin-top:10px;" onclick="closeLogger()">إلغاء</button>
+        </div>
+    </div>
+
+    <!-- User Profile Modal (Admin Only) -->
+    <div id="profile-modal" class="modal hidden">
+        <div class="card">
+            <h3 id="prof-name">اسم المشترك</h3>
+            <p id="prof-phone" style="font-size:12px; color:var(--text-muted);"></p>
+            <div style="margin-top:20px;">
+                <label>جدول التمرين المخصص:</label>
+                <textarea id="prof-workout-edit" style="width:100%; height:150px; background:#222; color:#fff; border:1px solid #444; padding:10px; margin-top:10px; border-radius:10px;"></textarea>
+                <button class="btn-full" style="margin-top:10px;" onclick="saveWorkout()">تحديث الجدول للمشترك 💾</button>
+                <button class="btn-full" style="background:#d32f2f; margin-top:10px;" onclick="deleteUser()">حذف المشترك نهائياً 🗑️</button>
+            </div>
+            <button class="btn-full" style="background:#555; margin-top:20px;" onclick="document.getElementById('profile-modal').classList.add('hidden')">رجوع</button>
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyAxMNBdkNk_brPMlq1O3_HPRWOIqj-lb24", authDomain: "fire-gym-9c753.firebaseapp.com", projectId: "fire-gym-9c753", storageBucket: "fire-gym-9c753.firebasestorage.app", messagingSenderId: "417014585133", appId: "1:417014585133:web:38f62686ae2e133298a5a4", measurementId: "G-352VQWNZ6P" };
-        firebase.initializeApp(firebaseConfig);
+        const config = { apiKey: "AIzaSyAxMNBdkNk_brPMlq1O3_HPRWOIqj-lb24", authDomain: "fire-gym-9c753.firebaseapp.com", projectId: "fire-gym-9c753", storageBucket: "fire-gym-9c753.firebasestorage.app", messagingSenderId: "417014585133", appId: "1:417014585133:web:38f62686ae2e133298a5a4" };
+        firebase.initializeApp(config);
         const db = firebase.firestore();
-        let currentUser = null; 
-        const ADMIN_PHONE = "01100896637";
+        let currentUser = null; let activeTarget = null;
+        const ADMIN = "01100896637";
 
-        window.addEventListener('load', () => {
-            const savedPhone = localStorage.getItem('fire_gym_phone');
-            if (savedPhone) { document.getElementById('login-phone').value = savedPhone; login(true); }
-            if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(console.error); }
-        });
+        window.onload = () => {
+            const sp = localStorage.getItem('fire_gym_phone');
+            if(sp) loginSilent(sp);
+            checkWaterReset();
+        };
 
-        function logout() { if(confirm('متأكد؟')) { localStorage.removeItem('fire_gym_phone'); location.reload(); } }
-        function toggleAuth(mode) { document.getElementById('login-form').classList.toggle('hidden', mode === 'register'); document.getElementById('register-form').classList.toggle('hidden', mode === 'login'); }
+        function logout() { localStorage.removeItem('fire_gym_phone'); location.reload(); }
+        function toggleAuth(m) { document.getElementById('login-form').classList.toggle('hidden', m==='register'); document.getElementById('register-form').classList.toggle('hidden', m==='login'); }
 
-        async function login(silent = false) {
-            const phone = document.getElementById('login-phone').value.trim();
-            if (phone.length < 10) return;
-            try {
-                if (phone === ADMIN_PHONE) { enterApp({ phone, name: "كابتن أحمد", role: 'admin' }); return; }
-                const doc = await db.collection('users').doc(phone).get();
-                if (doc.exists && doc.data().status === 'approved') enterApp({ phone, name: doc.data().name, role: 'user' });
-                else if (!silent) alert('حسابك غير موجود أو لسه متفعلش!');
-            } catch(e) { console.error(e); }
+        async function login() {
+            const p = document.getElementById('login-phone').value.trim();
+            if(p.length < 10) return;
+            if(p === ADMIN) { enterApp({phone:p,name:"كابتن أحمد",role:"admin"}); return; }
+            const doc = await db.collection('users').doc(p).get();
+            if(doc.exists && doc.data().status==='approved') enterApp({...doc.data(), role:'user'});
+            else alert('حسابك غير مفعل بعد!');
+        }
+        function loginSilent(p) { if(p === ADMIN) enterApp({phone:p,name:"كابتن أحمد",role:"admin"}); else db.collection('users').doc(p).get().then(d => { if(d.exists) enterApp({...d.data(), role:'user'}); }); }
+
+        function enterApp(u) {
+            currentUser = u; localStorage.setItem('fire_gym_phone', u.phone);
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('app-content').classList.remove('hidden');
+            document.getElementById('user-display-name').innerText = u.name;
+            if(u.role === 'admin') { document.getElementById('admin-nav').classList.remove('hidden'); loadAdmin(); }
+            else { loadUserLogs(); loadPlan(); }
         }
 
-        function enterApp(user) {
-            currentUser = user; localStorage.setItem('fire_gym_phone', user.phone);
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('app-content').style.display = 'block';
-            document.getElementById('user-display-name').innerText = user.name;
-            if (user.role === 'admin') { document.getElementById('admin-nav').classList.remove('hidden'); loadAdminData(); }
-            else loadUserHistory();
+        async function loadPlan() {
+            const d = await db.collection('users').doc(currentUser.phone).get();
+            document.getElementById('workout-text').innerText = d.data().workoutPlan || "مفيش جدول مسجل ليك لسه يا وحش. ارجع للكابتن!";
         }
 
-        const CATEGORIES = { 'وجبة': ['فطار 🍳', 'غداء 🍗', 'عشاء 🥛', 'سناك 🍎'], 'تمرين': ['بنج (Chest) 🏠', 'ظهر (Back) 🐉', 'كتف (Shoulders) 🛡️', 'درع (Arms) 💪', 'رجل (Legs) 🦵'] };
-        let currentType = ""; let currentSub = "";
+        const CATS = {'وجبة':['فطار','غداء','عشاء','سناك'], 'تمرين':['بنج/صدر','ظهر','أكتاف','دراع','رجل']};
+        let cType = "", cSub = "";
 
-        function openLogger(type) {
-            currentType = type; currentSub = "";
-            document.getElementById('log-value').value = ""; document.getElementById('log-note').value = ""; document.getElementById('log-file').value = "";
-            document.getElementById('file-status').innerText = "📸 صور نفسك";
-            document.getElementById('logger-title').innerText = "تسجيل " + type;
-            document.getElementById('logger-ui').classList.remove('hidden');
-            if (CATEGORIES[type]) {
+        function openLogger(t) {
+            cType = t; cSub = "";
+            document.getElementById('log-val').value = ""; document.getElementById('log-note').value = "";
+            document.getElementById('img-preview').classList.add('hidden');
+            document.getElementById('logger-title').innerText = "تسجيل " + t;
+            document.getElementById('logger-modal').classList.remove('hidden');
+            if(CATS[t]) {
                 document.getElementById('category-menu').classList.remove('hidden');
-                document.getElementById('log-inputs-area').classList.add('hidden');
-                document.getElementById('category-btns').innerHTML = CATEGORIES[type].map(s => `<button class="sub-btn" onclick="selectSubCategory('${s}')">${s}</button>`).join('');
-            } else showLogInputs();
+                document.getElementById('log-inputs').classList.add('hidden');
+                document.getElementById('category-btns').innerHTML = CATS[t].map(s => `<button class="sub-btn" onclick="setSub('${s}')">${s}</button>`).join('');
+            } else showInputs();
         }
-
-        function selectSubCategory(s) { currentSub = s; showLogInputs(); }
-        function showLogInputs() {
+        function setSub(s) { cSub = s; showInputs(); }
+        function showInputs() {
             document.getElementById('category-menu').classList.add('hidden');
-            document.getElementById('log-inputs-area').classList.remove('hidden');
-            document.getElementById('file-input-wrapper').classList.toggle('hidden', currentType !== 'صور');
-            document.getElementById('text-input-wrapper').classList.toggle('hidden', currentType === 'صور');
+            document.getElementById('log-inputs').classList.remove('hidden');
+            document.getElementById('file-wrapper').classList.toggle('hidden', cType !== 'صور');
+            document.getElementById('log-val').classList.toggle('hidden', cType === 'صور');
         }
-
-        function handleFile(input) { if(input.files[0]) document.getElementById('file-status').innerText = "✅ تم اختيار الصورة"; }
+        function previewImg(i) { if(i.files[0]) { document.getElementById('img-preview').src = URL.createObjectURL(i.files[0]); document.getElementById('img-preview').classList.remove('hidden'); } }
+        function closeLogger() { document.getElementById('logger-modal').classList.add('hidden'); }
 
         async function saveLog() {
-            const val = document.getElementById('log-value').value;
-            const note = document.getElementById('log-note').value;
-            const file = document.getElementById('log-file').files[0];
-            if (currentType !== 'صور' && !val) return;
-            try {
-                await db.collection('logs').add({
-                    userName: currentUser.name, userPhone: currentUser.phone,
-                    type: currentType, subCategory: currentSub,
-                    value: currentType === 'صور' ? ("صورة: " + file.name) : val,
-                    note, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                alert('عاش يا بطل! تم الحفظ 💪'); closeLogger(); loadUserHistory();
-            } catch(e) { alert('خطأ في الشبكة!'); }
-        }
-
-        async function loadUserHistory() {
-            const list = document.getElementById('user-history-list');
-            try {
-                const snap = await db.collection('logs').where('userPhone', '==', currentUser.phone).get();
-                if (snap.empty) { list.innerHTML = '<p style="text-align:center; padding:20px;">ابدأ سجل يومك يا وحش! 💪</p>'; return; }
-                let logs = []; snap.forEach(doc => logs.push(doc.data()));
-                logs.sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-                let html = ""; let lastDate = "";
-                logs.forEach(d => {
-                    const dt = d.timestamp ? d.timestamp.toDate() : new Date();
-                    const ds = dt.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' });
-                    if (ds !== lastDate) { html += `<div style="display:flex; align-items:center; margin:20px 0 10px;"><div style="flex:1; height:1px; background:#333;"></div><div style="padding:0 15px; font-size:11px; color:var(--accent); font-weight:bold;">📅 ${ds}</div><div style="flex:1; height:1px; background:#333;"></div></div>`; lastDate = ds; }
-                    const color = {'وزن':'#ff3b30','وجبة':'#4cd964','تمرين':'#5856d6','صور':'#ff9500'}[d.type] || '#fff';
-                    html += `<div class="history-item" style="border-right:4px solid ${color}; padding:12px; margin-bottom:8px;"><div style="flex:1;"><div style="display:flex; justify-content:space-between;"><span>${d.type} ${d.subCategory||''}</span><small>${dt.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</small></div><div style="font-size:15px; font-weight:bold; margin-top:5px;">${d.value}</div>${d.note ? `<div style="font-size:11px; color:#777; margin-top:5px;">" ${d.note} "</div>`:''}</div></div>`;
-                });
-                list.innerHTML = html;
-            } catch(e) { console.error(e); }
-        }
-
-        function closeLogger() { document.getElementById('logger-ui').classList.add('hidden'); }
-        function switchTab(t, el) { document.querySelectorAll('.content-tab').forEach(c => c.classList.add('hidden')); document.getElementById(t + '-tab').classList.remove('hidden'); document.querySelectorAll('.tab').forEach(x => x.classList.remove('active')); el.classList.add('active'); }
-        function loadAdminData() { loadAllLogs(); }
-        async function loadAllLogs() {
-            const list = document.getElementById('users-list');
-            const snap = await db.collection('logs').orderBy('timestamp', 'desc').limit(50).get();
-            let html = ""; let lastDate = "";
-            snap.forEach(doc => {
-                const d = doc.data(); if(!d.timestamp) return;
-                const dt = d.timestamp.toDate(); const ds = dt.toLocaleDateString('ar-EG', {day:'numeric', month:'long'});
-                if(ds !== lastDate) { html += `<div style="color:var(--primary); font-size:12px; font-weight:bold; margin:20px 0; text-align:center;">-- ${ds} --</div>`; lastDate = ds; }
-                html += `<div style="background:#1a1a1a; padding:12px; border-radius:12px; margin-bottom:8px; border-right:3px solid var(--accent);"><div style="display:flex; justify-content:space-between;"><span style="color:var(--accent); font-weight:bold;">${d.userName}</span><small style="color:#666;">${dt.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</small></div><div style="color:#fff;">سجل ${d.type}: ${d.value}</div></div>`;
+            const v = document.getElementById('log-val').value;
+            const n = document.getElementById('log-note').value;
+            const f = document.getElementById('log-file').files[0];
+            if(cType!=='صور' && !v) return;
+            await db.collection('logs').add({
+                uName: currentUser.name, uPhone: currentUser.phone,
+                type: cType, sub: cSub, val: cType==='صور' ? ("صورة: "+f.name) : v, note: n,
+                ts: firebase.firestore.FieldValue.serverTimestamp()
             });
-            list.innerHTML = html;
+            closeLogger(); loadUserLogs();
+        }
+
+        async function deleteLog(id) { if(confirm('متأكد إنك عايز تمسح؟')) { await db.collection('logs').doc(id).delete(); loadUserLogs(); if(currentUser.role==='admin') loadAdmin(); } }
+
+        async function loadUserLogs() {
+            const list = document.getElementById('user-history-list');
+            const snap = await db.collection('logs').where('uPhone','==',currentUser.phone).get();
+            let arr = []; snap.forEach(d => arr.push({id:d.id, ...d.data()}));
+            arr.sort((a,b) => (b.ts?.seconds || 0) - (a.ts?.seconds || 0));
+            let h = ""; let lastD = "";
+            arr.forEach(d => {
+                const dt = d.ts ? d.ts.toDate() : new Date();
+                const ds = dt.toLocaleDateString('ar-EG', {day:'numeric',month:'long'});
+                if(ds !== lastD) { h += `<div style="text-align:center; margin:15px 0; font-size:12px; color:var(--accent);">📅 ${ds}</div>`; lastD = ds; }
+                const color = {'وزن':'#ff3b30','وجبة':'#4caf50','تمرين':'#5856d6','صور':'#ff9500'}[d.type] || '#fff';
+                h += `<div class="history-item" style="border-right-color:${color}">
+                    <i class="del-btn" onclick="deleteLog('${d.id}')">🗑️</i>
+                    <div style="margin-right:25px;">
+                        <small style="color:${color}">${d.type} ${d.sub||''}</small>
+                        <div style="font-weight:bold;">${d.val}</div>
+                        <small style="color:#666">${dt.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</small>
+                    </div>
+                </div>`;
+            });
+            list.innerHTML = h || "مفيش سجلات.";
+        }
+
+        async function loadAdmin() {
+            const logs = document.getElementById('admin-logs-list');
+            const snap = await db.collection('logs').orderBy('ts','desc').limit(20).get();
+            let h = ""; snap.forEach(d => {
+                const da = d.data();
+                h += `<div class="history-item"><i class="del-btn" onclick="deleteLog('${d.id}')">🗑️</i> <div style="margin-right:25px;"><b>${da.uName}:</b> ${da.type} - ${da.val}</div></div>`;
+            });
+            logs.innerHTML = h;
+
+            const users = document.getElementById('all-users-list');
+            const uSnap = await db.collection('users').where('status','==','approved').get();
+            let uh = ""; uSnap.forEach(d => {
+                const u = d.data();
+                uh += `<div class="sub-btn" style="text-align:right;" onclick="openProfile('${u.phone}')">${u.name} (عرض البروفايل)</div>`;
+            });
+            users.innerHTML = uh;
+
+            const pList = document.getElementById('pending-users-list');
+            const pSnap = await db.collection('users').where('status','==','pending').get();
+            let ph = ""; pSnap.forEach(d => {
+                const u = d.data();
+                ph += `<div class="card">${u.name} - ${u.phone} <button onclick="approveUser('${u.phone}')">موافقة</button></div>`;
+            });
+            pList.innerHTML = ph || "مفيش طلبات.";
+        }
+
+        async function openProfile(p) {
+            const d = await db.collection('users').doc(p).get();
+            const u = d.data();
+            activeTarget = p;
+            document.getElementById('prof-name').innerText = u.name;
+            document.getElementById('prof-phone').innerText = u.phone;
+            document.getElementById('prof-workout-edit').value = u.workoutPlan || "";
+            document.getElementById('profile-modal').classList.remove('hidden');
+        }
+
+        async function saveWorkout() {
+            const text = document.getElementById('prof-workout-edit').value;
+            await db.collection('users').doc(activeTarget).update({ workoutPlan: text });
+            alert('تم تحديث جدول البطل بنجاح!');
+        }
+
+        async function deleteUser() { if(confirm('مسح المشترك نهائياً؟')) { await db.collection('users').doc(activeTarget).delete(); alert('تم المسح.'); location.reload(); } }
+        async function approveUser(p) { await db.collection('users').doc(p).update({status:'approved'}); loadAdmin(); }
+
+        function checkWaterReset() {
+            const d = new Date().toDateString();
+            if(localStorage.getItem('w_date') !== d) {
+                localStorage.setItem('w_date', d); localStorage.setItem('w_count', "0");
+                document.getElementById('water-count').innerText = "0";
+            } else {
+                document.getElementById('water-count').innerText = localStorage.getItem('w_count') || "0";
+            }
+        }
+        async function updateWater(v) {
+            let c = parseInt(localStorage.getItem('w_count') || "0") + v;
+            localStorage.setItem('w_count', c);
+            document.getElementById('water-count').innerText = c;
+            await db.collection('logs').add({ uName:currentUser.name, uPhone:currentUser.phone, type:'مياه', val: c+' كوب', ts:firebase.firestore.FieldValue.serverTimestamp() });
+            loadUserLogs();
         }
     </script>
 </body>
