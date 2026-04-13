@@ -35,11 +35,9 @@
         .main-sections { padding: 0 20px; margin-top: -40px; }
         .card { background: var(--surface); padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px solid #333; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .tracker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        .track-btn { background: #222; padding: 15px; border-radius: 15px; text-align: center; border: 1px solid #444; color: #fff; cursor: pointer; transition: transform 0.1s, background-color 0.2s; -webkit-appearance: none; appearance: none; }
-        .track-btn:active { transform: scale(0.95); background: #333; }
+        .track-btn { background: #222; padding: 15px; border-radius: 15px; text-align: center; border: 1px solid #444; color: #fff; cursor: pointer; transition: transform 0.1s, background-color 0.2s; }
         .track-btn span { display: block; font-size: 24px; margin-bottom: 5px; }
         .track-btn label { font-size: 14px; font-weight: bold; pointer-events: none; }
-        .coach-badge { background: var(--accent); color: #000; padding: 2px 10px; border-radius: 5px; font-size: 12px; font-weight: 900; vertical-align: middle; }
         .bottom-tabs { position: fixed; bottom: 0; width: 100%; background: rgba(30, 30, 30, 0.98); display: flex; justify-content: space-around; padding: 15px 0 30px; border-top: 1px solid #333; }
         .tab { color: var(--text-muted); font-size: 12px; text-align: center; text-decoration: none; display: flex; flex-direction: column; }
         .tab i { font-size: 20px; margin-bottom: 4px; font-style: normal; }
@@ -50,43 +48,33 @@
         .loading { opacity: 0.7; pointer-events: none; position: relative; }
         .loading::after { content: ""; position: absolute; width: 20px; height: 20px; top: 50%; left: 20px; margin-top: -10px; border: 2px solid white; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .card, .btn-full { transform: translateZ(0); backface-visibility: hidden; }
+        .history-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 8px; border-right: 4px solid #333; display: flex; justify-content: space-between; align-items: center; }
         .sub-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .sub-btn { background: #333; color: #fff; padding: 12px; border-radius: 10px; border: 1px solid #444; font-size: 14px; cursor: pointer; }
-        .sub-btn:active { background: var(--primary); }
-        .history-item { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 12px; margin-bottom: 8px; border-right: 4px solid #333; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
     <div id="auth-screen">
         <div class="auth-card" id="login-form">
             <h2>FIRE GYM</h2>
-            <p style="color: var(--text-muted);">المنصة الذكية للأبطال 🦁</p>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">المنصة الذكية للأبطال 🦁</p>
             <div class="input-group">
                 <label>رقم الموبايل المسجل</label>
                 <input type="tel" id="login-phone" placeholder="01xxxxxxxxx">
             </div>
             <button class="btn-full" onclick="login()">دخول للأرض 🔥</button>
-            <p style="margin-top: 15px; font-size: 14px;">
-                <a href="javascript:void(0)" onclick="toggleAuth('register')" style="color: var(--accent); text-decoration: none;">سجل كبطل جديد معانا 💪</a>
-            </p>
+            <p style="margin-top: 15px; font-size: 14px;"><a href="javascript:void(0)" onclick="toggleAuth('register')" style="color: var(--accent); text-decoration: none;">سجل كبطل جديد معانا 💪</a></p>
         </div>
         <div class="auth-card hidden" id="register-form">
             <h2>بطل جديد 🔥</h2>
-            <div class="input-group">
-                <label>الاسم بالكامل</label>
-                <input type="text" id="reg-name" placeholder="اكتب اسمك هنا">
-            </div>
-            <div class="input-group">
-                <label>رقم الموبايل (واتساب)</label>
-                <input type="tel" id="reg-phone" placeholder="01xxxxxxxxx">
-            </div>
+            <div class="input-group"><label>الاسم بالكامل</label><input type="text" id="reg-name" placeholder="اكتب اسمك"></div>
+            <div class="input-group"><label>رقم الموبايل</label><input type="tel" id="reg-phone" placeholder="01xxxxxxxxx"></div>
             <div class="input-group">
                 <label>هدفك إيه؟</label>
                 <select id="reg-goal" style="width:100%; padding:15px; border-radius:12px; background:#121212; color:#fff; border:1px solid #333;">
                     <option value="تخسيس">تخسيس ونحت</option>
                     <option value="تضخيم">تضخيم وبناء عضلات</option>
-                    <option value="فتنس">لياقة بدنية (فتنس)</option>
+                    <option value="فتنس">لياقة بدنية</option>
                 </select>
             </div>
             <button class="btn-full" onclick="register()">إرسال طلب الانضمام 🚀</button>
@@ -97,11 +85,11 @@
     <div id="app-content">
         <header>
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                <div style="font-size: 10px; color: var(--primary); text-align: left;">V3.1.0 - ULTIMATE 🚀</div>
+                <div style="font-size: 10px; color: var(--primary); text-align: left;">V3.1.5 - STABLE ✅</div>
                 <button onclick="logout()" style="background: rgba(229, 57, 53, 0.1); border: 1px solid var(--primary); color: var(--primary); padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: bold;">تسجيل خروج ⬅️</button>
             </div>
             <div class="user-welcome">يا مرحب بـ <span id="user-display-name">بطلنا</span> 👋</div>
-            <p id="coach-hint" class="hidden"><span class="coach-badge">أدمن</span> إنت في وضع الكابتن</p>
+            <p id="coach-hint" class="hidden"><span class="coach-badge">أدمن</span> وضـع الكابتن</p>
         </header>
 
         <div class="main-sections">
@@ -115,44 +103,42 @@
                         <button class="track-btn" onclick="openLogger('تمرين')"><span>💪</span><label>سجل الأوزان</label></button>
                     </div>
                 </div>
-                <!-- Water Tracker -->
-                <div class="card" style="background: linear-gradient(135deg, #1e1e1e, #0d47a1);">
+                <div class="card" style="background: linear-gradient(135deg, #1e1e1e, #1a237e);">
                     <h3>متابع المية 💧</h3>
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 15px;">
                         <span id="water-count" style="font-size: 32px; font-weight: 900;">0</span>
-                        <div style="display: flex; gap: 10px;"><button onclick="updateWater(1)" style="background: rgba(255,255,255,0.2); border: none; padding: 10px 20px; border-radius: 10px; color: #fff;">+1 كوب</button></div>
+                        <button onclick="updateWater(1)" style="background: rgba(255,255,255,0.2); border:none; padding:10px 20px; border-radius:10px; color:#fff;">+1 كوب</button>
                     </div>
                 </div>
-                <!-- History Section -->
                 <div class="card" style="border-top: 2px solid var(--accent);">
                     <h3>تاريخ نشاطك 💪</h3>
-                    <div id="user-history-list" style="margin-top: 15px;"><p style="color: var(--text-muted); font-size:12px; text-align:center;">جاري تحميل سجلاتك...</p></div>
+                    <div id="user-history-list" style="margin-top: 15px;"><p style="text-align:center; color:#666;">جاري التحميل...</p></div>
                 </div>
             </div>
 
             <div id="library-tab" class="content-tab hidden">
-                <div class="card"><h3>تعلم التكنيك الصح ✅</h3><p>شاهد فيديوهات التمارين هنا قريباً.</p></div>
+                <div class="card"><h3>مكتبة التمارين 🎓</h3><p>شاهد فيديوهات التمارين هنا قريباً.</p></div>
             </div>
 
             <div id="admin-tab" class="content-tab hidden">
                 <div class="card"><h3>طلبات انضمام 🆕</h3><div id="pending-users-list"></div></div>
-                <div class="card"><h3>أحدث نشاط الأبطال 🏃‍♂️</h3><div id="users-list"></div></div>
+                <div class="card"><h3>نشاط الأبطال 🏃‍♂️</h3><div id="users-list"></div></div>
             </div>
         </div>
 
-        <div id="logger-ui" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; padding: 20px 10px; overflow-y: auto;">
+        <div id="logger-ui" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; padding: 20px 10px; overflow-y: auto;">
             <div class="card" style="max-width: 500px; margin: auto;">
-                <h3 id="logger-title">تسجيل بيانات</h3>
+                <h3 id="logger-title">تسجيل</h3>
                 <div id="category-menu" class="hidden"><div id="category-btns" class="sub-menu"></div></div>
                 <div id="log-inputs-area" class="hidden">
                     <div class="log-form">
-                        <div id="text-input-wrapper"><input type="text" id="log-value" placeholder="اكتب البيانات هنا..."></div>
+                        <div id="text-input-wrapper"><input type="text" id="log-value" placeholder="اكتب هنا..."></div>
                         <div id="file-input-wrapper" class="hidden">
-                             <button class="track-btn" onclick="document.getElementById('log-file').click()" style="width:100%; margin-bottom:15px; background:#121212; border: 2px dashed #444;"><span id="file-status">📸 افتح الكاميرا</span></button>
-                             <input type="file" id="log-file" accept="image/*" capture="environment" style="display:none;" onchange="handleFile(this)">
+                            <button class="track-btn" onclick="document.getElementById('log-file').click()" style="width:100%; background:#121212; border:2px dashed #444;"><span id="file-status">📸 صور نفسك</span></button>
+                            <input type="file" id="log-file" accept="image/*" capture="environment" style="display:none;" onchange="handleFile(this)">
                         </div>
-                        <textarea id="log-note" placeholder="ملاحظات إضافية (اختياري)..."></textarea>
-                        <button class="btn-full" id="save-log-btn" onclick="saveLog()">حفظ للأبد ✅</button>
+                        <textarea id="log-note" placeholder="ملاحظات (اختياري)..."></textarea>
+                        <button class="btn-full" id="save-log-btn" onclick="saveLog()">حفظ ✅</button>
                     </div>
                 </div>
                 <button class="btn-full" style="background: #444; margin-top: 15px;" onclick="closeLogger()">إلغاء</button>
@@ -166,7 +152,6 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -175,8 +160,7 @@
         const firebaseConfig = { apiKey: "AIzaSyAxMNBdkNk_brPMlq1O3_HPRWOIqj-lb24", authDomain: "fire-gym-9c753.firebaseapp.com", projectId: "fire-gym-9c753", storageBucket: "fire-gym-9c753.firebasestorage.app", messagingSenderId: "417014585133", appId: "1:417014585133:web:38f62686ae2e133298a5a4", measurementId: "G-352VQWNZ6P" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        let currentUser = null;
-        let waterCount = 0;
+        let currentUser = null; 
         const ADMIN_PHONE = "01100896637";
 
         window.addEventListener('load', () => {
@@ -185,99 +169,101 @@
             if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(console.error); }
         });
 
-        function logout() { if(confirm('عايز تخرج بجد؟')) { localStorage.removeItem('fire_gym_phone'); location.reload(); } }
+        function logout() { if(confirm('متأكد؟')) { localStorage.removeItem('fire_gym_phone'); location.reload(); } }
         function toggleAuth(mode) { document.getElementById('login-form').classList.toggle('hidden', mode === 'register'); document.getElementById('register-form').classList.toggle('hidden', mode === 'login'); }
 
-        async function login(isSilent = false) {
+        async function login(silent = false) {
             const phone = document.getElementById('login-phone').value.trim();
             if (phone.length < 10) return;
             try {
-                if (phone === ADMIN_PHONE) { enterApp({ phone: phone, name: "كابتن أحمد", role: 'admin' }); return; }
-                const userDoc = await db.collection('users').doc(phone).get();
-                if (userDoc.exists && userDoc.data().status === 'approved') { enterApp({ phone: phone, name: userDoc.data().name, role: 'user' }); }
-                else if (!isSilent) alert('حسابك لسه متفعلش أو مش موجود!');
+                if (phone === ADMIN_PHONE) { enterApp({ phone, name: "كابتن أحمد", role: 'admin' }); return; }
+                const doc = await db.collection('users').doc(phone).get();
+                if (doc.exists && doc.data().status === 'approved') enterApp({ phone, name: doc.data().name, role: 'user' });
+                else if (!silent) alert('حسابك غير موجود أو لسه متفعلش!');
             } catch(e) { console.error(e); }
         }
 
         function enterApp(user) {
-            currentUser = user;localStorage.setItem('fire_gym_phone', user.phone);
+            currentUser = user; localStorage.setItem('fire_gym_phone', user.phone);
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app-content').style.display = 'block';
             document.getElementById('user-display-name').innerText = user.name;
             if (user.role === 'admin') { document.getElementById('admin-nav').classList.remove('hidden'); loadAdminData(); }
-            else { loadUserHistory(); }
+            else loadUserHistory();
         }
 
-        const CATEGORIES = { 'وجبة': ['فطار 🍳', 'غداء 🍗', 'عشاء 🥛', 'سناك 🍎'], 'تمرين': ['بنج (Chest) 🏠', 'ظهر (Back) 🐉', 'كتف (Shoulders) 🛡️', 'دراع (Arms) 💪', 'رجل (Legs) 🦵'] };
-        let currentLogType = ""; let currentLogSubCategory = "";
+        const CATEGORIES = { 'وجبة': ['فطار 🍳', 'غداء 🍗', 'عشاء 🥛', 'سناك 🍎'], 'تمرين': ['بنج (Chest) 🏠', 'ظهر (Back) 🐉', 'كتف (Shoulders) 🛡️', 'درع (Arms) 💪', 'رجل (Legs) 🦵'] };
+        let currentType = ""; let currentSub = "";
 
         function openLogger(type) {
-            currentLogType = type; currentLogSubCategory = "";
+            currentType = type; currentSub = "";
+            document.getElementById('log-value').value = ""; document.getElementById('log-note').value = ""; document.getElementById('log-file').value = "";
+            document.getElementById('file-status').innerText = "📸 صور نفسك";
             document.getElementById('logger-title').innerText = "تسجيل " + type;
             document.getElementById('logger-ui').classList.remove('hidden');
             if (CATEGORIES[type]) {
                 document.getElementById('category-menu').classList.remove('hidden');
                 document.getElementById('log-inputs-area').classList.add('hidden');
-                document.getElementById('category-btns').innerHTML = CATEGORIES[type].map(sub => `<button class="sub-btn" onclick="selectSubCategory('${sub}')">${sub}</button>`).join('');
-            } else { showLogInputs(); }
+                document.getElementById('category-btns').innerHTML = CATEGORIES[type].map(s => `<button class="sub-btn" onclick="selectSubCategory('${s}')">${s}</button>`).join('');
+            } else showLogInputs();
         }
 
-        function selectSubCategory(sub) { currentLogSubCategory = sub; showLogInputs(); }
-        function showLogInputs() { 
+        function selectSubCategory(s) { currentSub = s; showLogInputs(); }
+        function showLogInputs() {
             document.getElementById('category-menu').classList.add('hidden');
             document.getElementById('log-inputs-area').classList.remove('hidden');
-            document.getElementById('file-input-wrapper').classList.toggle('hidden', currentLogType !== 'صور');
-            document.getElementById('text-input-wrapper').classList.toggle('hidden', currentLogType === 'صور');
+            document.getElementById('file-input-wrapper').classList.toggle('hidden', currentType !== 'صور');
+            document.getElementById('text-input-wrapper').classList.toggle('hidden', currentType === 'صور');
         }
 
-        function handleFile(input) { if(input.files[0]) document.getElementById('file-status').innerText = "✅ جاهز: " + input.files[0].name.substring(0,10); }
+        function handleFile(input) { if(input.files[0]) document.getElementById('file-status').innerText = "✅ تم اختيار الصورة"; }
 
         async function saveLog() {
             const val = document.getElementById('log-value').value;
             const note = document.getElementById('log-note').value;
             const file = document.getElementById('log-file').files[0];
-            if (currentLogType !== 'صور' && !val) return;
+            if (currentType !== 'صور' && !val) return;
             try {
                 await db.collection('logs').add({
                     userName: currentUser.name, userPhone: currentUser.phone,
-                    type: currentLogType, subCategory: currentLogSubCategory,
-                    value: currentLogType === 'صور' ? ("صورة: " + file.name) : val,
-                    note: note, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    type: currentType, subCategory: currentSub,
+                    value: currentType === 'صور' ? ("صورة: " + file.name) : val,
+                    note, timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 alert('عاش يا بطل! تم الحفظ 💪'); closeLogger(); loadUserHistory();
-            } catch(e) { alert('مشكلة في الشبكة!'); }
+            } catch(e) { alert('خطأ في الشبكة!'); }
         }
 
         async function loadUserHistory() {
             const list = document.getElementById('user-history-list');
-            const snap = await db.collection('logs').where('userPhone', '==', currentUser.phone).orderBy('timestamp', 'desc').limit(30).get();
-            let html = ""; let lastDate = "";
-            snap.forEach(doc => {
-                const d = doc.data(); if (!d.timestamp) return;
-                const dObj = d.timestamp.toDate();
-                const dStr = dObj.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' });
-                if (dStr !== lastDate) { 
-                    html += `<div style="display:flex; align-items:center; margin:20px 0 10px;"><div style="flex:1; height:1px; background:#333;"></div><div style="padding:0 15px; font-size:11px; color:var(--accent); font-weight:bold;">📅 ${dStr}</div><div style="flex:1; height:1px; background:#333;"></div></div>`;
-                    lastDate = dStr;
-                }
-                const color = {'وزن':'#ff3b30','وجبة':'#4cd964','تمرين':'#5856d6','صور':'#ff9500'}[d.type] || '#fff';
-                html += `<div class="history-item" style="border-right:4px solid ${color}; padding:10px; margin-bottom:8px;"><div style="flex:1;"><div style="display:flex; justify-content:space-between;"><span style="font-size:10px; color:${color}; font-weight:bold;">${d.type} ${d.subCategory||''}</span><span style="font-size:8px; color:#555;">${dObj.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</span></div><div style="font-size:14px; font-weight:bold; margin-top:5px;">${d.value}</div>${d.note ? `<div style="font-size:11px; color:#777; margin-top:5px;">" ${d.note} "</div>`:''}</div></div>`;
-            });
-            list.innerHTML = html || '<p style="text-align:center;">مفيش سجلات لسه..</p>';
+            try {
+                const snap = await db.collection('logs').where('userPhone', '==', currentUser.phone).get();
+                if (snap.empty) { list.innerHTML = '<p style="text-align:center; padding:20px;">ابدأ سجل يومك يا وحش! 💪</p>'; return; }
+                let logs = []; snap.forEach(doc => logs.push(doc.data()));
+                logs.sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+                let html = ""; let lastDate = "";
+                logs.forEach(d => {
+                    const dt = d.timestamp ? d.timestamp.toDate() : new Date();
+                    const ds = dt.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' });
+                    if (ds !== lastDate) { html += `<div style="display:flex; align-items:center; margin:20px 0 10px;"><div style="flex:1; height:1px; background:#333;"></div><div style="padding:0 15px; font-size:11px; color:var(--accent); font-weight:bold;">📅 ${ds}</div><div style="flex:1; height:1px; background:#333;"></div></div>`; lastDate = ds; }
+                    const color = {'وزن':'#ff3b30','وجبة':'#4cd964','تمرين':'#5856d6','صور':'#ff9500'}[d.type] || '#fff';
+                    html += `<div class="history-item" style="border-right:4px solid ${color}; padding:12px; margin-bottom:8px;"><div style="flex:1;"><div style="display:flex; justify-content:space-between;"><span>${d.type} ${d.subCategory||''}</span><small>${dt.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</small></div><div style="font-size:15px; font-weight:bold; margin-top:5px;">${d.value}</div>${d.note ? `<div style="font-size:11px; color:#777; margin-top:5px;">" ${d.note} "</div>`:''}</div></div>`;
+                });
+                list.innerHTML = html;
+            } catch(e) { console.error(e); }
         }
 
         function closeLogger() { document.getElementById('logger-ui').classList.add('hidden'); }
-        function switchTab(tabId, el) { document.querySelectorAll('.content-tab').forEach(t => t.classList.add('hidden')); document.getElementById(tabId + '-tab').classList.remove('hidden'); document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); el.classList.add('active'); }
-        async function loadAdminData() { /* Admin load logic simple here */ loadAllLogs(); }
+        function switchTab(t, el) { document.querySelectorAll('.content-tab').forEach(c => c.classList.add('hidden')); document.getElementById(t + '-tab').classList.remove('hidden'); document.querySelectorAll('.tab').forEach(x => x.classList.remove('active')); el.classList.add('active'); }
+        function loadAdminData() { loadAllLogs(); }
         async function loadAllLogs() {
             const list = document.getElementById('users-list');
             const snap = await db.collection('logs').orderBy('timestamp', 'desc').limit(50).get();
             let html = ""; let lastDate = "";
             snap.forEach(doc => {
                 const d = doc.data(); if(!d.timestamp) return;
-                const dt = d.timestamp.toDate(); 
-                const ds = dt.toLocaleDateString('ar-EG', {day:'numeric', month:'long'});
-                if(ds !== lastDate) { html += `<div style="color:var(--primary); font-size:12px; font-weight:bold; margin:20px 0; text-align:center; background:#1a1a1a; padding:5px;">-- ${ds} --</div>`; lastDate = ds; }
+                const dt = d.timestamp.toDate(); const ds = dt.toLocaleDateString('ar-EG', {day:'numeric', month:'long'});
+                if(ds !== lastDate) { html += `<div style="color:var(--primary); font-size:12px; font-weight:bold; margin:20px 0; text-align:center;">-- ${ds} --</div>`; lastDate = ds; }
                 html += `<div style="background:#1a1a1a; padding:12px; border-radius:12px; margin-bottom:8px; border-right:3px solid var(--accent);"><div style="display:flex; justify-content:space-between;"><span style="color:var(--accent); font-weight:bold;">${d.userName}</span><small style="color:#666;">${dt.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</small></div><div style="color:#fff;">سجل ${d.type}: ${d.value}</div></div>`;
             });
             list.innerHTML = html;
