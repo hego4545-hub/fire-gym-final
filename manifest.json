@@ -1,0 +1,24 @@
+{
+  "name": "Fire Gym & Fitness",
+  "short_name": "Fire Gym",
+  "description": "أقوى تطبيق للمتابعة الأونلاين وتغيير نمط الحياة مع كابتن أحمد هجرس",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#e53935",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://pwa-builder-icons.s3.amazonaws.com/icons/512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://pwa-builder-icons.s3.amazonaws.com/icons/192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
