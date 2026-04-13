@@ -6,83 +6,179 @@
     <title>Fire Gym | Smart App</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212">
-    <!-- التحميل السريع لمكتبات جوجل -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #e53935; --bg: #121212; --surface: #1e1e1e; --text: #fff; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); }
+        :root { --primary: #e53935; --bg: #121212; --surface: #1e1e1e; --text: #fff; --accent: #ffb300; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+        
         #auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800') center/cover; padding: 20px; }
-        .card { background: var(--surface); padding: 30px; border-radius: 20px; text-align: center; width: 100%; max-width: 400px; border: 1px solid #444; }
-        input { width: 100%; padding: 15px; margin: 20px 0; border-radius: 10px; border: none; background: #000; color: #fff; text-align: center; font-size: 18px; }
-        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--primary); color: #fff; font-weight: 900; font-size: 18px; }
-        #app-content { display: none; padding-bottom: 80px; }
-        .content-tab { padding: 20px; }
+        .card { background: var(--surface); padding: 25px; border-radius: 20px; text-align: center; border: 1px solid #333; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        input, textarea { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: 1px solid #444; background: #000; color: #fff; text-align: center; }
+        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--primary); color: #fff; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn:active { transform: scale(0.95); }
+
+        #app-content { display: none; padding-bottom: 100px; }
+        .top-header { background: #1e1e1e; padding: 40px 20px; text-align: center; border-bottom: 3px solid var(--primary); border-radius: 0 0 30px 30px; }
+        
+        .main-container { padding: 20px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #1e1e1e; display: flex; justify-content: space-around; padding: 15px 0 30px; border-top: 1px solid #333; z-index: 100; }
+        .nav-item { color: #666; text-decoration: none; font-size: 12px; text-align: center; }
+        .nav-item.active { color: var(--primary); font-weight: 900; }
         .hidden { display: none; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #1e1e1e; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #333; }
-        .nav-item { color: #888; text-decoration: none; font-size: 12px; text-align: center; }
-        .nav-item.active { color: var(--primary); }
+
+        /* Modal */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
     </style>
 </head>
 <body>
 
+    <!-- Login -->
     <div id="auth-screen">
-        <div class="card">
-            <h1 style="color: var(--primary); font-size: 40px;">FIRE GYM</h1>
-            <input type="tel" id="login-phone" placeholder="اكتب رقم موبايلك">
-            <button class="btn" onclick="easyLogin()">دخول للأرض 🔥</button>
+        <div class="card" style="max-width: 400px;">
+            <h1 style="color: var(--primary); font-size: 45px; letter-spacing: 2px;">FIRE GYM</h1>
+            <p style="color: #aaa; margin-bottom: 20px;">الأسطورة بتبدأ من هنا 🦁</p>
+            <input type="tel" id="login-phone" placeholder="أدخل رقم موبايلك">
+            <button class="btn" onclick="appLogin()">دخول للأرض 🔥</button>
         </div>
     </div>
 
+    <!-- App Body -->
     <div id="app-content">
-        <div style="background: #1e1e1e; padding: 40px 20px; text-align: center; border-bottom: 2px solid var(--primary);">
-            <h2 id="welcome-msg">مرحباً بطل فاير 👋</h2>
+        <div class="top-header">
+            <h2 id="user-title" style="font-size: 28px;">بطل فاير 👋</h2>
+            <div id="badge" class="hidden" style="margin-top: 5px;"><span style="background:var(--accent); color:#000; padding:2px 10px; border-radius:5px; font-weight:bold; font-size:12px;">أدمن</span></div>
         </div>
-        
-        <div class="content-tab">
-            <div class="card" style="max-width: 100%; margin-bottom: 20px; background: linear-gradient(45deg, #1e1e1e, #b71c1c);">
-                <h3>متابع المية 💧</h3>
-                <h1 id="w-count" style="font-size: 50px;">0</h1>
-                <button class="btn" onclick="addW()" style="background: rgba(255,255,255,0.2);">+1 كوب</button>
+
+        <div class="main-container">
+            <!-- Home Tab -->
+            <div id="home-tab" class="tab-content">
+                <div class="card" style="background: linear-gradient(135deg, #1e1e1e, #b71c1c);">
+                    <h3 style="margin-bottom: 10px;">عداد المياه اليومي 💧</h3>
+                    <h1 id="water-val" style="font-size: 60px;">0</h1>
+                    <button class="btn" style="background: rgba(255,255,255,0.2);" onclick="addWater()">+1 كوب</button>
+                </div>
+
+                <div class="card">
+                    <h3>سجل أداءك اليومي 📈</h3>
+                    <div class="grid-2">
+                        <button class="btn" style="background:#252525;" onclick="openLog('وزن')">⚖️ وزن</button>
+                        <button class="btn" style="background:#252525;" onclick="openLog('تمرين')">💪 تمرين</button>
+                        <button class="btn" style="background:#252525;" onclick="openLog('أكل')">🥗 أكل</button>
+                        <button class="btn" style="background:#252525;" onclick="openLog('صور')">📸 صور</button>
+                    </div>
+                </div>
             </div>
-            
-            <div class="card" style="max-width: 100%;">
-                <h3>سجل بيانتاتك 📈</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
-                    <button class="btn" style="background:#333;" onclick="alert('جاري التفعيل..')">⚖️ وزن</button>
-                    <button class="btn" style="background:#333;" onclick="alert('جاري التفعيل..')">🥗 أكل</button>
+
+            <!-- Diet Tab -->
+            <div id="diet-tab" class="tab-content hidden">
+                <div class="card">
+                    <h2 style="color:var(--accent);">خطة الأكل 🥗</h2>
+                    <p style="margin-top: 20px; color: #888;">سيقوم الكابتن برفع خطتك قريباً..</p>
+                </div>
+            </div>
+
+            <!-- Admin Tab -->
+            <div id="admin-tab" class="tab-content hidden">
+                <div class="card">
+                    <h2>لوحة تحكم الكابتن 👑</h2>
+                    <div id="log-list" style="text-align: right; margin-top: 20px;"></div>
                 </div>
             </div>
         </div>
 
-        <div class="bottom-nav">
-            <a href="#" class="nav-item active">🏠<br>حسابي</a>
-            <a href="#" class="nav-item">🎓<br>التكنيك</a>
-            <a href="#" id="admin-link" class="nav-item hidden">👑<br>الأدمن</a>
+        <!-- Navigation -->
+        <nav class="nav-bar">
+            <a href="#" class="nav-item active" onclick="showTab('home', this)">🏠<br>حسابي</a>
+            <a href="#" class="nav-item" onclick="showTab('diet', this)">🥗<br>الأكل</a>
+            <a href="#" id="admin-btn" class="nav-item hidden" onclick="showTab('admin', this)">👑<br>الأدمن</a>
+        </nav>
+    </div>
+
+    <!-- Modal Form -->
+    <div id="log-modal" class="overlay hidden">
+        <div class="card" style="width: 100%; max-width: 400px;">
+            <h3 id="modal-title">تسجيل</h3>
+            <input type="text" id="log-input" placeholder="القيمة">
+            <textarea id="log-notes" placeholder="ملاحظات (اختياري)"></textarea>
+            <button class="btn" onclick="saveData()">حفظ في السحابة ✅</button>
+            <button class="btn" style="background: #444; margin-top: 10px;" onclick="closeLog()">إلغاء</button>
         </div>
     </div>
 
     <script>
-        const ADMIN = "01100896637";
-        let w = 0;
+        // Firebase Config
+        const fbConfig = {
+            apiKey: "AIzaSyAxMNBdkNk_brPMlq1O3_HPRWOIqj-lb24",
+            authDomain: "fire-gym-9c753.firebaseapp.com",
+            projectId: "fire-gym-9c753",
+            storageBucket: "fire-gym-9c753.firebasestorage.app",
+            messagingSenderId: "417014585133",
+            appId: "1:417014585133:web:38f62686ae2e133298a5a4"
+        };
+        firebase.initializeApp(fbConfig);
+        const db = firebase.firestore();
 
-        function easyLogin() {
+        const COACH = "01100896637";
+        let user = "";
+        let water = 0;
+
+        function appLogin() {
             const p = document.getElementById('login-phone').value.trim();
-            if (p.length < 10) { alert('الرقم ناقص يا بطل!'); return; }
-            
+            if (p.length < 10) return alert("الرقم غلط يا بطل!");
+            user = p;
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app-content').style.display = 'block';
-            
-            if (p === ADMIN) {
-                document.getElementById('admin-link').classList.remove('hidden');
-                document.getElementById('welcome-msg').innerText = "يا مرحب بـ كابتن أحمد 🦁";
+            if (p === COACH) {
+                document.getElementById('admin-btn').classList.remove('hidden');
+                document.getElementById('badge').classList.remove('hidden');
+                document.getElementById('user-title').innerText = "يا مرحب كابتن أحمد 🦁";
+                loadLogs();
             }
         }
 
-        function addW() { w++; document.getElementById('w-count').innerText = w; }
-    </script>
+        function addWater() { water++; document.getElementById('water-val').innerText = water; }
+        function openLog(t) { document.getElementById('modal-title').innerText = "تسجيل " + t; document.getElementById('log-modal').classList.remove('hidden'); }
+        function closeLog() { document.getElementById('log-modal').classList.add('hidden'); }
 
+        async function saveData() {
+            const val = document.getElementById('log-input').value;
+            const type = document.getElementById('modal-title').innerText;
+            if (!val) return alert("اكتب البيانات!");
+            try {
+                await db.collection('logs').add({
+                    user: user, type: type, val: val, note: document.getElementById('log-notes').value,
+                    time: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("تم الحفظ بنجاح 💪"); closeLog();
+                if(user === COACH) loadLogs();
+            } catch(e) { alert("خطأ! اتأكد من نت الموبايل"); }
+        }
+
+        function showTab(t, el) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(t + '-tab').classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        async function loadLogs() {
+            const snap = await db.collection('logs').orderBy('time', 'desc').limit(15).get();
+            let html = "";
+            snap.forEach(d => {
+                const data = d.data();
+                html += `<div style="border-bottom:1px solid #444; padding:10px; font-size:14px;">
+                    <b style="color:var(--primary);">${data.user}</b> سجل ${data.type}: <br> <b>${data.val}</b>
+                </div>`;
+            });
+            document.getElementById('log-list').innerHTML = html || "لا يوجد بيانات";
+        }
+    </script>
 </body>
 </html>
