@@ -1,44 +1,20 @@
-// Service Worker for Fire Gym Mobile - Version 4
-const CACHE_NAME = 'fire-gym-v4';
-const assets = [
-  './',
-  './index.html',
-  './manifest.json',
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js',
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js',
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js',
-  'https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap'
-];
+const CACHE_NAME = 'fire-gym-v6';
+const assets = ['./', './index.html', './manifest.json'];
 
-// Install Event
-self.addEventListener('install', event => {
-  self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log('Caching Assets...');
-      return cache.addAll(assets);
-    })
-  );
+self.addEventListener('install', e => {
+    self.skipWaiting(); // إجبار السيرفس وركر على العمل فوراً
+    e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(assets)));
 });
 
-// Activate Event (Clears old caches)
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys.filter(key => key !== CACHE_NAME)
-            .map(key => caches.delete(key))
-      );
-    })
-  );
-  self.clients.claim();
+self.addEventListener('activate', e => {
+    e.waitUntil(caches.keys().then(ks => {
+        return Promise.all(
+            ks.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+        );
+    }));
+    self.clients.claim(); // السيطرة على الصفحة فوراً
 });
 
-// Fetch Event
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    })
-  );
+self.addEventListener('fetch', e => {
+    e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
 });
