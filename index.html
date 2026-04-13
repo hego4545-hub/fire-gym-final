@@ -3,46 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fire Gym | النسخة النهائية</title>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Fire Gym Final</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #e53935; --bg: #111; --card: #1c1c1c; --text: #fff; }
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
-        body { background:var(--bg); color:var(--text); padding-bottom:100px; }
-        header { padding:40px 20px; text-align:center; }
-        .grid { display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:0 20px; }
-        .action-card { background:var(--card); padding:25px 15px; border-radius:20px; text-align:center; border:1px solid #333; }
-        .schedule { background:#1c1c1c; margin:15px 20px; padding:20px; border-radius:20px; border:1px solid #333; }
-        .water-card { margin:25px 20px; background:#1c1c1c; padding:25px; border-radius:20px; border:1px solid #333; text-align:center; }
-        nav { position:fixed; bottom:0; width:100%; background:#111; display:flex; justify-content:space-around; padding:15px 0 30px; border-top:1px solid #222; }
-        .nav-item { color:#555; font-size:12px; } .nav-item.active { color:var(--primary); }
+        body { background: #111; color: white; font-family: 'Cairo', sans-serif; text-align: center; padding: 50px 20px; }
+        .card { background: #1c1c1c; padding: 30px; border-radius: 20px; border: 1px solid #e53935; margin-top: 20px; }
+        h1 { color: #e53935; font-size: 35px; }
     </style>
 </head>
 <body>
-    <header><h1>أهلاً بطل <span style="color:var(--primary);">فاير</span> 👋</h1></header>
-    
-    <div style="padding:0 20px 10px; font-weight:bold;">📊 أداؤك النهاردة</div>
-    <div class="grid">
-        <div class="action-card">⚖️<p>سجل الوزن</p></div>
-        <div class="action-card">🥗<p>سجل الأكل</p></div>
+    <h1>FIRE GYM PRO 🦁</h1>
+    <p>تم التحديث بنجاح!</p>
+
+    <div class="card">
+        <h3>جدول تمارينك 🏋️</h3>
+        <p style="color: #888; margin-top: 10px;">سيتم رفع الجدول هنا خلال ساعات.</p>
     </div>
 
-    <div class="schedule">
-        <h3>جدول تمرينك الحالي 🏋️</h3>
-        <p style="color:#666; font-size:12px; margin-top:5px;">سيتم تحديث جدولك بواسطة الكابتن بنهاية الأسبوع.</p>
+    <div class="card" style="background: #0d47a1;">
+        <h3>متابع المياه 💧</h3>
+        <h1 id="count">0</h1>
+        <button onclick="document.getElementById('count').innerText++" style="padding: 10px 20px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer;">+1 كوب</button>
     </div>
-
-    <div class="water-card" style="border-top: 4px solid #0d47a1;">
-        <h3>💧 متابع المية</h3>
-        <h1 id="wc" style="font-size:45px; margin:10px 0;">0</h1>
-        <button onclick="document.getElementById('wc').innerText++" style="width:100%; padding:10px; border-radius:10px; background:#0d47a1; color:#fff; border:none; font-weight:900;">+1 كوب</button>
-    </div>
-
-    <nav>
-        <div class="nav-item active">🏠 حسابي</div>
-        <div class="nav-item">🎓 التكنيك</div>
-    </nav>
 </body>
 </html>
