@@ -10,10 +10,10 @@
     <style>
         :root { --primary:#e53935; --primary-dark:#b71c1c; --bg:#121212; --surface:#1e1e1e; --text:#fff; --text-muted:#aaa; --accent:#ffb300; --success:#4caf50; }
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { font-family:'Cairo',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+        body { font-family:'Cairo',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; font-size:16px; }
         .hidden { display:none !important; }
         .card { background:var(--surface); padding:20px; border-radius:20px; margin-bottom:20px; border:1px solid #333; position:relative; }
-        .btn-full { width:100%; padding:15px; border-radius:12px; border:none; background:linear-gradient(45deg, var(--primary), var(--primary-dark)); color:#fff; font-size:18px; font-weight:900; cursor:pointer; }
+        .btn-full { width:100%; padding:16px; border-radius:12px; border:none; background:linear-gradient(45deg, var(--primary), var(--primary-dark)); color:#fff; font-size:18px; font-weight:900; cursor:pointer; }
         #auth-screen { height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; background:linear-gradient(rgba(18,18,18,0.8),var(--bg)), url('https://images.unsplash.com/photo-1541534741688-6078c64b5903?auto=format&fit=crop&w=800&q=80') center/cover; }
         .auth-card { background:var(--surface); padding:35px; border-radius:24px; width:100%; max-width:400px; text-align:center; border:1px solid rgba(229,57,53,0.3); }
         .input-group { margin:20px 0; text-align:right; }
@@ -26,32 +26,50 @@
         .track-btn b { font-size:24px; margin-bottom:5px; font-style:normal; }
         .history-item { background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; margin-bottom:10px; border-right:4px solid #444; position:relative; }
         .del-btn { position:absolute; left:10px; top:12px; color:#ff3b30; cursor:pointer; font-style:normal; font-size:18px; }
-        .log-img { width:100%; max-width:250px; border-radius:12px; margin-top:10px; border:1px solid #444; }
+        .log-img { width:100%; max-width:300px; border-radius:15px; margin-top:10px; border:2px solid #333; display:block; }
         .bottom-tabs { position:fixed; bottom:0; width:100%; background:rgba(30,30,30,0.98); display:flex; justify-content:space-around; padding:15px 0 35px; border-top:1px solid #333; z-index:100; }
         .tab { color:var(--text-muted); font-size:11px; text-align:center; text-decoration:none; display:flex; flex-direction:column; align-items:center; gap:5px; }
         .tab.active { color:var(--primary); font-weight:bold; }
         .tab span { font-size:22px; }
-        .tech-card { display:flex; align-items:center; gap:15px; background:#222; padding:12px; border-radius:15px; margin-bottom:10px; border:1px solid #333; }
-        .tech-icon { font-size:24px; background:var(--surface); padding:10px; border-radius:12px; }
         .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.96); z-index:1000; padding:20px; overflow-y:auto; }
+        .workout-table { width:100%; border-collapse:collapse; margin-top:15px; font-size:12px; }
+        .workout-table th, .workout-table td { border:1px solid #444; padding:5px; text-align:center; color:#fff; }
+        .workout-table th { background:#333; }
+        .workout-table input { width:100%; border:none; background:transparent; color:var(--accent); text-align:center; outline:none; font-family:inherit; }
+        .workout-table .row-header { background:rgba(255,255,255,0.05); color:var(--text-muted); width:50px; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-card" id="login-form">
-            <h1 style="color:var(--primary); font-weight:900;">FIRE GYM</h1><p style="color:var(--text-muted); margin-bottom:10px;">عالم الوحوش 🔥</p>
+            <h1 style="color:var(--primary); font-weight:900;">FIRE GYM</h1><p style="color:var(--text-muted);">الأبطال وصلوا 🔥</p>
             <div class="input-group"><label>رقم الموبايل</label><input type="tel" id="login-phone" placeholder="01xxxxxxxxx"></div>
+            <div class="input-group"><label>كلمة المرور</label><input type="password" id="login-pass" placeholder="******"></div>
+            <div style="text-align:left; margin-bottom:15px;"><a href="https://wa.me/201100896637?text=يا%20كوتش%20نسيت%20كلمة%20السر%20بتاعتي" target="_blank" style="color:var(--accent); font-size:12px; text-decoration:none;">نسيت كلمة السر؟ 🤨</a></div>
             <button class="btn-full" onclick="login()">دخول 🔥</button>
-            <p style="margin-top:20px;"><a href="javascript:void(0)" onclick="toggleAuth('register')" style="color:var(--accent); text-decoration:none;">بطل جديد؟ سجل بياناتك</a></p>
-            <button onclick="localStorage.clear(); location.reload();" style="margin-top:25px; background:none; border:none; color:#333; font-size:10px;">إعادة تهيين يدوي (Update Fix)</button>
+            <p style="margin-top:20px;"><a href="javascript:void(0)" onclick="toggleAuth('register')" style="color:var(--accent); text-decoration:none;">سجل كبطل جديد 📝</a></p>
+            <button onclick="localStorage.clear(); sessionStorage.clear(); location.reload(true);" style="margin-top:25px; background:#333; border:none; color:#fff; padding:10px; border-radius:10px; font-size:12px; width:100%;">🔄 تحديث إجباري (حل مشكلة عدم التغير)</button>
         </div>
         <div class="auth-card hidden" id="register-form">
-            <h2>سجل يا بطل 📝</h2>
+            <h2>بيانات البطل 🔥</h2>
             <div class="input-group"><label>الاسم</label><input type="text" id="reg-name"></div>
             <div class="input-group"><label>الموبايل</label><input type="tel" id="reg-phone"></div>
-            <div class="input-group"><label>الهدف</label><select id="reg-goal"><option value="تنشيف">تنشيف ⚔️</option><option value="تضخيم">تضخيم 💪</option></select></div>
-            <button class="btn-full" onclick="register()">انضمام للعصابة 🔥</button>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+                <div class="input-group"><label>السن</label><input type="number" id="reg-age"></div>
+                <div class="input-group"><label>الطول</label><input type="number" id="reg-height"></div>
+                <div class="input-group"><label>الوزن</label><input type="number" id="reg-weight"></div>
+            </div>
+            <div class="input-group">
+                <label>هدفك</label>
+                <select id="reg-goal">
+                    <option value="نظام تدريب">نظام تدريب 🏋️‍♂️</option>
+                    <option value="نظام تغذيه">نظام تغذيه 🥗</option>
+                    <option value="نظام VIP">نظام VIP ⭐</option>
+                </select>
+            </div>
+            <div class="input-group"><label>كلمة مرور خاصة بك</label><input type="password" id="reg-pass" placeholder="اختر كلمة سر قوية"></div>
+            <button class="btn-full" onclick="register()">انضم الآن 🔥</button>
             <p style="margin-top:15px;"><a href="javascript:void(0)" onclick="toggleAuth('login')" style="color:var(--text-muted);">رجوع</a></p>
         </div>
     </div>
@@ -59,22 +77,21 @@
     <div id="app-content" class="hidden">
         <header>
             <div style="display:flex; justify-content:space-between; align-items:start;">
-                <div style="font-size:11px; color:var(--primary); font-weight:bold;">V.4.5.0 - AUTO_SYNC 🚀</div>
-                <button onclick="logout()" style="background:rgba(255,0,0,0.1); color:#ff3b30; border:1px solid #ff3b30; padding:6px 15px; border-radius:10px; font-weight:bold;">خروج</button>
+                <div style="font-size:11px; color:var(--primary); font-weight:bold;">V.4.6.0 - FORCE_REFRESH 🚀</div>
+                <div style="display:flex; gap:10px;">
+                    <button onclick="location.reload(true)" style="background:#333; color:#fff; border:none; padding:6px 10px; border-radius:8px; font-size:10px;">تحديث 🔄</button>
+                    <button onclick="logout()" style="background:rgba(255,0,0,0.1); color:#ff3b30; border:1px solid #ff3b30; padding:6px 15px; border-radius:10px; font-weight:bold;">خروج</button>
+                </div>
             </div>
-            <h2 style="margin-top:15px;">يا وحش <span id="user-display-name">بطلنا</span> 👋</h2>
+            <h2 style="margin-top:15px; font-size:26px;">يا وحش <span id="user-display-name">بطلنا</span> 👋</h2>
         </header>
 
         <div class="main-sections">
-            <!-- Account Tab -->
             <div id="user-tab" class="content-tab">
                 <div class="card">
-                    <h3>سجل نشاطك اليومي 🦁</h3>
-                    <div class="tracker-grid">
-                        <div class="track-btn" onclick="openLogger('وزن')"><b>⚖️</b>وزن</div>
-                        <div class="track-btn" onclick="openLogger('وجبة')"><b>🥗</b>وجبة</div>
-                        <div class="track-btn" onclick="openLogger('تمرين')"><b>💪</b>تمرين</div>
-                        <div class="track-btn" onclick="openLogger('صور')"><b>📸</b>صور</div>
+                    <h3>سجل نشاطك 🏃‍♂️</h3>
+                    <div class="tracker-grid" id="main-tracker-grid">
+                        <!-- الأزرار ستظهر هنا ديناميكياً -->
                     </div>
                 </div>
                 <div class="card" style="background:linear-gradient(135deg,#1e1e1e,#0d47a1);">
@@ -83,29 +100,104 @@
                         <button onclick="updateWater(1)" style="background:#fff; color:#000; border:none; padding:10px 20px; border-radius:12px; font-weight:bold;">+1 كوب</button>
                     </div>
                 </div>
-                <!-- Plan Card -->
                 <div class="card" style="border-left:4px solid var(--accent); background:rgba(255,179,0,0.05);">
-                    <h3>جدول تمرينك 🏋️‍♂️</h3>
-                    <div id="workout-text" style="margin-top:10px; white-space:pre-line; color:#eee; line-height:1.6;">جاري تحميل جدولك المخصص...</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 id="plan-title-display">جدول تمرينك 🏋️‍♂️</h3>
+                        <small style="color:var(--accent); font-size:10px; font-weight:bold;">تحت إشراف الكابتن 👨‍🏫</small>
+                    </div>
+                    <div id="user-plan-tabs" style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:15px 0;">
+                        <!-- الأزرار ستظهر هنا -->
+                    </div>
+                    <div id="user-plan-view" class="hidden">
+                        <!-- جدول التمرين العادي والتغذية -->
+                        <table class="workout-table" id="view-table">
+                            <thead><tr><th id="th-name">التمرين/الوجبة</th><th id="th-extra">التفاصيل</th><th id="th-val">وزن/كمية</th><th>تم ✅</th></tr></thead>
+                            <tbody id="view-rows"></tbody>
+                        </table>
+
+                        <!-- جدول الـ VIP المتقدم -->
+                        <div id="vip-timer-box" class="hidden" style="background:#ffeb3b; color:#000; padding:10px; text-align:center; font-weight:bold; border-radius:10px 10px 0 0; margin-top:15px; cursor:pointer;" onclick="toggleWorkoutTimer()">
+                            ⏱️ وقت التمرين: <span id="workout-timer-display">00:00:00</span>
+                            <div id="finish-workout-btn" class="hidden" style="background:#000; color:#fff; padding:5px 10px; border-radius:5px; margin-top:5px; font-size:12px;">إنهاء ونشر النشاط ✅</div>
+                        </div>
+                        <table class="workout-table hidden" id="vip-view-table">
+                            <thead style="background:#283593; color:#fff;">
+                                <tr><th>المجموعات</th><th>اسم التمرين</th><th>وزن</th><th>العدد</th><th>وقت راحة</th><th>تم</th></tr>
+                            </thead>
+                            <tbody id="vip-view-rows"></tbody>
+                        </table>
+                    </div>
                 </div>
+
+                <!-- مكان الملاحظة: تحت جدول التمرين مباشرة -->
+                <div id="captain-notes-box" class="card hidden" style="background:rgba(255,179,0,0.15); border:3px solid var(--accent); padding:20px; border-radius:15px; box-shadow: 0 0 20px rgba(0,0,0,0.5);">
+                    <b style="color:var(--accent); font-size:16px; display:block; margin-bottom:8px;">📢 ملاحظة الكابتن لك:</b>
+                    <p id="captain-notes-text" style="font-size:18px; font-weight:bold; color:#fff; margin:0; line-height:1.4;"></p>
+                </div>
+
                 <div class="card"><h3>تاريخ الأبطال 📜</h3><div id="user-history-list"></div></div>
+
+                <!-- قسم التفضيلات والوصفات (يظهر لمشتركي التغذية فقط) -->
+                <div id="nutrition-extras" class="hidden">
+                    <div class="card" style="border:1px solid #4caf50; background:rgba(76,175,80,0.05);">
+                        <h3>🥗 جدول تفضيلات الأكل</h3>
+                        <p style="font-size:10px; color:#777; margin-bottom:10px;">أضف الأكلات اللي بتحبها أو بتكرهها عشان الكابتن يراعي ده.</p>
+                        <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:12px;">
+                            <thead><tr style="color:#777; border-bottom:1px solid #333;"><th style="padding:5px; text-align:right;">الوجبة/الأكلة</th><th style="padding:5px;">الحالة</th><th style="padding:5px;">حذف</th></tr></thead>
+                            <tbody id="food-prefs-body"></tbody>
+                        </table>
+                        <button onclick="addPrefRow()" class="sub-btn" style="background:#222; width:100%; font-size:11px; margin-bottom:10px;">➕ إضافة أكلة للجدول</button>
+                        <button onclick="saveFoodPrefs()" class="sub-btn" style="background:#4caf50; width:100%;">حفظ الجدول وإرساله للكابتن ✅</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>👨‍🍳 وصفات أون فاير 🔥</h3>
+                        <div id="recipes-gallery" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;"></div>
+                    </div>
+                </div>
+
+                <div class="card" style="border-top:1px solid #333; margin-top:30px; opacity:0.8;">
+                    <h4 style="margin-bottom:15px; color:#777;">⚙️ إعدادات الحساب</h4>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="my-new-pass" placeholder="تغيير كلمة السر" style="flex:1; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:10px; font-size:13px;">
+                        <button onclick="changeMyPass()" style="background:#333; color:#fff; border:1px solid #444; padding:10px 20px; border-radius:10px; font-size:13px; font-weight:bold;">تحديث 🔑</button>
+                    </div>
+                </div>
             </div>
 
-            <!-- Tech Tab (Exercises) -->
             <div id="tech-tab" class="content-tab hidden">
                 <div class="card">
                     <h3>مكتبة التكنيك 📖</h3>
-                    <div class="tech-card"> <span class="tech-icon">🏋️</span> <div><b>تمارين الصدر</b><p style="font-size:12px; color:#777;">شرح البنش بريس</p></div></div>
-                    <div class="tech-card"> <span class="tech-icon">🐉</span> <div><b>تمارين الظهر</b><p style="font-size:12px; color:#777;">السحب العالي والأرضي</p></div></div>
-                    <div class="tech-card"> <span class="tech-icon">🍗</span> <div><b>تمارين الرجل</b><p style="font-size:12px; color:#777;">السكوات واللانج</p></div></div>
+                    <div style="background:#222; padding:15px; border-radius:15px; margin-bottom:10px; border:1px solid #333;"><b>صدر - بنش بريس</b><p style="font-size:12px; color:#777;">شرح كامل للتكنيك</p></div>
+                    <div style="background:#222; padding:15px; border-radius:15px; margin-bottom:10px; border:1px solid #333;"><b>رجل - سكوات</b><p style="font-size:12px; color:#777;">أهم تمرين للجسم</p></div>
                 </div>
             </div>
 
-            <!-- Admin Tab -->
             <div id="admin-tab" class="content-tab hidden">
                 <div class="card"><h3>طلبات انتظار 🆕</h3><div id="pending-users-list"></div></div>
-                <div class="card"><h3>الأبطال 👥</h3><div id="all-users-list"></div></div>
-                <div class="card"><h3>أحدث النشاطات 🏃‍♂️</h3><div id="admin-logs-list"></div></div>
+                <div class="card">
+                    <h3>الأبطال 👥</h3>
+                    <!-- قسم التحكم في الوصفات (للكابتن) -->
+                    <div id="admin-recipes-tool" class="hidden" style="background:rgba(255,179,0,0.05); border:1px solid var(--accent); padding:15px; border-radius:15px; margin-bottom:20px;">
+                        <h4 style="color:var(--accent); margin-bottom:10px;">➕ إضافة وصفة أون فاير جديدة 🔥</h4>
+                        <input type="text" id="recipe-name" placeholder="اسم الوصفة (مثلاً: صدور دجاج مشوية)" style="width:100%; padding:10px; background:#111; border:1px solid #333; color:#fff; border-radius:10px; margin-bottom:10px; font-size:13px;">
+                        <textarea id="recipe-desc" placeholder="المكونات وطريقة التحضير باختصار..." style="width:100%; height:80px; background:#111; border:1px solid #333; color:#fff; border-radius:12px; padding:10px; margin-bottom:10px; font-size:12px;"></textarea>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <button onclick="document.getElementById('recipe-img').click()" style="background:#222; border:1px solid #444; color:#ccc; padding:8px 15px; border-radius:8px; font-size:12px;">📎 اختر صورة</button>
+                            <input type="file" id="recipe-img" class="hidden" accept="image/*" onchange="processRecipeImg(this)">
+                            <small id="recipe-img-status" style="color:var(--success); font-size:10px;"></small>
+                            <button onclick="saveRecipe()" style="background:var(--accent); color:#000; border:none; padding:8px 20px; border-radius:8px; font-weight:bold; font-size:13px;">نشر الآن ✅</button>
+                        </div>
+                    </div>
+
+                    <div id="admin-user-filters" style="display:grid; grid-template-columns:repeat(4,1fr); gap:5px; margin-bottom:15px;">
+                        <button class="sub-btn" style="background:var(--primary); font-size:11px;" onclick="filterAdminUsers('all')">الكل</button>
+                        <button class="sub-btn" style="background:#333; font-size:11px;" onclick="filterAdminUsers('نظام تدريب')">تدريب</button>
+                        <button class="sub-btn" style="background:#333; font-size:11px;" onclick="filterAdminUsers('نظام تغذيه')">تغذية</button>
+                        <button class="sub-btn" style="background:#333; font-size:11px;" onclick="filterAdminUsers('نظام VIP')">VIP</button>
+                    </div>
+                    <div id="all-users-list"></div>
+                </div>
             </div>
         </div>
 
@@ -123,31 +215,95 @@
             <div id="category-menu" class="hidden"><div id="category-btns" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;"></div></div>
             <div id="log-inputs" class="hidden">
                 <div id="file-wrapper" class="hidden">
-                    <button class="btn-full" onclick="document.getElementById('log-file').click()" style="background:#444; margin-bottom:10px;">📸 فتح الكاميرا / الاستوديو</button>
-                    <input type="file" id="log-file" accept="image/*" capture="environment" style="display:none;" onchange="previewImg(this)">
-                    <canvas id="resize-canvas" class="hidden"></canvas>
-                    <img id="img-preview" class="hidden" style="width:100%; border-radius:15px; margin-bottom:15px; border:2px solid var(--primary);">
+                    <button class="btn-full" onclick="document.getElementById('log-file').click()" style="background:#444;">📸 صور/ارفع الصورة</button>
+                    <input type="file" id="log-file" accept="image/*" capture="environment" style="display:none;" onchange="handleImageProcessing(this)">
+                    <img id="img-preview" class="hidden" style="width:100%; border-radius:15px; margin:15px 0; border:2px solid var(--primary);">
                 </div>
-                <input type="text" id="log-val" placeholder="البيانات..." style="width:100%; padding:14px; background:#121212; border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:10px;">
+                <input type="text" id="log-val" placeholder="اكتب البيانات..." style="width:100%; padding:14px; background:#121212; border:1px solid #444; color:#fff; border-radius:12px; margin:10px 0;">
                 <textarea id="log-note" placeholder="ملاحظات..." style="width:100%; padding:14px; background:#121212; border:1px solid #444; color:#fff; border-radius:12px; margin-bottom:15px;"></textarea>
-                <div id="save-status" style="text-align:center; color:var(--accent); font-size:12px; margin-bottom:10px;"></div>
-                <button class="btn-full" id="save-btn" onclick="saveLog()">تأكيد ✅</button>
+                <div id="save-status" style="text-align:center; color:var(--accent); margin-bottom:10px;"></div>
+                <button class="btn-full" id="save-btn" onclick="saveLog()">تأكيد الحفظ ✅</button>
             </div>
             <button class="btn-full" style="background:#555; margin-top:10px;" onclick="closeLogger()">إلغاء</button>
         </div>
     </div>
 
-    <!-- Admin Modal -->
+    <!-- Workout Table Modal -->
+    <div id="workout-table-modal" class="modal hidden">
+        <div class="card" style="max-width:800px; margin:auto; padding:10px;">
+            <h3 id="workout-table-title" style="text-align:center; color:var(--primary);">تسجيل تمرين</h3>
+            <div style="overflow-x:auto;">
+                <table class="workout-table" id="table-body">
+                    <thead>
+                        <tr>
+                            <th>التمرين</th>
+                            <th>المجموعات</th>
+                            <th class="row-header">نوع</th>
+                            <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exercise-rows">
+                        <!-- الصفوف تُضاف برمجياً -->
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn-full" style="background:#333; margin-top:15px; font-size:14px;" onclick="addExerciseRow()">+ إضافة تمرين آخر</button>
+            <div id="save-workout-status" style="text-align:center; margin-top:10px; color:var(--accent);"></div>
+            <button class="btn-full" style="margin-top:10px;" onclick="saveWorkoutTable()">حفظ التمرين بالكامل ✅</button>
+            <button class="btn-full" style="background:#555; margin-top:10px;" onclick="document.getElementById('workout-table-modal').classList.add('hidden')">إلغاء</button>
+        </div>
+    </div>
+
     <div id="profile-modal" class="modal hidden">
         <div class="card">
-            <h3 id="prof-name">اسم المشترك</h3>
-            <div style="margin-top:20px;">
-                <label>تعديل جدول التمرين:</label>
-                <textarea id="prof-workout-edit" style="width:100%; height:250px; background:#121212; color:#fff; border:1px solid #444; padding:15px; margin-top:10px; border-radius:12px;"></textarea>
-                <button class="btn-full" onclick="saveWorkout()" style="margin-top:10px;">تحديث الجدول 💾</button>
-                <button class="btn-full" style="background:#d32f2f; margin-top:10px;" onclick="deleteUser()">حذف نهائي 🗑️</button>
+            <div style="display:flex; justify-content:space-between; align-items:start;">
+                <div>
+                    <h3 id="prof-name" style="margin-bottom:0;">اسم المشترك</h3>
+                    <div id="prof-details" style="font-size:12px; color:var(--accent);"></div>
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <button onclick="deleteUser()" style="background:rgba(211,47,47,0.1); color:#d32f2f; border:1px solid #d32f2f; padding:5px 10px; border-radius:8px; font-size:11px;">حذف 🗑️</button>
+                    <button onclick="document.getElementById('profile-modal').classList.add('hidden')" style="background:#333; color:#aaa; border:none; padding:5px 10px; border-radius:8px; font-size:11px;">إغلاق</button>
+                </div>
             </div>
-            <button class="btn-full" style="background:#444; margin-top:20px;" onclick="document.getElementById('profile-modal').classList.add('hidden')">رجوع</button>
+
+            <div style="display:grid; grid-template-columns: 1fr auto; gap:8px; margin-top:10px; background:rgba(255,179,0,0.05); padding:10px; border-radius:12px; align-items:center; border:1px dashed var(--accent);">
+                <div style="flex:1;">
+                    <label style="font-size:10px; color:var(--accent); display:block; margin-bottom:5px;">🔑 إعادة تعيين كلمة السر (أمان):</label>
+                    <input type="text" id="prof-pass-edit" placeholder="اكتب كلمة سر جديدة هنا..." style="width:100%; padding:8px 12px; background:#000; border:1px solid #444; color:#fff; border-radius:8px; font-size:13px;">
+                </div>
+                <button onclick="updateUserPass()" style="background:var(--success); color:#fff; border:none; padding:12px 15px; border-radius:8px; font-size:12px; font-weight:bold; align-self:flex-end;">حفظ 🔑</button>
+            </div>
+
+            <div style="margin-top:15px; background:rgba(255,179,0,0.05); padding:12px; border-radius:15px; border:1px solid rgba(255,179,0,0.2);">
+                <label style="font-size:12px; color:var(--accent); display:block; margin-bottom:8px; font-weight:bold;">✍️ ملاحظاتك للمشترك (تظهر له فوراً):</label>
+                <textarea id="prof-notes-edit" placeholder="اكتب ملاحظة، نصيحة، أو تشجيع..." style="width:100%; height:70px; background:#000; border:1px solid #444; color:#fff; padding:10px; border-radius:10px; font-size:14px; resize:none; font-family:inherit;"></textarea>
+                <button onclick="updateUserNotes()" style="width:100%; margin-top:8px; background:var(--primary); color:#fff; font-weight:bold; border:none; padding:10px; border-radius:10px; font-size:14px;">إرسال الملاحظة ✅</button>
+            </div>
+
+            <button class="btn-full" style="background:#03a9f4; margin-top:15px; font-size:16px; padding:14px; font-weight:bold;" id="admin-view-logs-btn" onclick="viewSelectedUserLogs()">عرض سجل البطل 📜</button>
+            
+            <div id="selected-user-history" class="hidden" style="margin-top:15px; padding-top:15px; border-top:1px solid #333;">
+                <h4 style="margin-bottom:10px; font-size:14px; color:var(--accent);">سجل نشاط البطل 📅</h4>
+                <div id="target-history-list"></div>
+            </div>
+
+            <div id="admin-plan-section" style="margin-top:20px; border-top:1px solid #444; padding-top:15px;">
+                <h4 style="margin-bottom:10px; font-size:14px;">تعديل جدول التمرين 📋 <small style="color:#777;">(خاص بالكابتن)</small></h4>
+                <div id="admin-plan-cats" style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:10px;"></div>
+                <div id="admin-plan-editor" class="hidden">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <h5 id="editing-cat-name" style="color:var(--primary); margin:0;"></h5>
+                        <button onclick="addAdminPlanRow()" style="background:#333; border:none; color:#fff; padding:4px 10px; border-radius:6px; font-size:11px;">+ تمرين</button>
+                    </div>
+                    <table class="workout-table">
+                        <thead><tr><th>التمرين</th><th>تكرار</th><th>وزن</th><th>حذف</th></tr></thead>
+                        <tbody id="admin-plan-rows"></tbody>
+                    </table>
+                    <button class="btn-full" style="margin-top:10px; background:var(--success); padding:10px; font-size:13px;" onclick="saveAdminPlan()">تحديث تمارين العضلة ✅</button>
+                </div>
+            </div>
+            <button class="btn-full" style="background:#555; margin-top:20px;" onclick="document.getElementById('profile-modal').classList.add('hidden')">رجوع للخلف</button>
         </div>
     </div>
 
@@ -157,17 +313,29 @@
         const config = { apiKey: "AIzaSyAxMNBdkNk_brPMlq1O3_HPRWOIqj-lb24", authDomain: "fire-gym-9c753.firebaseapp.com", projectId: "fire-gym-9c753", storageBucket: "fire-gym-9c753.firebasestorage.app", messagingSenderId: "417014585133", appId: "1:417014585133:web:38f62686ae2e133298a5a4" };
         firebase.initializeApp(config);
         const db = firebase.firestore();
-        let currentUser = null; let activeTarget = null; let base64Img = "";
+        let currentUser = null; let activeTarget = null; let finalBase64 = "";
         const ADMIN = "01100896637";
+        const PLAN_CATS = ['بنج','ظهر','كتف','دراع','رجل','بطن'];
+        const NUTRI_CATS = ['فطار','غداء','عشاء','سناك','فيتامينات ومكملات'];
+        let currentPlanData = {};
 
         window.onload = () => { const sp = localStorage.getItem('fire_gym_phone'); if(sp) loginSilent(sp); checkWaterReset(); };
 
         async function login() {
-            const p = document.getElementById('login-phone').value.trim();
-            if(p === ADMIN) { enterApp({phone:p,name:"كابتن أحمد",role:"admin"}); return; }
-            const doc = await db.collection('users').doc(p).get();
-            if(doc.exists && doc.data().status==='approved') enterApp({...doc.data(), role:'user'});
-            else alert('مستني موافقة الكابتن أو الرقم غلط!');
+            try {
+                const p = document.getElementById('login-phone').value.trim();
+                const pass = document.getElementById('login-pass').value;
+                if(!p || !pass) return alert('برجاء إدخال البيانات');
+                if(p === ADMIN) { enterApp({phone:p,name:"كابتن أحمد",role:"admin"}); return; }
+                const doc = await db.collection('users').doc(p).get();
+                if(doc.exists) {
+                    const data = doc.data();
+                    if(data.password === pass) {
+                        if(data.status==='approved') enterApp({...data, role:'user'});
+                        else alert('مستني موافقة الكابتن!');
+                    } else alert('كلمة المرور غير صحيحة!');
+                } else alert('هذا الحساب غير موجود!');
+            } catch(e) { console.error(e); }
         }
         function loginSilent(p) { if(p === ADMIN) enterApp({phone:p,name:"كابتن أحمد",role:"admin"}); else db.collection('users').doc(p).get().then(d => { if(d.exists) enterApp({...d.data(), role:'user'}); }); }
 
@@ -176,17 +344,143 @@
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app-content').classList.remove('hidden');
             document.getElementById('user-display-name').innerText = u.name;
+            if(u.role !== 'admin' && u.captainNotes) {
+                document.getElementById('captain-notes-box').classList.remove('hidden');
+                document.getElementById('captain-notes-text').innerText = u.captainNotes;
+            } else {
+                document.getElementById('captain-notes-box').classList.add('hidden');
+            }
+            renderTrackerGrid();
             if(u.role==='admin') { document.getElementById('admin-nav').classList.remove('hidden'); loadAdmin(); }
-            else { loadUserLogs(); loadPlan(); }
+            else { loadUserLogs(); renderUserPlanTabs(); }
         }
 
-        async function loadPlan() { const d = await db.collection('users').doc(currentUser.phone).get(); document.getElementById('workout-text').innerText = d.data().workoutPlan || "اطلب جدولك!"; }
+        function renderUserPlanTabs() {
+            const container = document.getElementById('user-plan-tabs');
+            let html = "";
+            const g = currentUser.goal || "";
+            
+            if(g.includes('تدريب') || g.includes('VIP')) {
+                html += PLAN_CATS.map(c => `<button class="sub-btn" style="background:#1a1a1a; color:var(--primary); font-size:12px; padding:10px 5px;" onclick="viewCatPlan('${c}')">🏋️ ${c}</button>`).join('');
+            }
+            if(g.includes('تغذيه') || g.includes('VIP')) {
+                html += NUTRI_CATS.map(c => `<button class="sub-btn" style="background:#1a1a1a; color:#4caf50; font-size:12px; padding:10px 5px;" onclick="viewCatPlan('${c}')">🥗 ${c}</button>`).join('');
+                document.getElementById('nutrition-extras').classList.remove('hidden');
+                loadFoodPrefs();
+                loadRecipes();
+            } else {
+                document.getElementById('nutrition-extras').classList.add('hidden');
+            }
+            
+            container.innerHTML = html;
+            db.collection('users').doc(currentUser.phone).get().then(doc => { currentPlanData = doc.data().workoutPlan || {}; });
+        }
 
-        const CATS = {'وجبة':['فطار','غداء','عشاء','سناك'], 'تمرين':['بنج/صدر','ظهر','أكتاف','دراع','رجل']};
+        function viewCatPlan(cat) {
+            editingCat = cat;
+            const isNutri = NUTRI_CATS.includes(cat);
+            const isVIP = currentUser.goal === 'VIP';
+            const titleDisplay = document.getElementById('plan-title-display');
+            const thName = document.getElementById('th-name');
+            const thVal = document.getElementById('th-val');
+            
+            const normalTable = document.getElementById('view-table');
+            const vipTable = document.getElementById('vip-view-table');
+            const vipTimer = document.getElementById('vip-timer-box');
+
+            if(isNutri) {
+                titleDisplay.innerText = "البرنامج الغذائي 🥗";
+                thName.innerText = "نوع الأكل";
+                thVal.innerText = "الكمية";
+                normalTable.classList.remove('hidden');
+                vipTable.classList.add('hidden');
+                vipTimer.classList.add('hidden');
+            } else if(isVIP) {
+                titleDisplay.innerText = "تمرين الـ VIP 💎";
+                normalTable.classList.add('hidden');
+                vipTable.classList.remove('hidden');
+                vipTimer.classList.remove('hidden');
+            } else {
+                titleDisplay.innerText = "جدول تمرينك 🏋️‍♂️";
+                thName.innerText = "التمرين";
+                thVal.innerText = "الوزن";
+                normalTable.classList.remove('hidden');
+                vipTable.classList.add('hidden');
+                vipTimer.classList.add('hidden');
+            }
+
+            const view = document.getElementById('user-plan-view');
+            const tbody = isVIP && !isNutri ? document.getElementById('vip-view-rows') : document.getElementById('view-rows');
+            view.classList.remove('hidden');
+            const exs = currentPlanData[cat] || [];
+            
+            if(isVIP && !isNutri) {
+                tbody.innerHTML = exs.map((ex, i) => `
+                    <tr>
+                        <td style="color:var(--accent); font-weight:bold;">${ex.sets || '3'}</td>
+                        <td style="font-size:12px;">${ex.name}</td>
+                        <td>${ex.weight || '-'}</td>
+                        <td>${ex.reps || '-'}</td>
+                        <td style="color:#4caf50;">${ex.rest || '-'}</td>
+                        <td><input type="checkbox" style="width:18px; height:18px;" ${ex.done ? 'checked' : ''} onchange="toggleExDone('${cat}', ${i}, this.checked)"></td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = exs.map((ex, i) => `
+                    <tr>
+                        <td>${ex.name}</td>
+                        <td>${ex.reps}</td>
+                        <td>${ex.weight}</td>
+                        <td><input type="checkbox" style="width:20px; height:20px;" ${ex.done ? 'checked' : ''} onchange="toggleExDone('${cat}', ${i}, this.checked)"></td>
+                    </tr>
+                `).join('');
+            }
+            if(exs.length === 0) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#555; padding:20px;">مفيش بيانات مضافة هنا!</td></tr>`;
+        }
+
+        async function toggleExDone(cat, idx, status) {
+            currentPlanData[cat][idx].done = status;
+            await db.collection('users').doc(currentUser.phone).update({ workoutPlan: currentPlanData });
+        }
+
+        async function loadPlan() { /* تم الاستبدال */ }
+
+        function renderTrackerGrid() {
+            const grid = document.getElementById('main-tracker-grid');
+            if(!currentUser) return;
+            let html = "";
+            if(currentUser.role==='admin') {
+                html = `
+                    <div class="track-btn" onclick="openLogger('وزن')"><b>⚖️</b>وزن</div>
+                    <div class="track-btn" onclick="openLogger('وجبة')"><b>🥗</b>وجبة</div>
+                    <div class="track-btn" onclick="openLogger('تمرين')"><b>💪</b>تمرين</div>
+                    <div class="track-btn" onclick="openLogger('صور')"><b>📸</b>صور</div>
+                `;
+            } else {
+                const goal = currentUser.goal;
+                if(goal === 'نظام تدريب') {
+                    html = `<div class="track-btn" onclick="openLogger('تمرين')"><b>💪</b>تمرين</div>
+                            <div class="track-btn" onclick="openLogger('صور')"><b>📸</b>صور متابعة</div>`;
+                } else if(goal === 'نظام تغذيه') {
+                    html = `<div class="track-btn" onclick="openLogger('وجبة')"><b>🥗</b>وجبة</div>
+                            <div class="track-btn" onclick="openLogger('وزن')"><b>⚖️</b>وزن</div>`;
+                } else { // VIP or anything else
+                    html = `<div class="track-btn" onclick="openLogger('وزن')"><b>⚖️</b>وزن</div>
+                            <div class="track-btn" onclick="openLogger('وجبة')"><b>🥗</b>وجبة</div>
+                            <div class="track-btn" onclick="openLogger('تمرين')"><b>💪</b>تمرين</div>
+                            <div class="track-btn" onclick="openLogger('صور')"><b>📸</b>صور</div>`;
+                }
+            }
+            grid.innerHTML = html;
+        }
+
+        async function loadPlan() { /* تم الاستبدال */ }
+
+        const CATS = {'وجبة':['فطار','غداء','عشاء','سناك','فيتامينات ومكملات'], 'تمرين':['بنج','ظهر','كتف','دراع','رجل']};
         let cType = "", cSub = "";
 
         function openLogger(t) {
-            cType = t; cSub = ""; base64Img = "";
+            cType = t; cSub = ""; finalBase64 = "";
             document.getElementById('log-val').value = ""; document.getElementById('log-note').value = "";
             document.getElementById('img-preview').classList.add('hidden');
             document.getElementById('logger-title').innerText = "تسجيل " + t;
@@ -197,7 +491,72 @@
                 document.getElementById('category-btns').innerHTML = CATS[t].map(s => `<button class="sub-btn" style="background:#333; color:#fff; padding:12px; border-radius:10px; border:1px solid #444;" onclick="setSub('${s}')">${s}</button>`).join('');
             } else showInputs();
         }
-        function setSub(s) { cSub = s; showInputs(); }
+        function setSub(s) { 
+            cSub = s; 
+            if(cType === 'تمرين') {
+                closeLogger();
+                openWorkoutTable(s);
+            } else {
+                showInputs();
+            }
+        }
+
+        function openWorkoutTable(s) {
+            document.getElementById('workout-table-title').innerText = "تمارين " + s;
+            document.getElementById('exercise-rows').innerHTML = "";
+            addExerciseRow();
+            document.getElementById('workout-table-modal').classList.remove('hidden');
+        }
+
+        function addExerciseRow() {
+            const tbody = document.getElementById('exercise-rows');
+            const rowCount = tbody.children.length / 2;
+            const h = `
+                <tr>
+                    <td rowspan="2"><input type="text" placeholder="اسم التمرين" class="ex-name"></td>
+                    <td rowspan="2"><input type="number" placeholder="0" style="width:40px;" class="ex-sets"></td>
+                    <td class="row-header">وزن</td>
+                    <td><input type="text" class="w1"></td><td><input type="text" class="w2"></td><td><input type="text" class="w3"></td><td><input type="text" class="w4"></td><td><input type="text" class="w5"></td><td><input type="text" class="w6"></td>
+                </tr>
+                <tr>
+                    <td class="row-header">عدة</td>
+                    <td><input type="text" class="r1"></td><td><input type="text" class="r2"></td><td><input type="text" class="r3"></td><td><input type="text" class="r4"></td><td><input type="text" class="r5"></td><td><input type="text" class="r6"></td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', h);
+        }
+
+        async function saveWorkoutTable() {
+            const btn = document.querySelector('#workout-table-modal .btn-full:nth-last-child(2)');
+            btn.disabled = true; document.getElementById('save-workout-status').innerText = "جاري الحفظ... ⏳";
+            
+            const rows = document.querySelectorAll('#exercise-rows tr:nth-child(odd)');
+            let exercises = [];
+            rows.forEach(row => {
+                const nextRow = row.nextElementSibling;
+                const name = row.querySelector('.ex-name').value;
+                if(!name) return;
+                const sets = row.querySelector('.ex-sets').value;
+                let data = { name, sets, weights: [], reps: [] };
+                for(let i=1; i<=6; i++) {
+                    data.weights.push(row.querySelector('.w'+i).value || "");
+                    data.reps.push(nextRow.querySelector('.r'+i).value || "");
+                }
+                exercises.push(data);
+            });
+
+            if(exercises.length === 0) { btn.disabled = false; return alert('اكتب اسم تمرين واحد على الأقل!'); }
+
+            try {
+                await db.collection('logs').add({
+                    uName: currentUser.name, uPhone: currentUser.phone,
+                    type: 'تمرين', sub: cSub, val: JSON.stringify(exercises),
+                    ts: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                document.getElementById('workout-table-modal').classList.add('hidden');
+                loadUserLogs(); if(currentUser.role==='admin') loadAdmin();
+            } finally { btn.disabled = false; document.getElementById('save-workout-status').innerText = ""; }
+        }
         function showInputs() {
             document.getElementById('category-menu').classList.add('hidden');
             document.getElementById('log-inputs').classList.remove('hidden');
@@ -205,21 +564,23 @@
             document.getElementById('log-val').classList.toggle('hidden', cType === 'صور');
         }
 
-        function previewImg(input) {
+        function handleImageProcessing(input) {
             if (input.files[0]) {
+                document.getElementById('save-status').innerText = "جاري معالجة الصورة... ⏳";
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
                     img.onload = () => {
-                        const canvas = document.getElementById('resize-canvas');
+                        const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
-                        const max = 800; let w = img.width, h = img.height;
-                        if(w > h) { if(w > max){ h *= max/w; w = max; } } else { if(h > max){ w *= max/h; h = max; } }
+                        let w = img.width, h = img.height;
+                        if(w > 600) { h *= 600/w; w = 600; }
                         canvas.width = w; canvas.height = h;
                         ctx.drawImage(img, 0, 0, w, h);
-                        base64Img = canvas.toDataURL('image/jpeg', 0.6);
-                        document.getElementById('img-preview').src = base64Img;
+                        finalBase64 = canvas.toDataURL('image/jpeg', 0.5);
+                        document.getElementById('img-preview').src = finalBase64;
                         document.getElementById('img-preview').classList.remove('hidden');
+                        document.getElementById('save-status').innerText = "جاهز للحفظ ✅";
                     }
                     img.src = e.target.result;
                 }
@@ -229,11 +590,12 @@
 
         async function saveLog() {
             if(cType!=='صور' && !document.getElementById('log-val').value) return;
-            const btn = document.getElementById('save-btn'); btn.disabled = true; document.getElementById('save-status').innerText = "جاري الحفظ البصري...";
+            if(cType==='صور' && !finalBase64) return alert('الرجاء اختيار صورة أولاً!');
+            const btn = document.getElementById('save-btn'); btn.disabled = true; document.getElementById('save-status').innerText = "جاري الرفع... 🚀";
             try {
                 await db.collection('logs').add({
                     uName: currentUser.name, uPhone: currentUser.phone,
-                    type: cType, sub: cSub, val: cType==='صور' ? base64Img : document.getElementById('log-val').value,
+                    type: cType, sub: cSub, val: cType==='صور' ? finalBase64 : document.getElementById('log-val').value,
                     note: document.getElementById('log-note').value,
                     ts: firebase.firestore.FieldValue.serverTimestamp()
                 });
@@ -246,44 +608,464 @@
             const snap = await db.collection('logs').where('uPhone','==',currentUser.phone).get();
             let arr = []; snap.forEach(d => arr.push({id:d.id, ...d.data()}));
             arr.sort((a,b) => (b.ts?.seconds || 0) - (a.ts?.seconds || 0));
-            let h = ""; let lastD = "";
+
+            // Grouping logs by Date
+            let groups = {};
             arr.forEach(d => {
                 const dt = d.ts ? d.ts.toDate() : new Date();
-                const ds = dt.toLocaleDateString('ar-EG', {day:'numeric',month:'long'});
-                if(ds !== lastD) { h += `<div style="text-align:center; color:var(--accent); margin:15px 0; font-size:12px;">📅 ${ds}</div>`; lastD = ds; }
-                const color = {'وزن':'#ff3b30','وجبة':'#4caf50','تمرين':'#5856d6','صور':'#ff9500','مياه':'#03a9f4'}[d.type] || '#fff';
-                const isImg = d.val && d.val.startsWith('data:image');
-                h += `<div class="history-item" style="border-right-color:${color}">
-                    <i class="del-btn" onclick="deleteLog('${d.id}')">🗑️</i>
-                    <div style="margin-right:25px;">
-                        <small style="color:${color}; font-weight:bold;">${d.type} ${d.sub||''}</small>
-                        ${isImg ? `<img src="${d.val}" class="log-img">` : `<div style="font-weight:bold;">${d.val}</div>`}
-                        ${d.note ? `<div style="color:#777; font-size:11px; margin-top:5px;">${d.note}</div>` : ''}
-                    </div>
-                </div>`;
+                const ds = dt.toLocaleDateString('ar-EG', {day:'numeric', month:'long'});
+                if(!groups[ds]) groups[ds] = { water: 0, items: [] };
+                
+                if(d.type === 'مياه') {
+                    const count = parseInt(d.val) || 0;
+                    if(count > groups[ds].water) groups[ds].water = count;
+                } else {
+                    groups[ds].items.push(d);
+                }
             });
-            list.innerHTML = h || "مفيش سجلات.";
+
+            let h = "";
+            Object.keys(groups).forEach((ds, index) => {
+                const g = groups[ds];
+                const isOpen = index === 0 ? 'open' : ''; // Open first day by default
+                
+                let dayHtml = `<details ${isOpen} style="margin-bottom:10px; background:rgba(255,255,255,0.02); border-radius:15px; border:1px solid #333; overflow:hidden;">
+                    <summary style="padding:15px; cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04);">
+                        <span style="color:var(--accent); font-weight:bold;">📅 ${ds}</span>
+                        <span style="font-size:12px; color:#777;">🔽 اضغط للتفاصيل</span>
+                    </summary>
+                    <div style="padding:15px;">`;
+
+                // Add consolidated water if exists
+                if(g.water > 0) {
+                    dayHtml += `<div class="history-item" style="border-right-color:#03a9f4">
+                        <div style="margin-right:0px;">
+                            <small style="color:#03a9f4; font-weight:bold;">شرب مياه 💧</small>
+                            <div style="font-weight:bold;">إجمالي اليوم: ${g.water} كوب</div>
+                        </div>
+                    </div>`;
+                }
+
+                // Add other items
+                g.items.forEach(d => {
+                    const color = {'وزن':'#ff3b30','وجبة':'#4caf50','تمرين':'#5856d6','صور':'#ff9500'}[d.type] || '#fff';
+                    const isImg = d.val && d.val.toString().startsWith('data:image');
+                    const isWorkoutTable = d.type === 'تمرين' && d.val.toString().startsWith('[');
+                    
+                    let valHtml = "";
+                    if(isImg) valHtml = `<img src="${d.val}" class="log-img" onclick="window.open(this.src)">`;
+                    else if(isWorkoutTable) {
+                        try {
+                            const exs = JSON.parse(d.val);
+                            valHtml = `<div style="font-size:12px; background:#000; padding:10px; border-radius:10px;">` + 
+                                exs.map(ex => `<b>${ex.name}</b> (${ex.sets} مج): ${ex.weights.filter(w=>w).map((w,i)=> ` [${w}kg x ${ex.reps[i]}]`).join(' - ')}`).join('<br>') + 
+                                `</div>`;
+                        } catch(e) { valHtml = `<div>تمرين مسجل</div>`; }
+                    } else valHtml = `<div style="font-weight:bold;">${d.val}</div>`;
+
+                    dayHtml += `<div class="history-item" style="border-right-color:${color}">
+                        <i class="del-btn" onclick="deleteLog('${d.id}')">🗑️</i>
+                        <div style="margin-right:25px;">
+                            <small style="color:${color}; font-weight:bold;">${d.type} ${d.sub||''}</small>
+                            ${valHtml}
+                            ${d.note ? `<div style="color:#777; font-size:11px; margin-top:5px;">${d.note}</div>` : ''}
+                        </div>
+                    </div>`;
+                });
+
+                dayHtml += `</div></details>`;
+                h += dayHtml;
+            });
+
+            list.innerHTML = h || `<p style="text-align:center; padding:20px; color:#555;">مفيش سجلات لسه يا بطل!</p>`;
         }
 
+        let allUsersData = [];
         async function loadAdmin() {
-            const logs = document.getElementById('admin-logs-list');
-            const snap = await db.collection('logs').orderBy('ts','desc').limit(30).get();
-            let h = ""; snap.forEach(d => {
-                const da = d.data(); const isImg = da.val && da.val.startsWith('data:image');
-                h += `<div class="history-item"><i class="del-btn" onclick="deleteLog('${d.id}')">🗑️</i> <div style="margin-right:25px;"><b>${da.uName}:</b> ${da.type} - ${isImg ? '📸 صورة' : da.val} ${isImg ? `<br><img src="${da.val}" style="width:60px; border-radius:8px; margin-top:5px;">`:''}</div></div>`;
-            });
-            logs.innerHTML = h;
             const uSnap = await db.collection('users').get();
-            let uh = ""; uSnap.forEach(d => { if(d.data().status==='approved') uh += `<div class="tech-card" onclick="openProfile('${d.id}')"><b>${d.data().name}</b></div>`; });
-            document.getElementById('all-users-list').innerHTML = uh;
+            allUsersData = []; 
+            uSnap.forEach(d => allUsersData.push({id: d.id, ...d.data()}));
+            filterAdminUsers('all');
+
             const pSnap = await db.collection('users').where('status','==','pending').get();
-            let ph = ""; pSnap.forEach(d => { ph += `<div class="card">${d.data().name} <button onclick="approveUser('${d.id}')">تفعيل ✅</button></div>`; });
+            let ph = ""; pSnap.forEach(d => { ph += `<div class="card" style="display:flex; justify-content:space-between; align-items:center;"><span>${d.data().name}</span> <button class="sub-btn" style="background:var(--success); padding:8px 15px;" onclick="approveUser('${d.id}')">تفعيل ✅</button></div>`; });
             document.getElementById('pending-users-list').innerHTML = ph || "محّدش مستني.";
         }
 
+        function filterAdminUsers(goal) {
+            const list = document.getElementById('all-users-list');
+            const btns = document.querySelectorAll('#admin-user-filters button');
+            const recipeTool = document.getElementById('admin-recipes-tool');
+            
+            btns.forEach(b => b.style.background = "#333");
+            
+            // إظهار/إخفاء أداة الوصفات حسب النظام المختار
+            if(goal === 'نظام تغذيه' || goal === 'VIP') {
+                recipeTool.classList.remove('hidden');
+            } else {
+                recipeTool.classList.add('hidden');
+            }
+
+            let filtered = allUsersData.filter(u => u.status === 'approved');
+            if(goal !== 'all') {
+                filtered = filtered.filter(u => u.goal === goal);
+                // Highlight active button
+                const active = Array.from(btns).find(b => b.innerText.includes(goal.replace('نظام ','')));
+                if(active) active.style.background = "var(--primary)";
+            } else btns[0].style.background = "var(--primary)";
+
+            list.innerHTML = filtered.map(u => `
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <button class="btn-full" style="flex:1; background:#222; text-align:right; font-size:14px; padding:12px; border:1px solid #333;" onclick="openProfile('${u.id}')">
+                        ${u.name} <small style="display:block; color:#666; font-size:10px;">${u.goal || ''}</small>
+                    </button>
+                    <button class="sub-btn" style="background:#5856d6; width:50px; border-radius:12px;" onclick="activeTarget='${u.id}'; viewSelectedUserLogs()">📜</button>
+                </div>
+            `).join('') || '<p style="text-align:center; color:#555;">مفيش أبطال هنا لسه.</p>';
+        }
+
         async function deleteLog(id) { if(confirm('حذف؟')) { await db.collection('logs').doc(id).delete(); loadUserLogs(); if(currentUser.role==='admin') loadAdmin(); } }
-        async function openProfile(p) { activeTarget = p; const d = await db.collection('users').doc(p).get(); document.getElementById('prof-name').innerText = d.data().name; document.getElementById('prof-workout-edit').value = d.data().workoutPlan||""; document.getElementById('profile-modal').classList.remove('hidden'); }
-        async function saveWorkout() { await db.collection('users').doc(activeTarget).update({workoutPlan: document.getElementById('prof-workout-edit').value}); alert('تم الحفظ!'); }
+        async function openProfile(p) { 
+            activeTarget = p; 
+            const d = await db.collection('users').doc(p).get();
+            const data = d.data();
+            document.getElementById('prof-name').innerText = data.name;
+            document.getElementById('prof-details').innerHTML = `
+                <div style="font-weight:bold; color:var(--accent); margin-bottom:5px;">${data.goal || 'بدون نظام'} | ${data.phone}</div>
+                <div style="font-size:11px; color:#777;">🎂 ${data.age} سنة | 📏 ${data.height} سم | ⚖️ ${data.weight} كجم</div>
+                ${data.foodPrefs && data.foodPrefs.length > 0 ? `
+                    <div style="margin-top:10px; padding:10px; background:rgba(76,175,80,0.1); border:1px solid #4caf50; border-radius:12px;">
+                        <b style="color:#4caf50; font-size:12px; display:block; margin-bottom:5px;">🥗 جدول تفضيلات البطل:</b>
+                        <table style="width:100%; font-size:11px; color:#fff; border-collapse:collapse;">
+                            ${data.foodPrefs.map(p => `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);"><td style="padding:4px;">${p.name}</td><td style="text-align:left;">${p.status==='like'?'❤️':'💔'}</td></tr>`).join('')}
+                        </table>
+                    </div>
+                ` : ''}
+            `;
+            document.getElementById('prof-pass-edit').value = ""; // تفريغها دايماً للأمان
+            document.getElementById('prof-notes-edit').value = data.captainNotes || "";
+            document.getElementById('selected-user-history').classList.add('hidden');
+            document.getElementById('admin-plan-editor').classList.add('hidden');
+            
+            currentPlanData = data.workoutPlan || {};
+            const catContainer = document.getElementById('admin-plan-cats');
+            
+            let html = "";
+            // إذا كان تدريب أو VIP
+            if(data.goal.includes('تدريب') || data.goal.includes('VIP')) {
+                html += `<div style="grid-column:1/-1; font-size:10px; color:#777; margin-bottom:5px;">📋 تمارين العضلات:</div>`;
+                html += PLAN_CATS.map(c => `<button class="sub-btn" style="background:#1a1a1a; color:var(--primary); padding:10px; border-radius:8px; border:1px solid #333; font-size:11px;" onclick="editCatPlan('${c}')">${c}</button>`).join('');
+            }
+            // إذا كان تغذية أو VIP
+            if(data.goal.includes('تغذيه') || data.goal.includes('VIP')) {
+                html += `<div style="grid-column:1/-1; font-size:10px; color:#777; margin:10px 0 5px 0;">🥗 وجبات التغذية:</div>`;
+                html += NUTRI_CATS.map(c => `<button class="sub-btn" style="background:#1a1a1a; color:#4caf50; padding:10px; border-radius:8px; border:1px solid #333; font-size:11px;" onclick="editCatPlan('${c}')">${c}</button>`).join('');
+            }
+            
+            catContainer.innerHTML = html;
+            document.getElementById('profile-modal').classList.remove('hidden'); 
+        }
+
+        async function viewSelectedUserLogs() {
+            const container = document.getElementById('selected-user-history');
+            const list = document.getElementById('target-history-list');
+            container.classList.remove('hidden');
+            list.innerHTML = "<p style='text-align:center; padding:10px; color:#aaa;'>جاري تحميل السجل... ⏳</p>";
+            if(!activeTarget) return;
+
+            const snap = await db.collection('logs').where('uPhone','==',activeTarget).get();
+            let arr = []; snap.forEach(d => arr.push({id:d.id, ...d.data()}));
+            arr.sort((a,b) => (b.ts?.seconds || 0) - (a.ts?.seconds || 0));
+
+            let groups = {};
+            arr.forEach(d => {
+                const dt = d.ts ? d.ts.toDate() : new Date();
+                const ds = dt.toLocaleDateString('ar-EG', {day:'numeric', month:'long'});
+                if(!groups[ds]) groups[ds] = { water: 0, items: [] };
+                if(d.type === 'مياه') {
+                    const count = parseInt(d.val) || 0;
+                    if(count > groups[ds].water) groups[ds].water = count;
+                } else groups[ds].items.push(d);
+            });
+
+            let h = "";
+            Object.keys(groups).forEach((ds, idx) => {
+                const g = groups[ds];
+                h += `
+                    <details ${idx===0?'open':''} style="margin-bottom:10px; border:1px solid #333; border-radius:12px; background:rgba(255,255,255,0.01); overflow:hidden;">
+                        <summary style="padding:12px; background:var(--surface); cursor:pointer; font-size:13px; color:var(--accent); display:flex; justify-content:space-between; align-items:center;">
+                            <b>📅 ${ds}</b>
+                            <span style="font-size:10px; color:#555;">(انقر للتفاصيل)</span>
+                        </summary>
+                        <div style="padding:10px;">
+                            ${g.water > 0 ? `<div style='font-size:12px; color:#03a9f4; margin-bottom:8px; font-weight:bold;'>💧 مياه: ${g.water} كوب</div>` : ''}
+                            ${g.items.map(item => {
+                                const color = {'وزن':'#ff3b30','وجبة':'#4caf50','تمرين':'#5856d6','صور':'#ff9500'}[item.type] || '#777';
+                                let valHtml = "";
+                                if(item.val.startsWith('data:image')) valHtml = `<img src="${item.val}" style="width:100%; border-radius:10px; margin-top:8px; border:1px solid #333;">`;
+                                else if(item.type==='تمرين' && item.val.startsWith('[')) {
+                                    try {
+                                        const exs = JSON.parse(item.val);
+                                        valHtml = `<div style="font-size:11px; color:#aaa; margin-top:5px; background:#000; padding:10px; border-radius:10px; line-height:1.6;">` + 
+                                            exs.map(ex => `• <b>${ex.name}</b> (${ex.sets} مج): ${ex.weights.filter(w=>w).map((w,i)=> ` [${w}kg x ${ex.reps[i]}]`).join(' - ')}`).join('<br>') + 
+                                            `</div>`;
+                                    } catch(e) { valHtml = `<div>تمرين مسجل</div>`; }
+                                } else valHtml = `<div style="font-size:13px; font-weight:bold; margin-top:5px;">${item.val}</div>`;
+                                
+                                return `<div style="border-right:4px solid ${color}; padding:8px 12px; margin-bottom:12px; background:rgba(255,255,255,0.03); border-radius:8px; position:relative;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <small style="color:${color}; font-weight:bold; text-transform:uppercase; font-size:10px;">${item.type} ${item.sub||''}</small>
+                                        <i onclick="deleteLog('${item.id}'); viewSelectedUserLogs()" style="color:#d32f2f; cursor:pointer; font-style:normal; font-size:14px; opacity:0.6;">🗑️</i>
+                                    </div>
+                                    ${valHtml}
+                                    ${item.note ? `<div style="font-size:11px; color:#777; margin-top:5px; font-style:italic;">"${item.note}"</div>` : ''}
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    </details>
+                `;
+            });
+            list.innerHTML = h || "<p style='text-align:center; font-size:12px; color:#555; padding:20px;'>مفيش نشاطات مسجلة للبطل ده.</p>";
+            container.classList.remove('hidden');
+            container.scrollIntoView({behavior:'smooth'});
+        }
+
+        async function updateUserNotes() {
+            const notes = document.getElementById('prof-notes-edit').value;
+            await db.collection('users').doc(activeTarget).update({ captainNotes: notes });
+            alert('تم إرسال الملاحظة للبطل بنجاح ✅');
+        }
+
+        async function updateUserNotes() {
+            if(!activeTarget) return;
+            const notes = document.getElementById('prof-notes-edit').value;
+            await db.collection('users').doc(activeTarget).update({ captainNotes: notes });
+            alert('تم إرسال الملاحظة للبطل بنجاح ✅');
+        }
+
+        async function updateUserPass() {
+            const newPass = document.getElementById('prof-pass-edit').value;
+            if(!newPass) return alert('برجاء كتابة كلمة السر');
+            await db.collection('users').doc(activeTarget).update({ password: newPass });
+            alert('تم تحديث كلمة السر بنجاح ✅');
+        }
+
+        let editingCat = "";
+        function editCatPlan(cat) {
+            editingCat = cat;
+            const isNutri = NUTRI_CATS.includes(cat);
+            document.getElementById('admin-plan-editor').classList.remove('hidden');
+            document.getElementById('editing-cat-name').innerText = (isNutri ? "البرنامج الغذائي: " : "تمارين ") + cat;
+            
+            // تحديث رؤوس الجدول في التعديل
+            const headRow = document.querySelector('#admin-plan-editor thead tr');
+            if(isNutri) {
+                headRow.cells[0].innerText = "نوع الأكل";
+                headRow.cells[1].innerText = "التفاصيل";
+                headRow.cells[2].innerText = "الكمية";
+            } else {
+                headRow.cells[0].innerText = "التمرين";
+                headRow.cells[1].innerText = "التفاصيل";
+                headRow.cells[2].innerText = "الوزن";
+            }
+
+            const tbody = document.getElementById('admin-plan-rows');
+            const exs = currentPlanData[cat] || [];
+            tbody.innerHTML = "";
+            exs.forEach((ex, i) => addAdminPlanRow(ex, isNutri));
+            if(exs.length === 0) addAdminPlanRow({name:'', reps:'', weight:''}, isNutri);
+        }
+        function addAdminPlanRow(data = {name:'', reps:'', weight:'', sets:'', rest:''}, isNutri = false) {
+            const tbody = document.getElementById('admin-plan-rows');
+            const row = document.createElement('tr');
+            const isVIP = allUsersData.find(u=>u.phone===activeTarget)?.goal === 'VIP';
+            
+            if(isVIP && !isNutri) {
+                row.innerHTML = `
+                    <td><input type="text" class="plan-ex-sets" value="${data.sets||'3'}" placeholder="مجموعات" style="width:40px;"></td>
+                    <td><input type="text" class="plan-ex-name" value="${data.name}" placeholder="اسم التمرين"></td>
+                    <td><input type="text" class="plan-ex-weight" value="${data.weight}" placeholder="وزن"></td>
+                    <td><input type="text" class="plan-ex-reps" value="${data.reps}" placeholder="تكرار"></td>
+                    <td><input type="text" class="plan-ex-rest" value="${data.rest||'60s'}" placeholder="راحة" style="width:50px;"></td>
+                    <td onclick="this.parentElement.remove()" style="color:#ff3b30; cursor:pointer;">✖</td>
+                `;
+            } else {
+                row.innerHTML = `
+                    <td><input type="text" class="plan-ex-name" value="${data.name}" placeholder="${isNutri?'أرز، دجاج...':'اسم التمرين'}"></td>
+                    <td><input type="text" class="plan-ex-reps" value="${data.reps}" placeholder="${isNutri?'مثلاً: مسلوق':'4x12'}"></td>
+                    <td><input type="text" class="plan-ex-weight" value="${data.weight}" placeholder="${isNutri?'100 جرام':'10kg'}"></td>
+                    <td onclick="this.parentElement.remove()" style="color:#ff3b30; cursor:pointer;">✖</td>
+                `;
+            }
+            tbody.appendChild(row);
+        }
+
+        async function saveAdminPlan() {
+            const rows = document.querySelectorAll('#admin-plan-rows tr');
+            let exs = [];
+            const isVIP = allUsersData.find(u=>u.phone===activeTarget)?.goal === 'VIP';
+            const isNutri = NUTRI_CATS.includes(editingCat);
+
+            rows.forEach(r => {
+                const name = r.querySelector('.plan-ex-name').value;
+                if(name) {
+                    let entry = { name, done: false };
+                    if(isVIP && !isNutri) {
+                        entry.sets = r.querySelector('.plan-ex-sets').value;
+                        entry.weight = r.querySelector('.plan-ex-weight').value;
+                        entry.reps = r.querySelector('.plan-ex-reps').value;
+                        entry.rest = r.querySelector('.plan-ex-rest').value;
+                    } else {
+                        entry.reps = r.querySelector('.plan-ex-reps').value;
+                        entry.weight = r.querySelector('.plan-ex-weight').value;
+                    }
+                    exs.push(entry);
+                }
+            });
+            currentPlanData[editingCat] = exs;
+            await db.collection('users').doc(activeTarget).update({ workoutPlan: currentPlanData });
+            alert('تم حفظ تمارين ' + editingCat + ' ✅');
+        }
+
+        async function changeMyPass() {
+            const np = document.getElementById('my-new-pass').value.trim();
+            if(!np) return alert('برجاء كتابة كلمة السر الجديدة!');
+            if(!confirm('هل تريد تغيير كلمة السر الخاصة بك؟')) return;
+            await db.collection('users').doc(currentUser.phone).update({ password: np });
+            alert('تم تحديث كلمة السر بنجاح! سيتم تسجيل الخروج لتأكيد التغيير.');
+            logout();
+        }
+
+        // --- VIP Timer Logic ---
+        let timerInterval = null;
+        let seconds = 0;
+        function toggleWorkoutTimer() {
+            const display = document.getElementById('workout-timer-display');
+            const finishBtn = document.getElementById('finish-workout-btn');
+            
+            if(timerInterval) {
+                // Timer is running, clicking label doesn't do much or we can pause? 
+                // User said "click to start", and "add finish button".
+            } else {
+                seconds = 0;
+                finishBtn.classList.remove('hidden');
+                timerInterval = setInterval(() => {
+                    seconds++;
+                    const h = Math.floor(seconds/3600).toString().padStart(2,'0');
+                    const m = Math.floor((seconds%3600)/60).toString().padStart(2,'0');
+                    const s = (seconds%60).toString().padStart(2,'0');
+                    display.innerText = `${h}:${m}:${s}`;
+                }, 1000);
+            }
+        }
+        async function finishWorkout() {
+            if(!timerInterval) return;
+            clearInterval(timerInterval);
+            timerInterval = null;
+            const timeStr = document.getElementById('workout-timer-display').innerText;
+            const logMsg = `💎 تم الانتهاء من تمرين الـ VIP في وقت: ${timeStr}`;
+            
+            await db.collection('logs').add({
+                phone: currentUser.phone,
+                name: currentUser.name,
+                action: logMsg,
+                ts: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert('عاش يا وحش! تم تسجيل وقت تمرينك في النشاط اليومي ✅');
+            document.getElementById('finish-workout-btn').classList.add('hidden');
+            document.getElementById('workout-timer-display').innerText = "00:00:00";
+        }
+        // Wrapper for the timer button to call finish correctly
+        document.addEventListener('click', (e) => {
+            if(e.target.id === 'finish-workout-btn') {
+                e.stopPropagation();
+                finishWorkout();
+            }
+        });
+
+        // --- Improved Nutrition Table Logic ---
+        function addPrefRow(name="", status="like") {
+            const body = document.getElementById('food-prefs-body');
+            const row = document.createElement('tr');
+            row.style.borderBottom = "1px solid #222";
+            row.innerHTML = `
+                <td><input type="text" class="pref-name" value="${name}" placeholder="اسم الأكلة..." style="width:100%; background:transparent; border:none; color:#fff; padding:8px; font-size:12px;"></td>
+                <td>
+                    <select class="pref-status" style="background:#111; border:none; color:#fff; font-size:12px; padding:5px; border-radius:5px;">
+                        <option value="like" ${status==='like'?'selected':''}>❤️</option>
+                        <option value="dislike" ${status==='dislike'?'selected':''}>💔</option>
+                    </select>
+                </td>
+                <td style="text-align:center;"><button onclick="this.parentElement.parentElement.remove()" style="background:none; border:none; color:#ff3b30; cursor:pointer;">🗑️</button></td>
+            `;
+            body.appendChild(row);
+        }
+        async function saveFoodPrefs() {
+            const rows = document.querySelectorAll('#food-prefs-body tr');
+            let prefs = [];
+            rows.forEach(r => {
+                const name = r.querySelector('.pref-name').value.trim();
+                const status = r.querySelector('.pref-status').value;
+                if(name) prefs.push({ name, status });
+            });
+            await db.collection('users').doc(currentUser.phone).update({ foodPrefs: prefs });
+            alert('تم حفظ جدول تفضيلاتك بنجاح ✅');
+        }
+        function loadFoodPrefs() {
+            db.collection('users').doc(currentUser.phone).get().then(doc => {
+                const prefs = doc.data().foodPrefs || [];
+                document.getElementById('food-prefs-body').innerHTML = "";
+                if(prefs.length === 0) addPrefRow();
+                else prefs.forEach(p => addPrefRow(p.name, p.status));
+            });
+        }
+        let recipeImgBase64 = "";
+        function processRecipeImg(input) {
+            if (input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = 600; canvas.height = (img.height/img.width)*600;
+                        ctx.drawImage(img, 0, 0, 600, canvas.height);
+                        recipeImgBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                        document.getElementById('recipe-img-status').innerText = "تم اختيار الصورة ✅";
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        async function saveRecipe() {
+            const name = document.getElementById('recipe-name').value;
+            const desc = document.getElementById('recipe-desc').value;
+            if(!name || !recipeImgBase64) return alert('برجاء كتابة اسم الوصفة واختيار صورة');
+            await db.collection('recipes').add({ name, desc, img: recipeImgBase64, ts: firebase.firestore.FieldValue.serverTimestamp() });
+            alert('تم نشر الوصفة بنجاح ✅');
+            document.getElementById('recipe-name').value = ""; document.getElementById('recipe-desc').value = "";
+            recipeImgBase64 = ""; document.getElementById('recipe-img-status').innerText = "";
+            loadRecipes();
+        }
+        async function loadRecipes() {
+            const snap = await db.collection('recipes').orderBy('ts','desc').limit(10).get();
+            let h = "";
+            snap.forEach(d => {
+                const r = d.data();
+                h += `
+                    <div style="background:#111; border-radius:12px; overflow:hidden; border:1px solid #222;" onclick="alert('${r.desc.replace(/\n/g,' ')}')">
+                        <img src="${r.img}" style="width:100%; height:80px; object-fit:cover;">
+                        <div style="padding:5px; font-size:11px; text-align:center; color:#fff;">${r.name}</div>
+                    </div>
+                `;
+            });
+            const gallery = document.getElementById('recipes-gallery');
+            if(gallery) gallery.innerHTML = h || "<p style='grid-column:1/-1; text-align:center; color:#555;'>مفيش وصفات لسه.</p>";
+        }
+
+        async function saveWorkout() { /* ... */ }
+        async function deleteUser() { if(confirm('هل أنت متأكد من حذف هذا البطل نهائياً؟ ⚠️')) { await db.collection('users').doc(activeTarget).delete(); alert('تم الحذف'); document.getElementById('profile-modal').classList.add('hidden'); loadAdmin(); } }
         async function approveUser(p) { await db.collection('users').doc(p).update({status:'approved'}); loadAdmin(); }
         function logout() { localStorage.removeItem('fire_gym_phone'); location.reload(); }
         function switchTab(t, el) { document.querySelectorAll('.content-tab').forEach(c => c.classList.add('hidden')); document.getElementById(t + '-tab').classList.remove('hidden'); document.querySelectorAll('.tab').forEach(x => x.classList.remove('active')); el.classList.add('active'); }
@@ -291,9 +1073,32 @@
         function closeLogger() { document.getElementById('logger-modal').classList.add('hidden'); }
         function checkWaterReset() { const td = new Date().toDateString(); if(localStorage.getItem('w_date') !== td) { localStorage.setItem('w_date', td); localStorage.setItem('w_count', "0"); document.getElementById('water-count').innerText = "0"; } else document.getElementById('water-count').innerText = localStorage.getItem('w_count'); }
         async function updateWater(v) { if(!currentUser) return; let c = parseInt(localStorage.getItem('w_count') || "0") + v; localStorage.setItem('w_count', c); document.getElementById('water-count').innerText = c; await db.collection('logs').add({ uName:currentUser.name, uPhone:currentUser.phone, type:'مياه', val:c+' كوب', ts:firebase.firestore.FieldValue.serverTimestamp() }); loadUserLogs(); }
-        async function register() { const n = document.getElementById('reg-name').value; const p = document.getElementById('reg-phone').value; if(!n || !p) return alert('كمل بياناتك'); await db.collection('users').doc(p).set({name:n, phone:p, status:'pending'}); alert('مستني الكابتن!'); toggleAuth('login'); }
+        async function register() {
+            const n = document.getElementById('reg-name').value.trim();
+            const p = document.getElementById('reg-phone').value.trim();
+            const age = document.getElementById('reg-age').value;
+            const h = document.getElementById('reg-height').value;
+            const w = document.getElementById('reg-weight').value;
+            const g = document.getElementById('reg-goal').value;
+            const pass = document.getElementById('reg-pass').value.trim();
 
-        // التحديث التلقائي الإجباري
+            if(!n || !p || !age || !h || !w || !pass) return alert('يا بطل، برجاء ملء جميع البيانات!');
+            
+            await db.collection('users').doc(p).set({
+                name: n, 
+                phone: p, 
+                age: age,
+                height: h,
+                weight: w,
+                goal: g,
+                password: pass,
+                status: 'pending',
+                workoutPlan: ""
+            });
+            alert('تم التسجيل بنجاح! مستني موافقة الكابتن!');
+            toggleAuth('login');
+        }
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
