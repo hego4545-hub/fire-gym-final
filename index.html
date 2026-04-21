@@ -410,6 +410,7 @@
                     <div style="background:#ffb300; width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; box-shadow:0 4px 10px rgba(255,179,0,0.3);">💡</div>
                     <b style="color:#333; font-size:15px; flex:1; text-align:right;">معلومات تهمك</b>
                 </div>
+
                 <!-- تفعيل الإشعارات -->
                 <div onclick="enableNotificationsManual(); toggleMoreMenu();" style="display:flex; align-items:center; gap:15px; padding:12px; border-radius:15px; cursor:pointer;" class="menu-item-whatsapp">
                     <div style="background:#e53935; width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; box-shadow:0 4px 10px rgba(229,57,53,0.3);">🔔</div>
@@ -1503,7 +1504,7 @@
             }
         }
 
-              // --- 🔔 نظام الإشعارات الذكي (Smart System Notifications) ---
+        // --- 🔔 نظام الإشعارات الذكي (Smart System Notifications) ---
         let notifListener = null;
 
         function updateNotifUI(isGranted) {
@@ -1546,7 +1547,6 @@
             } else if (Notification.permission === "default") {
                 updateNotifUI(false);
                 setTimeout(() => {
-                    // عشان ميظهرش التنبيه كل شوية نعمل تحقق
                     if(localStorage.getItem('notif_asked')) return;
                     Swal.fire({
                         title: 'تفعيل الإشعارات 🔔',
@@ -1573,10 +1573,11 @@
             if(!currentUser || !currentUser.phone) return;
             if(notifListener) notifListener(); // تنظيف القديم
 
+            // الاستماع لأي إشعار موجه لرقم المستخدم الحالي وتم إرساله الآن
             const now = new Date();
             notifListener = db.collection('notifications')
                 .where('targetPhone', '==', currentUser.phone)
-                .where('ts', '>', now) 
+                .where('ts', '>', now) // فقط الإشعارات الجديدة
                 .onSnapshot(snap => {
                     snap.docChanges().forEach(change => {
                         if (change.type === 'added') {
@@ -1594,8 +1595,6 @@
                     icon: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png",
                     vibrate: [200, 100, 200]
                 };
-                
-                // هنا التعديل المهم ليعمل الإشعار من الـ ServiceWorker
                 if(navigator.serviceWorker && navigator.serviceWorker.ready) {
                     navigator.serviceWorker.ready.then(reg => {
                         reg.showNotification(title, options);
@@ -1638,7 +1637,7 @@
                 }
             }, 15 * 60 * 1000); 
         }
-
+        async function register() {
             const n = document.getElementById('reg-name').value.trim();
             const p = document.getElementById('reg-phone').value.trim();
             const pass = document.getElementById('reg-pass').value.trim();
