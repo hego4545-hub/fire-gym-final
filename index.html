@@ -1503,8 +1503,36 @@
             }
         }
 
-        // --- 🔔 نظام الإشعارات الذكي (Smart System Notifications) ---
+              // --- 🔔 نظام الإشعارات الذكي (Smart System Notifications) ---
         let notifListener = null;
+
+        function updateNotifUI(isGranted) {
+            const lbl = document.getElementById('notif-menu-label');
+            if(lbl) {
+                lbl.innerText = isGranted ? 'الإشعارات مفعلة ✅' : 'تفعيل الإشعارات 🔔';
+            }
+        }
+
+        function enableNotificationsManual() {
+            if (!("Notification" in window)) {
+                return Swal.fire('عفواً', 'متصفحك لا يدعم الإشعارات', 'warning');
+            }
+            Notification.requestPermission().then(p => { 
+                if (p === "granted") {
+                    startWaterInterval(); 
+                    listenForCustomNotifications();
+                    updateNotifUI(true);
+                    Swal.fire({ title: 'تم!', text: 'تم تفعيل الإشعارات بنجاح.', icon: 'success', background: '#1e1e1e', color: '#fff' });
+                } else {
+                    Swal.fire({
+                        title: 'الإشعارات مقفولة ⚠️', 
+                        text: 'يبدو أنك رفضت الإشعارات من قبل. برجاء الدخول لإعدادات المتصفح أو التطبيق وتفعيلها يدوياً.',
+                        icon: 'warning',
+                        background: '#1e1e1e', color: '#fff'
+                    });
+                }
+            });
+        }
 
         function initSystemNotifications() {
             if (!("Notification" in window)) {
@@ -1514,21 +1542,30 @@
             if (Notification.permission === "granted") {
                 startWaterInterval();
                 listenForCustomNotifications();
-            } else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then(p => { 
-                    if (p === "granted") {
-                        startWaterInterval(); 
-                        listenForCustomNotifications();
-                    } else {
-                        Swal.fire({
-                            title: 'تحذير هام ⚠️', 
-                            text: 'الأبلكيشن محتاج إذن الإشعارات عشان يفكرك بالمياه وأوقات التمرين، وعشان يوصلك رسائل الكابتن بسرعة. برجاء تفعيله من إعدادات المتصفح.',
-                            icon: 'warning'
-                        });
-                    }
-                });
+                updateNotifUI(true);
+            } else if (Notification.permission === "default") {
+                updateNotifUI(false);
+                setTimeout(() => {
+                    // عشان ميظهرش التنبيه كل شوية نعمل تحقق
+                    if(localStorage.getItem('notif_asked')) return;
+                    Swal.fire({
+                        title: 'تفعيل الإشعارات 🔔',
+                        text: 'عشان يوصلك تذكير المياه ورسائل الكابتن، محتاجين نفعل الإشعارات بضغطة واحدة من هنا.',
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'تفعيل الآن',
+                        cancelButtonText: 'ليس الآن',
+                        background: '#1e1e1e',
+                        color: '#fff'
+                    }).then((result) => {
+                        localStorage.setItem('notif_asked', 'true');
+                        if (result.isConfirmed) {
+                            enableNotificationsManual();
+                        }
+                    });
+                }, 3000);
             } else {
-                Swal.fire('تنبيه الإشعارات 🔔', 'الإشعارات مقفولة من إعدادات تليفونك.. افتحها لتجربة أفضل!', 'info');
+                updateNotifUI(false);
             }
         }
 
@@ -1536,11 +1573,10 @@
             if(!currentUser || !currentUser.phone) return;
             if(notifListener) notifListener(); // تنظيف القديم
 
-            // الاستماع لأي إشعار موجه لرقم المستخدم الحالي وتم إرساله الآن
             const now = new Date();
             notifListener = db.collection('notifications')
                 .where('targetPhone', '==', currentUser.phone)
-                .where('ts', '>', now) // فقط الإشعارات الجديدة
+                .where('ts', '>', now) 
                 .onSnapshot(snap => {
                     snap.docChanges().forEach(change => {
                         if (change.type === 'added') {
@@ -1553,11 +1589,22 @@
 
         function showPhoneNotification(title, body) {
             if (Notification.permission === "granted") {
-                new Notification(title, { 
+                const options = { 
                     body: body, 
                     icon: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png",
                     vibrate: [200, 100, 200]
-                });
+                };
+                
+                // هنا التعديل المهم ليعمل الإشعار من الـ ServiceWorker
+                if(navigator.serviceWorker && navigator.serviceWorker.ready) {
+                    navigator.serviceWorker.ready.then(reg => {
+                        reg.showNotification(title, options);
+                    }).catch(e => {
+                        new Notification(title, options);
+                    });
+                } else {
+                    new Notification(title, options);
+                }
             }
         }
 
@@ -1574,12 +1621,24 @@
         }
 
         function startWaterInterval() {
-            setInterval(() => {
+            if (window.waterIntervalObj) clearInterval(window.waterIntervalObj);
+            window.waterIntervalObj = setInterval(() => {
                 const msgs = ["اشرب مياه يا بطل! 🔥💧", "متنساش المياه! 💪🧊", "كوباية مياه دلوقتي هتفرق! 🏆💧", "المياه هي وقود الجسم! 🚀🌊"];
-                new Notification("Fire Gym 💎 تذكير مياه", { body: msgs[Math.floor(Math.random()*msgs.length)], icon: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png" });
+                const msg = msgs[Math.floor(Math.random()*msgs.length)];
+                if (Notification.permission === "granted") {
+                    const title = "Fire Gym 💎 تذكير مياه";
+                    const options = { body: msg, icon: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png" };
+                    if(navigator.serviceWorker && navigator.serviceWorker.ready) {
+                        navigator.serviceWorker.ready.then(reg => {
+                            reg.showNotification(title, options);
+                        }).catch(e => new Notification(title, options));
+                    } else {
+                        new Notification(title, options);
+                    }
+                }
             }, 15 * 60 * 1000); 
         }
-        async function register() {
+
             const n = document.getElementById('reg-name').value.trim();
             const p = document.getElementById('reg-phone').value.trim();
             const pass = document.getElementById('reg-pass').value.trim();
