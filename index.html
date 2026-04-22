@@ -423,7 +423,7 @@
             height: 100%;
             background: #000;
             z-index: 999999;
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -545,10 +545,10 @@
                 <!-- المعرض المتحرك (Carousel) -->
                 <div style="position:relative; width:100%; height:250px; border-radius:15px; overflow:hidden; margin-bottom:20px; box-shadow:0 5px 15px rgba(0,0,0,0.5); background:#000;">
                     <div id="about-carousel" style="width:100%; height:100%; position:relative;">
-                        <img class="carousel-img active" src="images/about1.jpg" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0; opacity:1; transition:opacity 1s ease-in-out;">
-                        <img class="carousel-img" src="images/about2.jpg" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0; opacity:0; transition:opacity 1s ease-in-out;">
-                        <img class="carousel-img" src="images/about3.jpg" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0; opacity:0; transition:opacity 1s ease-in-out;">
-                        <img class="carousel-img" src="images/about4.jpg" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0; opacity:0; transition:opacity 1s ease-in-out;">
+                        <img class="carousel-img active" src="images/hero1.jpg" onerror="this.src='https://via.placeholder.com/400x250?text=FIRE+GYM+1'" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0; opacity:1; transition:opacity 1s ease-in-out;">
+                        <img class="carousel-img" src="images/hero2.jpg" onerror="this.src='https://via.placeholder.com/400x250?text=FIRE+GYM+2'" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0; opacity:0; transition:opacity 1s ease-in-out;">
+                        <img class="carousel-img" src="images/hero3.jpg" onerror="this.src='https://via.placeholder.com/400x250?text=FIRE+GYM+3'" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0; opacity:0; transition:opacity 1s ease-in-out;">
+                        <img class="carousel-img" src="images/hero4.jpg" onerror="this.src='https://via.placeholder.com/400x250?text=FIRE+GYM+4'" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0; opacity:0; transition:opacity 1s ease-in-out;">
                     </div>
                 </div>
 
@@ -665,7 +665,7 @@
                     <h2
                         style="font-size:36px; font-weight:900; letter-spacing:-1.5px; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">
                         يا كابتن <span id="user-display-name" style="color:var(--primary);">بطلنا</span> 👋</h2>
-                    <marquee id="coach-marquee" class="hidden" scrollamount="5" direction="right" style="color:var(--text); font-size:18px; margin-top:20px; background:rgba(229,57,53,0.15); padding:10px; border-radius:15px; font-weight:900; border:1px solid var(--primary); text-shadow: 0 2px 5px rgba(0,0,0,0.5);"></marquee>
+                    <div id="coach-marquee" class="hidden" style="color:var(--text); font-size:16px; margin-top:20px; background:rgba(229,57,53,0.15); padding:15px; border-radius:15px; font-weight:900; border:1px solid var(--primary); text-align:right; box-shadow: 0 4px 15px rgba(0,0,0,0.5); line-height: 1.6; white-space: normal;"></div>
                 </header>
                 <!-- بنر النظام المخصص (تم تحسين التنسيق) -->
                 <div id="system-banner"
@@ -1655,33 +1655,33 @@
                 return;
             }
 
-            // جدول التمرين الثابت المريح للموبايل
+            // جدول التمرين الثابت الشامل للموبايل بدون محرك
             let tableHtml = `
                 <div style="background:rgba(0,0,0,0.2); border-radius:15px; border:1px solid #333; margin-bottom:20px; overflow:hidden;">
-                    <table style="width:100%; border-collapse:collapse; text-align:center;">
+                    <table style="width:100%; border-collapse:collapse; text-align:center; font-size:10px; table-layout:fixed;">
                         <thead>
-                            <tr style="background:#111; color:#777; font-size:11px;">
-                                <th style="padding:12px; border:1px solid #222;">نوع</th>
-                                <th style="padding:12px; border:1px solid #222;">مج</th>
-                                <th style="padding:12px; border:1px solid #222; width:50%;">التمرين</th>
+                            <tr style="background:#111; color:#aaa; font-size:9px;">
+                                <th style="width:18%; border:1px solid #222; padding:5px 2px;">تمرين</th>
+                                <th style="width:8%; border:1px solid #222; padding:5px 2px;">نوع</th>
+                                ${[1, 2, 3, 4, 5, 6].map(n => `<th style="width:9%; border:1px solid #222; padding:5px 2px;">${n}</th>`).join('')}
+                                <th style="width:15%; border:1px solid #222; padding:5px 2px;">تم</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${exs.map((ex, i) => `
                                 <tr>
-                                    <td style="padding:8px; border:1px solid #222;">
-                                        <div style="color:var(--accent); font-size:11px; margin-bottom:5px;">وزن</div>
-                                        <div style="color:var(--success); font-size:11px;">عدة</div>
+                                    <td rowspan="2" style="border:1px solid #222; font-weight:bold; color:#fff; padding:3px; word-wrap:break-word; max-width:100%;">
+                                        ${ex.name}<br><span style="color:var(--primary); font-size:8px;">(${ex.sets} مج)</span>
                                     </td>
-                                    <td style="padding:10px; border:1px solid #222; color:var(--primary); font-weight:bold; font-size:16px;">
-                                        ${ex.sets || '4'}
+                                    <td style="border:1px solid #222; color:var(--accent); font-size:8px;">وزن</td>
+                                    ${[1, 2, 3, 4, 5, 6].map(n => `<td style="border:1px solid #222; color:var(--accent); font-weight:bold; padding:2px;">${ex['w' + n] || '-'}</td>`).join('')}
+                                    <td rowspan="2" style="border:1px solid #222; padding:2px;">
+                                        <input type="checkbox" style="width:16px; height:16px; accent-color:var(--success);" ${ex.done ? 'checked' : ''} onchange="toggleExDone('${cat}', ${i}, this.checked, '${ex.name}')">
                                     </td>
-                                    <td style="padding:10px; border:1px solid #222; font-weight:bold; color:#fff; position:relative; background:rgba(255,255,255,0.02);">
-                                        <div style="margin-bottom:8px; text-align:right;">${ex.name}</div>
-                                        <label style="position:absolute; bottom:5px; left:5px; font-size:10px; background:var(--primary); color:#fff; padding:2px 8px; border-radius:10px; display:flex; align-items:center; gap:4px; font-family:sans-serif;">
-                                            <input type="checkbox" style="accent-color:var(--success); margin:0;" ${ex.done ? 'checked' : ''} onchange="toggleExDone('${cat}', ${i}, this.checked, '${ex.name}')"> تم
-                                        </label>
-                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid #222; color:var(--success); font-size:8px;">عدة</td>
+                                    ${[1, 2, 3, 4, 5, 6].map(n => `<td style="border:1px solid #222; color:var(--success); font-weight:bold; padding:2px;">${ex['r' + n] || '-'}</td>`).join('')}
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -2004,28 +2004,27 @@
                                 const exs = JSON.parse(d.val);
                                 valHtml = `
                                     <div style="background:rgba(0,0,0,0.2); border-radius:15px; border:1px solid #333; margin-top:15px; overflow:hidden;">
-                                        <table style="width:100%; border-collapse:collapse; text-align:center;">
+                                        <table style="width:100%; border-collapse:collapse; text-align:center; font-size:10px; table-layout:fixed;">
                                             <thead>
-                                                <tr style="background:#111; color:#777; font-size:11px;">
-                                                    <th style="padding:10px; border:1px solid #222;">نوع</th>
-                                                    <th style="padding:10px; border:1px solid #222;">مج</th>
-                                                    <th style="padding:10px; border:1px solid #222; width:50%;">التمرين</th>
+                                                <tr style="background:#111; color:#aaa; font-size:9px;">
+                                                    <th style="width:25%; border:1px solid #222; padding:5px 2px;">تمرين</th>
+                                                    <th style="width:10%; border:1px solid #222; padding:5px 2px;">نوع</th>
+                                                    ${[1, 2, 3, 4, 5, 6].map(n => `<th style="width:10%; border:1px solid #222; padding:5px 2px;">${n}</th>`).join('')}
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 ${exs.map(ex => `
                                                     <tr>
-                                                        <td style="padding:8px; border:1px solid #222;">
-                                                            <div style="color:var(--accent); font-size:11px; margin-bottom:5px;">وزن</div>
-                                                            <div style="color:var(--success); font-size:11px;">عدة</div>
-                                                        </td>
-                                                        <td style="padding:10px; border:1px solid #222; color:var(--primary); font-weight:bold; font-size:16px;">
-                                                            ${ex.sets || '4'}
-                                                        </td>
-                                                        <td style="padding:10px; border:1px solid #222; font-weight:bold; color:#fff; text-align:right; background:rgba(255,255,255,0.02);">
+                                                        <td rowspan="2" style="border:1px solid #222; font-weight:bold; color:#fff; word-wrap:break-word; padding:3px;">
                                                             ${ex.name}
-                                                            <div style="font-size:9px; color:#555; font-weight:normal; margin-top:4px;">🕒 ${ex.time || '--:--'}</div>
+                                                            <div style="font-size:8px; color:#555; margin-top:2px;">🕒 ${ex.time || '--:--'}</div>
                                                         </td>
+                                                        <td style="border:1px solid #222; color:var(--accent); font-size:8px;">وزن</td>
+                                                        ${[0, 1, 2, 3, 4, 5].map(idx => `<td style="border:1px solid #222; color:var(--accent); font-weight:bold; padding:2px;">${(ex.w && ex.w[idx]) || ex['w' + (idx + 1)] || '-'}</td>`).join('')}
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border:1px solid #222; color:var(--success); font-size:8px;">عدة</td>
+                                                        ${[0, 1, 2, 3, 4, 5].map(idx => `<td style="border:1px solid #222; color:var(--success); font-weight:bold; padding:2px;">${(ex.r && ex.r[idx]) || ex['r' + (idx + 1)] || '-'}</td>`).join('')}
                                                     </tr>
                                                 `).join('')}
                                             </tbody>
@@ -3069,17 +3068,20 @@
 
         window.onload = () => {
             const splash = document.getElementById('splash-screen');
-            if (sessionStorage.getItem('splashShown')) {
-                if (splash) splash.remove();
-            } else {
+            if (!sessionStorage.getItem('splashShown')) {
                 sessionStorage.setItem('splashShown', 'true');
-                setTimeout(() => {
-                    if (splash) {
+                if (splash) {
+                    splash.style.display = 'flex';
+                    splash.style.opacity = '1';
+                    splash.style.visibility = 'visible';
+                    setTimeout(() => {
                         splash.style.opacity = '0';
                         splash.style.visibility = 'hidden';
-                        setTimeout(() => splash.remove(), 500); // إزالتها من الـ DOM نهائياً
-                    }
-                }, 2000);
+                        setTimeout(() => splash.remove(), 500); 
+                    }, 2000);
+                }
+            } else {
+                if (splash) splash.remove();
             }
 
             initAboutCarousel();
