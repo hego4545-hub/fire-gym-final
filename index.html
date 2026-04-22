@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="firegym_auth.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -128,6 +127,23 @@
             border-color: var(--primary); 
             background: rgba(255,59,48,0.05);
             box-shadow: 0 0 20px rgba(255,59,48,0.15); 
+        }
+
+        /* Responsive Design - Enhanced for Mobile */
+        @media (max-width: 600px) {
+            .auth-card { padding: 35px 20px; border-radius: 25px; margin: 10px; width: 95%; }
+            h1 { font-size: 36px !important; }
+            h2 { font-size: 28px !important; }
+            .btn-full { padding: 18px; font-size: 17px; border-radius: 18px; }
+            .card { padding: 15px !important; border-radius: 20px !important; margin-bottom: 15px !important; }
+            .tracker-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .bottom-tabs { bottom: 10px; left: 10px; right: 10px; padding: 12px 5px; border-radius: 25px; }
+            .tab span { font-size: 24px; }
+            .tab { font-size: 9px; }
+            .workout-table th, .workout-table td { padding: 10px 5px !important; font-size: 11px !important; }
+            #system-banner { height: 160px !important; border-radius: 20px !important; }
+            .input-group input, .input-group select { padding: 15px; font-size: 15px; }
+            .modal-content { width: 95% !important; padding: 20px !important; }
         }
         
         header { padding: 40px 20px 20px; background: none; text-align: center; }
@@ -378,8 +394,13 @@
         <div class="main-sections">
             <!-- 1. تبويب الرئيسية -->
             <div id="user-tab" class="content-tab hidden">
-                <header style="padding: 40px 0 20px; text-align: center; background: none; border-bottom: none;">
-                    <div style="display:inline-block; font-size:10px; color:var(--accent); font-weight:bold; background:rgba(0,0,0,0.5); padding:4px 15px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); margin-bottom:15px;">V.6.7.0 ELITE 🔥</div>
+                <header style="padding: 40px 0 20px; text-align: center; background: none; border-bottom: none; position: relative;">
+                    <!-- جرس الإشعارات (ستايل فيس بوك) -->
+                    <div onclick="openNotifModal()" style="position:absolute; top:30px; left:20px; font-size:26px; cursor:pointer;" id="notif-bell-container">
+                        🔔<span id="notif-badge" class="hidden" style="position:absolute; top:-5px; right:-5px; background:var(--primary); color:#fff; font-size:10px; padding:2px 5px; border-radius:50%; font-weight:bold; min-width:18px; border:2px solid #000;">0</span>
+                    </div>
+                    
+                    <div style="display:inline-block; font-size:10px; color:var(--accent); font-weight:bold; background:rgba(0,0,0,0.5); padding:4px 15px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); margin-bottom:15px;">V.6.7.2 ELITE 🔥</div>
                     <h2 style="font-size:36px; font-weight:900; letter-spacing:-1.5px; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">يا كابتن <span id="user-display-name" style="color:var(--primary);">بطلنا</span> 👋</h2>
                 </header>
                 <!-- بنر النظام المخصص (تم تحسين التنسيق) -->
@@ -543,10 +564,19 @@
                 </div>
             </div>
 
-            <!-- 5. تبويب الأدمن -->
             <div id="admin-tab" class="content-tab hidden">
-            <div class="card" style="margin-top:20px; border-right:5px solid var(--accent);">
-                <h3 style="margin-bottom:20px; display:flex; align-items:center; gap:10px;">📊 نظرة عامة على الجيم <span style="font-size:12px; font-weight:normal; color:var(--text-muted);">(تحديث لحظي)</span></h3>
+                <header style="padding: 40px 0 20px; text-align: center; background: none; border-bottom: none; position: relative;">
+                    <!-- جرس الإشعارات للأدمن (ستايل فيس بوك) -->
+                    <div onclick="openNotifModal()" style="position:absolute; top:30px; left:20px; font-size:26px; cursor:pointer;" id="notif-bell-admin">
+                        🔔<span id="notif-badge-admin" class="hidden" style="position:absolute; top:-5px; right:-5px; background:var(--primary); color:#fff; font-size:10px; padding:2px 5px; border-radius:50%; font-weight:bold; min-width:18px; border:2px solid #000;">0</span>
+                    </div>
+
+                    <div style="font-size:11px; color:var(--accent); font-weight:bold; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px;">Management Center 🖥️</div>
+                    <h2 style="font-size:32px; font-weight:900; color:#fff;">لوحة قيادة <span style="color:var(--primary);">الكابتن</span> 🔥</h2>
+                </header>
+
+                <div class="card" style="margin-top:20px; border-right:5px solid var(--accent);">
+                    <h3 style="margin-bottom:20px; display:flex; align-items:center; gap:10px;">📊 نظرة عامة على الجيم <span style="font-size:12px; font-weight:normal; color:var(--text-muted);">(تحديث لحظي)</span></h3>
                 <div class="tracker-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:25px;">
                     <div class="track-btn" style="padding:15px; border-radius:18px;">
                         <b id="stat-total" style="font-size:24px; color:var(--text);">0</b>
@@ -897,6 +927,18 @@
                 
                 <button onclick="saveTechnique()" style="width:100%; padding:14px; background:var(--accent); color:#000; border:none; border-radius:12px; font-weight:bold; font-size:16px;">حفظ ونشر التكنيك 🚀</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div id="notif-modal" class="modal hidden" style="z-index: 10008;">
+        <div class="card" style="width:95%; max-width:500px; padding:25px; background:#0a0a0a; border:1px solid #333; max-height:85vh; overflow-y:auto; border-radius:30px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="color:var(--accent); margin:0; display:flex; align-items:center; gap:10px;">🔔 التنبيهات والرسائل</h3>
+                <button onclick="closeNotifModal()" style="background:#222; border:none; color:#fff; width:35px; height:35px; border-radius:50%;">✕</button>
+            </div>
+            <div id="notif-list" style="display:flex; flex-direction:column; gap:12px;"></div>
+            <p style="text-align:center; color:#444; font-size:11px; margin-top:20px;">سيتم حذف التنبيهات القديمة تلقائياً لتوفير المساحة 🛠️</p>
         </div>
     </div>
 
@@ -1279,6 +1321,29 @@
         function openLogger(t) { cType = t; cSub = ""; finalBase64 = ""; document.getElementById('logger-title').innerText = "تسجيل " + t; document.getElementById('logger-modal').classList.remove('hidden'); document.getElementById('img-preview').classList.add('hidden'); document.getElementById('log-val').value = ""; document.getElementById('log-note').value = ""; if(CATS[t]) { document.getElementById('category-menu').classList.remove('hidden'); document.getElementById('log-inputs').classList.add('hidden'); document.getElementById('category-btns').innerHTML = CATS[t].map(s => `<button class="track-btn" onclick="setSub('${s}')">${s}</button>`).join(''); } else showInputs(); }
         function setSub(s) { cSub = s; if(cType==='تمرين'){ closeLogger(); openWorkoutTable(s); } else showInputs(); }
         function showInputs() { document.getElementById('category-menu').classList.add('hidden'); document.getElementById('log-inputs').classList.remove('hidden'); document.getElementById('file-wrapper').classList.toggle('hidden', cType !== 'صور'); }
+        function handleImageProcessing(input) {
+            if (!input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const MAX_WIDTH = 800;
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    canvas.width = width; canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    finalBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    document.getElementById('img-preview').src = finalBase64;
+                    document.getElementById('img-preview').classList.remove('hidden');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
         async function saveLog() { 
             const v = document.getElementById('log-val').value; 
             const n = document.getElementById('log-note').value; 
@@ -1371,8 +1436,6 @@
             loadUserLogs(); 
         }
 
-
-
         async function loadUserLogs() { await fetchAndRenderLogs(currentUser.phone, 'user-history-list'); }
 
         async function viewSelectedUserLogs() {
@@ -1397,70 +1460,105 @@
             let arr = []; snap.forEach(d => arr.push({id: d.id, ...d.data()})); 
             arr.sort((a,b) => (b.ts?.seconds||0) - (a.ts?.seconds||0));
             
-            let groups = {}; 
+            let groups = new Map(); 
             arr.forEach(d => { 
                 const ds = d.ts ? d.ts.toDate().toLocaleDateString('ar-EG', {day:'numeric', month:'long'}) : 'اليوم'; 
-                if(!groups[ds]) groups[ds] = []; groups[ds].push(d); 
+                if(!groups.has(ds)) groups.set(ds, []);
+                groups.get(ds).push(d);
             });
 
-            let h = ""; Object.keys(groups).forEach(ds => { 
-                h += `<h4 style="margin:25px 0 12px; color:var(--accent); font-size:14px; text-align:center; display:flex; align-items:center; gap:10px;"> <span style="flex:1; height:1px; background:#333;"></span> 📅 ${ds} <span style="flex:1; height:1px; background:#333;"></span></h4>`; 
-                groups[ds].forEach(d => { 
-                    const icon = { 'وزن': '⚖️', 'وجبة': '🥗', 'تمرين': '💪', 'صور': '📸', 'مياه': '💧', 'وقت التمرين': '⏱️' }[d.type] || '✨';
-                    const color = { 'وزن': '#ff3b30', 'وجبة': '#4caf50', 'تمرين': '#5856d6', 'صور': '#ff9500', 'مياه': '#007aff', 'وقت التمرين': '#ffcc00' }[d.type] || '#fff'; 
-                    let valHtml = d.val;
-                    if(d.type==='صور') valHtml=`<img src="${d.val}" class="log-img">`;
-                    else if(d.type==='تمرين' && d.val.startsWith('[')) { 
-                        try { 
-                            const exs = JSON.parse(d.val); 
-                            valHtml = `
-                                <div style="overflow-x:auto; background:rgba(0,0,0,0.3); border-radius:15px; border:1px solid #222; margin-top:15px;">
-                                    <table style="width:100%; border-collapse:collapse; text-align:center; min-width:500px; font-size:11px;">
-                                        <thead>
-                                            <tr style="background:#111; color:#777;">
-                                                <th style="padding:10px; border:1px solid #222; position:sticky; right:0; background:#111; z-index:2;">التمرين</th>
-                                                <th style="padding:10px; border:1px solid #222;">نوع</th>
-                                                ${[1,2,3,4,5,6].map(n => `<th style="padding:10px; border:1px solid #222;">${n}</th>`).join('')}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${exs.map(ex => `
-                                                <tr style="border-top:2px solid #222;">
-                                                    <td rowspan="2" style="padding:10px; border:1px solid #222; position:sticky; right:0; background:#0a0a0a; color:var(--primary); font-weight:bold; z-index:2;">
-                                                        ${ex.name}
-                                                        <div style="font-size:8px; color:#555; font-weight:normal; margin-top:4px; display:block;">🕒 ${ex.time || '--:--'}</div>
-                                                    </td>
-                                                    <td style="padding:5px; border:1px solid #222; color:var(--accent); background:rgba(255,215,0,0.05);">وزن</td>
-                                                    ${[0,1,2,3,4,5].map(idx => `<td style="padding:5px; border:1px solid #222; color:var(--accent); font-weight:bold;">${(ex.w && ex.w[idx]) || ex['w'+(idx+1)] || '-'}</td>`).join('')}
-                                                </tr>
-                                                <tr>
-                                                    <td style="padding:5px; border:1px solid #222; color:var(--success); background:rgba(76,175,80,0.05);">عدة</td>
-                                                    ${[0,1,2,3,4,5].map(idx => `<td style="padding:5px; border:1px solid #222; color:var(--success); font-weight:bold;">${(ex.r && ex.r[idx]) || ex['r'+(idx+1)] || '-'}</td>`).join('')}
-                                                </tr>
-                                            `).join('')}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            `; 
-                        } catch(e){ valHtml = d.val; } 
-                    }
-                    
-                    h += `
-                    <div class="history-item">
-                        ${(isAdminView || d.uPhone === currentUser.phone) ? `<i class="del-btn" onclick="deleteLog('${d.id}', '${phone}', '${containerId}')">🗑️</i>` : ''}
-                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-                            <div style="width:50px; height:50px; background:rgba(255,255,255,0.05); border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:24px;">${icon}</div>
-                            <div>
-                                <b style="color:${color}; font-size:17px;">${d.type} ${d.sub||''}</b>
-                                <div style="font-size:11px; color:#555;">${d.ts ? d.ts.toDate().toLocaleTimeString('ar-EG',{hour:'2-digit', minute:'2-digit'}) : ''}</div>
-                            </div>
-                        </div>
-                        <div style="color:#eee; line-height:1.5;">${valHtml}</div>
-                        ${d.note ? `<div style='margin-top:12px; padding:10px; background:rgba(0,0,0,0.3); border-radius:10px; font-size:12px; color:#aaa; font-style:italic;'>💬 ${d.note}</div>` : ''}
-                    </div>`;
-                }); 
+            let h = "";
+            let monthGroups = new Map();
+
+            // توزيع الداتا على شهور
+            groups.forEach((logs, dateStr) => {
+                const firstLogTs = logs[0].ts?.toDate() || new Date();
+                const monthYear = firstLogTs.toLocaleDateString('ar-EG', { month: 'long', year: 'numeric' });
+                if(!monthGroups.has(monthYear)) monthGroups.set(monthYear, []);
+                monthGroups.get(monthYear).push({ date: dateStr, logs: logs });
             });
-            list.innerHTML = h || '<p style="text-align:center; padding:50px; color:#444;">مفيش نشاط مسجل لسه.. ابدأ يا بطل! 🔥</p>';
+
+            monthGroups.forEach((days, monthName) => {
+                const monthId = "m_" + monthName.replace(/\s/g, '_');
+                h += `
+                <div class="month-section" style="margin-bottom:20px; border:1px solid #222; border-radius:20px; overflow:hidden; background:rgba(0,0,0,0.2);">
+                    <div onclick="toggleCollapse('${monthId}')" style="background:#111; padding:15px 20px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; color:var(--accent);">
+                        <b style="font-size:16px;">🗓️ ${monthName}</b>
+                        <span id="arr_${monthId}" style="transition:0.3s; font-size:12px;">▼</span>
+                    </div>
+                    <div id="${monthId}" style="padding:10px;">`;
+
+                days.forEach(day => {
+                    const dayId = "d_" + (day.date + monthName).replace(/\s/g, '_');
+                    h += `
+                    <div class="day-section" style="margin-bottom:15px; border-bottom:1px solid #222; padding-bottom:10px;">
+                        <div onclick="toggleCollapse('${dayId}')" style="color:#666; font-size:12px; text-align:center; display:flex; align-items:center; gap:15px; margin:15px 0; cursor:pointer;">
+                            <span style="flex:1; height:1px; background:#222;"></span> 
+                            <span>📅 ${day.date}</span> 
+                            <span id="arr_${dayId}" style="transition:0.3s; font-size:10px;">▼</span>
+                            <span style="flex:1; height:1px; background:#222;"></span>
+                        </div>
+                        <div id="${dayId}">`;
+
+                    day.logs.forEach(d => {
+                        let icon = '🔥', color = 'var(--primary)', valHtml = d.val;
+                        if(d.type==='تمرين') { icon='💪'; color='var(--primary)'; } else if(d.type==='مياه') { icon='💧'; color='#2196f3'; } else if(d.type==='وزن') { icon='⚖️'; color='var(--accent)'; }
+                        
+                        // معالجة عرض التمارين (الجدول)
+                        if(d.type === 'تمرين' && d.val.startsWith('[')) {
+                            try {
+                                const exs = JSON.parse(d.val); 
+                                valHtml = `
+                                    <div style="overflow-x:auto; background:rgba(0,0,0,0.3); border-radius:15px; border:1px solid #222; margin-top:15px; -webkit-overflow-scrolling: touch;">
+                                        <table style="width:100%; border-collapse:collapse; text-align:center; min-width:400px; font-size:11px;">
+                                            <thead>
+                                                <tr style="background:#111; color:#777;">
+                                                    <th style="padding:10px; border:1px solid #222; position:sticky; right:0; background:#111; z-index:2;">التمرين</th>
+                                                    <th style="padding:10px; border:1px solid #222;">نوع</th>
+                                                    ${[1,2,3,4,5,6].map(n => `<th style="padding:10px; border:1px solid #222;">${n}</th>`).join('')}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${exs.map(ex => `
+                                                    <tr style="border-top:2px solid #222;">
+                                                        <td rowspan="2" style="padding:10px; border:1px solid #222; position:sticky; right:0; background:#0a0a0a; color:var(--primary); font-weight:bold; z-index:2;">
+                                                            ${ex.name}
+                                                            <div style="font-size:8px; color:#555; font-weight:normal; margin-top:4px; display:block;">🕒 ${ex.time || '--:--'}</div>
+                                                        </td>
+                                                        <td style="padding:5px; border:1px solid #222; color:var(--accent); background:rgba(255,215,0,0.05);">وزن</td>
+                                                        ${[0,1,2,3,4,5].map(idx => `<td style="padding:5px; border:1px solid #222; color:var(--accent); font-weight:bold;">${(ex.w && ex.w[idx]) || ex['w'+(idx+1)] || '-'}</td>`).join('')}
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding:5px; border:1px solid #222; color:var(--success); background:rgba(76,175,80,0.05);">عدة</td>
+                                                        ${[0,1,2,3,4,5].map(idx => `<td style="padding:5px; border:1px solid #222; color:var(--success); font-weight:bold;">${(ex.r && ex.r[idx]) || ex['r'+(idx+1)] || '-'}</td>`).join('')}
+                                                    </tr>
+                                                `).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                `; 
+                            } catch(e){ valHtml = d.val; } 
+                        }
+                        
+                        h += `
+                        <div class="history-item">
+                            ${(isAdminView || d.uPhone === currentUser.phone) ? `<i class="del-btn" onclick="deleteLog('${d.id}', '${phone}', '${containerId}')">🗑️</i>` : ''}
+                            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                                <div style="width:50px; height:50px; background:rgba(255,255,255,0.05); border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:24px;">${icon}</div>
+                                <div>
+                                    <b style="color:${color}; font-size:17px;">${d.type} ${d.sub||''}</b>
+                                    <div style="font-size:11px; color:#555;">${d.ts ? d.ts.toDate().toLocaleTimeString('ar-EG',{hour:'2-digit', minute:'2-digit'}) : ''}</div>
+                                </div>
+                            </div>
+                            <div style="color:#eee; line-height:1.5;">${valHtml}</div>
+                            ${d.note ? `<div style='margin-top:12px; padding:10px; background:rgba(0,0,0,0.3); border-radius:10px; font-size:12px; color:#aaa; font-style:italic;'>💬 ${d.note}</div>` : ''}
+                        </div>`;
+                    });
+                    h += `</div></div>`; // إغلاق اليوم
+                });
+                h += `</div></div>`; // إغلاق الشهر
+            });
+            list.innerHTML = h || '<p style="text-align:center; padding:50px; color:#444;">مفيش نشاط مسجل لسه.. ابدأ يا بطل!</p>';
         }
 
         async function deleteLog(id, phone, containerId){ if(confirm('حذف؟')){ await db.collection('logs').doc(id).delete(); fetchAndRenderLogs(phone || currentUser.phone, containerId || 'user-history-list'); } }
@@ -1818,6 +1916,17 @@
                 loadEvaluationData();
             }
         }
+        function toggleCollapse(id) {
+            const el = document.getElementById(id);
+            const arr = document.getElementById('arr_'+id);
+            if(el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+                if(arr) arr.style.transform = 'rotate(0deg)';
+            } else {
+                el.classList.add('hidden');
+                if(arr) arr.style.transform = 'rotate(-90deg)';
+            }
+        }
         function logout() { localStorage.removeItem('fire_gym_phone'); location.reload(); }
         function checkWaterReset() { const d = new Date().toDateString(); if(localStorage.getItem('w_date') !== d){ localStorage.setItem('w_date', d); localStorage.setItem('w_count', "0"); } document.getElementById('water-count').innerText = localStorage.getItem('w_count') || "0"; }
         async function updateWater(v) { 
@@ -1848,6 +1957,7 @@
 
         // --- 🔔 نظام الإشعارات الذكي (Smart System Notifications) ---
         let notifListener = null;
+        let unreadNotifs = 0;
 
         function initSystemNotifications() {
             if (!("Notification" in window)) {
@@ -1872,23 +1982,89 @@
                 });
             } else {
                 Swal.fire('تنبيه الإشعارات 🔔', 'الإشعارات مقفولة من إعدادات تليفونك.. افتحها لتجربة أفضل!', 'info');
+                listenForCustomNotifications(); // استماع داخلي حتى لو مفيش Permission للهاتف
             }
+        }
+
+        async function openNotifModal() {
+            document.getElementById('notif-modal').classList.remove('hidden');
+            unreadNotifs = 0;
+            updateNotifBadge();
+            loadNotifList();
+        }
+
+        function closeNotifModal() {
+            document.getElementById('notif-modal').classList.add('hidden');
+        }
+
+        function updateNotifBadge() {
+            const badge = document.getElementById('notif-badge');
+            const adminBadge = document.getElementById('notif-badge-admin');
+            const countText = unreadNotifs > 9 ? "+9" : unreadNotifs;
+            
+            if (unreadNotifs > 0) {
+                if(badge) { badge.innerText = countText; badge.classList.remove('hidden'); }
+                if(adminBadge) { adminBadge.innerText = countText; adminBadge.classList.remove('hidden'); }
+            } else {
+                if(badge) badge.classList.add('hidden');
+                if(adminBadge) adminBadge.classList.add('hidden');
+            }
+        }
+
+        async function loadNotifList() {
+            const list = document.getElementById('notif-list');
+            list.innerHTML = '<p style="text-align:center; color:#555;">جاري تحميل الرسائل... 🛡️</p>';
+            try {
+                // شلنا الـ orderBy من الكود عشان ميطلبش Index ويطلع خطأ
+                const snap = await db.collection('notifications')
+                    .where('targetPhone', '==', currentUser.phone)
+                    .limit(30)
+                    .get();
+                
+                let results = [];
+                snap.forEach(doc => results.push(doc.data()));
+                
+                // بنرتب هنا فى الكود نفسه (الأحدث فوق)
+                results.sort((a, b) => (b.ts?.seconds || 0) - (a.ts?.seconds || 0));
+
+                let h = "";
+                results.forEach(d => {
+                    const date = d.ts ? d.ts.toDate().toLocaleString('ar-EG', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'short'}) : 'الآن';
+                    h += `
+                    <div style="background:rgba(255,255,255,0.03); border:1px solid #222; border-radius:15px; padding:15px;">
+                        <b style="color:var(--accent); display:block; margin-bottom:5px; font-size:14px;">${d.title}</b>
+                        <p style="color:#eee; font-size:13px; margin:0; line-height:1.5;">${d.message}</p>
+                        <small style="color:#555; display:block; margin-top:8px; font-size:10px;">${date}</small>
+                    </div>`;
+                });
+                list.innerHTML = h || '<p style="text-align:center; color:#444; padding:20px;">لا توجد رسائل حالياً.. أنت تتبع الجدول بامتياز!</p>';
+            } catch(e) { console.error("Notif Load Error:", e); list.innerHTML = '<p style="text-align:center; color:#ff3b30; padding:20px;">عذراً، فشل التحميل.. تأكد من الإنترنت ❌</p>'; }
         }
 
         function listenForCustomNotifications() {
             if(!currentUser || !currentUser.phone) return;
-            if(notifListener) notifListener(); // تنظيف القديم
+            if(notifListener) notifListener();
 
-            // الاستماع لأي إشعار موجه لرقم المستخدم الحالي وتم إرساله الآن
-            const now = new Date();
+            const startTs = firebase.firestore.Timestamp.now();
             notifListener = db.collection('notifications')
                 .where('targetPhone', '==', currentUser.phone)
-                .where('ts', '>', now) // فقط الإشعارات الجديدة
+                .where('ts', '>', startTs)
                 .onSnapshot(snap => {
                     snap.docChanges().forEach(change => {
                         if (change.type === 'added') {
                             const d = change.doc.data();
-                            showPhoneNotification(d.title || "تحديث من الكابتن 🔥", d.message);
+                            unreadNotifs++;
+                            updateNotifBadge();
+                            showPhoneNotification(d.title, d.message);
+                            
+                            // توست تنبيه صغير
+                            Swal.fire({
+                                toast: true, position: 'top-start',
+                                icon: 'info', title: d.title,
+                                text: d.message,
+                                showConfirmButton: false, timer: 4000,
+                                background: '#1a1a1a', color: '#fff'
+                            });
                         }
                     });
                 });
@@ -2033,7 +2209,6 @@
                 const r = d.data(); 
                 const id = d.id; 
                 if(hidden.includes(id) && currentUser.role !== 'admin') return;
-
                 h += `
                 <div class="history-item" style="padding:0; overflow:hidden; position:relative; border:1px solid #222;">
                     ${currentUser.role==='admin' ? 
@@ -2068,188 +2243,33 @@
             }
         }
 
-        // --- نظام التقييم والمتابعة ---
-        let myChart = null;
-        async function loadEvaluationData() {
-            const list = document.getElementById('eval-history-list');
-            const snap = await db.collection('evaluations').where('uPhone', '==', currentUser.phone).orderBy('ts','desc').get();
-            let evals = []; snap.forEach(d => evals.push(d.data()));
-            
-            // جلب بيانات الوزن والدهون من السجل
-            const logsSnap = await db.collection('logs').where('uPhone','==',currentUser.phone).get();
-            let weightData = [];
-            logsSnap.forEach(d => {
-                const data = d.data();
-                if(data.type==='وزن') weightData.push({ val: parseFloat(data.val), ts: data.ts?.toDate() });
-            });
-            weightData.sort((a,b) => a.ts - b.ts);
-
-            renderEvaluationContent(evals, weightData);
+        async function deleteRecipe(id) {
+            if(!confirm('حذف هذه الوصفة نهائياً؟')) return;
+            try {
+                await db.collection('recipes').doc(id).delete();
+                loadRecipes();
+            } catch(e) { alert("خطأ في الحذف: " + e.message); }
         }
 
-        function renderEvaluationContent(evals, weights) {
-            const lastEval = evals[0] || { score: 0, note: "لسه مفيش تقييم نزل.. التزم يا بطل وهتلاقي أحلى إشادة هنا! 🔥", fat: "--" };
-            document.getElementById('current-score-text').innerText = lastEval.score + " / 10";
-            document.getElementById('coach-note-bubble').innerText = lastEval.note;
-
-            // تجهيز البيانات للرسم البياني الموحد
-            const labels = weights.map(w => w.ts.toLocaleDateString('ar-EG', {day:'numeric', month:'short'}));
-            const wVals = weights.map(w => w.val);
-            
-            if(myChart) myChart.destroy();
-            const ctx = document.getElementById('evalChart').getContext('2d');
-            myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        { label: 'الوزن (كجم)', data: wVals, borderColor: '#ff3b30', tension: 0.4, yAxisID: 'y' },
-                        { label: 'الالتزام (10)', data: evals.map(e => e.score), borderColor: '#4caf50', type: 'bar', backgroundColor: 'rgba(76,175,80,0.1)', yAxisID: 'y1' }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { position: 'left', grid: { color: '#222' } },
-                        y1: { position: 'right', min: 0, max: 10, grid: { display: false } }
-                    },
-                    plugins: { legend: { labels: { color: '#fff' } } }
+        async function seedInitialKnowledge() {
+            try {
+                const snap = await db.collection('knowledge_bank').get();
+                if(snap.empty) {
+                    const base = [
+                        { q: "ما هو أفضل تمرين لحرق الدهون؟", a: "المشي السريع أو الجري الخفيف لمدة 30-45 دقيقة بعد تمرين المقاومة، أو تمارين (HIIT) عالية الكثافة." },
+                        { q: "متى يجب تناول الكربوهيدرات؟", a: "الكربوهيدرات المعقدة (مثل البطاطا أو الشوفان) قبل التمرين بـ ساعتين لتعطيك طاقة مستدامة طوال الحصة." },
+                        { q: "كم كمية المياه التي أحتاجها؟", a: "كشخص رياضي تحتاج من 3.5 إلى 5 لتر مياه يومياً للحفاظ على الأداء البدني والكلى." }
+                    ];
+                    for(let item of base) {
+                        await db.collection('knowledge_bank').add({ ...item, ts: firebase.firestore.FieldValue.serverTimestamp() });
+                    }
                 }
-            });
-
-            let h = evals.map(e => `
-                <div style="background:rgba(255,255,255,0.03); border:1px solid #222; border-radius:15px; padding:15px; margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <b style="color:var(--success);">الالتزام: ${e.score}/10</b>
-                        <span style="color:#555; font-size:10px;">📅 ${e.ts?.toDate().toLocaleDateString('ar-EG')}</span>
-                    </div>
-                    <div style="color:#eee; font-size:13px; line-height:1.6;">${e.note}</div>
-                    ${e.fat ? `<div style="margin-top:8px; font-size:11px; color:var(--accent);">🔥 نسبة الدهون المسجلة: ${e.fat}%</div>` : ''}
-                </div>
-            `).join('');
-            document.getElementById('eval-history-list').innerHTML = h || '<p style="text-align:center; padding:20px; color:#444;">مفيش تاريخ تقييمات لسه.</p>';
+            } catch(e) { console.error("Seed KB Error:", e); }
         }
 
-        async function submitEvaluation() {
-            const targetId = document.getElementById('profile-modal').dataset.activeId || activeTarget;
-            const score = document.getElementById('admin-eval-score').value;
-            const note = document.getElementById('admin-eval-note').value.trim();
-            const fat = document.getElementById('admin-eval-fat').value;
-
-            if(!note) return Swal.fire('نقص بيانات', 'اكتب ملاحظة للبطل عشان يعرف يطور نفسه', 'warning');
-
-            Swal.fire({ title: 'جاري الحفظ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-            try {
-                await db.collection('evaluations').add({
-                    uPhone: targetId,
-                    score: parseInt(score),
-                    note: note,
-                    fat: fat,
-                    ts: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                Swal.fire('تم التقييم! ✅', 'البطل هيشوف تقييمك فوراً في شاشته 🔥', 'success');
-                document.getElementById('admin-eval-note').value = "";
-            } catch(e) { Swal.fire('خطأ', e.message, 'error'); }
-        }
-
-        async function deleteRecipe(id){ if(confirm('حذف نهائي للوصفة من عند الكل؟')){ await db.collection('recipes').doc(id).delete(); loadRecipes(); } }
-        function addPrefRow(n="",s="like"){ const tr=document.createElement('tr'); tr.innerHTML=`<td><input type="text" class="pref-name" value="${n}" style="width:100%; background:none; border:none; color:#fff;"></td><td><select class="pref-status" style="background:#000; color:#fff; border:none;"><option value="like" ${s==='like'?'selected':''}>❤️</option><option value="dislike" ${s==='dislike'?'selected':''}>💔</option></select></td><td onclick="this.parentElement.remove()">🗑️</td>`; document.getElementById('food-prefs-body').appendChild(tr); }
-        async function saveFoodPrefs(){ let prefs=[]; document.querySelectorAll('#food-prefs-body tr').forEach(r=>{ const n=r.querySelector('.pref-name').value; if(n) prefs.push({name:n, status:r.querySelector('.pref-status').value}); }); await db.collection('users').doc(currentUser.phone).update({foodPrefs:prefs}); Swal.fire('تم','تم حفظ تفضيلاتك','success'); }
-        function loadFoodPrefs(){ db.collection('users').doc(currentUser.phone).get().then(doc=>{ const p=doc.data().foodPrefs||[]; document.getElementById('food-prefs-body').innerHTML=""; if(p.length===0) addPrefRow(); else p.forEach(x=>addPrefRow(x.name,x.status)); }); }
-
-        async function saveKnowledge() {
-            const q = document.getElementById('info-q').value.trim();
-            const a = document.getElementById('info-a').value.trim();
-            if(!q || !a) return Swal.fire('نقص بيانات', 'اكتب السؤال والإجابة يا كوتش', 'warning');
-            
-            Swal.fire({ title: 'جاري الحفظ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-            try {
-                await db.collection('knowledge_bank').add({ q, a, ts: firebase.firestore.FieldValue.serverTimestamp() });
-                Swal.fire('تم الحفظ! ✅', 'المعلومة بقت متاحة لكل الأبطال', 'success');
-                document.getElementById('info-q').value = "";
-                document.getElementById('info-a').value = "";
-                loadKnowledgeAdmin();
-            } catch(e) { Swal.fire('خطأ', e.message, 'error'); }
-        }
-
-        async function loadKnowledgeAdmin() {
-            const list = document.getElementById('admin-info-list');
-            const snap = await db.collection('knowledge_bank').orderBy('ts', 'desc').get();
-            let h = "";
-            snap.forEach(doc => {
-                const d = doc.data();
-                h += `
-                <div style="background:#111; padding:15px; border-radius:12px; border:1px solid #222; position:relative;">
-                    <i onclick="deleteKnowledge('${doc.id}')" style="position:absolute; left:10px; top:10px; color:#ff3b30; cursor:pointer;">🗑️</i>
-                    <b style="color:var(--accent); font-size:12px; display:block; margin-bottom:5px;">س: ${d.q}</b>
-                    <p style="color:#aaa; font-size:11px; margin:0;">ج: ${d.a}</p>
-                </div>`;
-            });
-            list.innerHTML = h || '<p style="text-align:center; color:#444;">مفيش معلومات لسه.</p>';
-        }
-
-        async function deleteKnowledge(id) {
-            if(!confirm('حذف هذه المعلومة؟')) return;
-            await db.collection('knowledge_bank').doc(id).delete();
-            loadKnowledgeAdmin();
-        }
-
-        async function openInfoBank() {
-            const modal = document.getElementById('info-bank-modal');
-            modal.classList.remove('hidden');
-            const container = document.getElementById('info-bank-content');
-            container.innerHTML = '<p style="text-align:center; color:#555; padding:20px;">جاري تحميل الحكمة... 🧬</p>';
-            
-            try {
-                const snap = await db.collection('knowledge_bank').orderBy('ts', 'desc').get();
-                let h = "";
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    h += `
-                    <div style="background:rgba(255,255,255,0.02); border:1px solid #222; border-radius:20px; padding:20px;">
-                        <div style="color:var(--accent); font-weight:bold; margin-bottom:12px; display:flex; align-items:start; gap:10px;">
-                            <span style="background:var(--accent); color:#000; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0;">؟</span>
-                            <span>${d.q}</span>
-                        </div>
-                        <div style="color:#eee; font-size:14px; line-height:1.6; padding-right:34px;">${d.a}</div>
-                    </div>`;
-                });
-                container.innerHTML = h || '<p style="text-align:center; color:#444; padding:20px;">لسه مفيش معلومات، انتظر نصائح الكوتش قريباً! 🔥</p>';
-            } catch(e) {
-                console.error("InfoBank Error:", e);
-                container.innerHTML = '<p style="text-align:center; color:var(--primary); padding:20px;">عذراً، فشل التحميل. تأكد من اتصالك بالإنترنت يا بطل ❌</p>';
-            }
-        }
-
-        // حقن المعلومات المبدئية عند الحاجة (أول مرة فقط)
-        async function seedKnowledge() {
-            const snap = await db.collection('knowledge_bank').limit(1).get();
-            if(snap.empty) {
-                const base = [
-                    { q: "ما هو الوقت المثالي لشرب البروتين؟", a: "بعد التمرين بـ 30-60 دقيقة هو أفضل وقت لامتصاص سريع، لكن الأهم هو إكمال حصتك اليومية كاملة." },
-                    { q: "هل الكارديو يحرق العضلات؟", a: "لا، الكارديو المعتدل يحسن الدورة الدموية ويساعد في نقل الغذاء للعضلات، المهم أن لا تبالغ فيه." },
-                    { q: "لماذا تشعر بالشد العضلي أحياناً؟", a: "نقص السوائل أو المعادن (بوتاسيوم، مغنسيوم). حافظ على توازن الأملاح في جسمك." },
-                    { q: "ما هي فوائد الكرياتين؟", a: "أكثر مكمل غذائي تمت دراسته؛ يزيد القوة، الانفجار البدني، ويحسن من شكل العضلة عن طريق تخزين المياه بداخلها." },
-                    { q: "هل النوم ضروري لبناء العضلات؟", a: "النوم هو المرحلة الوحيدة التي يتم فيها إصلاح الأنسجة العضلية الممزقة وبنائها من جديد." },
-                    { q: "ماذا آكل قبل التمرين؟", a: "كربوهيدرات معقدة (مثل البطاطا أو الشوفان) قبل التمرين بـ ساعتين لتعطيك طاقة مستدامة طوال الحصة." },
-                    { q: "كم كمية المياه التي أحتاجها؟", a: "كشخص رياضي تحتاج من 3.5 إلى 5 لتر مياه يومياً للحفاظ على الأداء البدني والكلى." },
-                    { q: "أهمية المغنيسيوم للرياضي؟", a: "يساعد في ارتخاء العضلات، يحسن جودة النوم، ويمنع التشنجات العضلية المزعجة ليلاً." },
-                    { q: "هل القهوة مفيدة قبل التمرين؟", a: "نعم، الكافيين يحسن التركيز الذهني ويزيد من معدل حرق الدهون ويرفع من تحمل الألم خلال العدات الصعبة." },
-                    { q: "لماذا يجب الإحماء جيداً؟", a: "الإحماء يرفع درجة حرارة الجسم ويزيت المفاصل، مما يقلل احتمالية الإصابة بنسبة 90%." },
-                    { q: "هل الدهون مفيدة في النظام الغذائي؟", a: "نعم، الدهون الصحية (زيت زيتون، مكسرات) ضرورية لإنتاج الهرمونات وامتصاص الفيتامينات." },
-                    { q: "سر الاستمرارية في الجيم؟", a: "أن تحب العملية وليس النتيجة فقط. ابدأ بأوزان مناسبة وتدرج ببطء لتتجنب الانقطاع أو الملل." }
-                ];
-                for(let item of base) {
-                    await db.collection('knowledge_bank').add({ ...item, ts: firebase.firestore.FieldValue.serverTimestamp() });
-                }
-            }
-        }
-
-        // تحديث شامل ومسح القديم
         async function forceSeedKnowledge() {
-            if(!confirm('هل تريد مسح المعلومات القديمة وتنزيل الـ 12 معلومة الذهبية الجديدة؟')) return;
+            if(!confirm('هل تريد مسح المعلومات القديمة وتنزيل المعلومات الذهبية الجديدة؟')) return;
             Swal.fire({ title: 'جاري التحديث الشامل...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-            
             try {
                 const snap = await db.collection('knowledge_bank').get();
                 const batch = db.batch();
@@ -2261,34 +2281,24 @@
                     { q: "هل الكارديو يحرق العضلات؟", a: "لا، الكارديو المعتدل يحسن الدورة الدموية ويساعد في نقل الغذاء للعضلات، المهم أن لا تبالغ فيه." },
                     { q: "لماذا تشعر بالشد العضلي أحياناً؟", a: "نقص السوائل أو المعادن (بوتاسيوم، مغنسيوم). حافظ على توازن الأملاح في جسمك." },
                     { q: "ما هي فوائد الكرياتين؟", a: "أكثر مكمل غذائي تمت دراسته؛ يزيد القوة، الانفجار البدني، ويحسن من شكل العضلة عن طريق تخزين المياه بداخلها." },
-                    { q: "هل النوم ضروري لبناء العضلات؟", a: "النوم هو المرحلة الوحيدة التي يتم فيها إصلاح الأنسجة العضلية الممزقة وبنائها من جديد." },
-                    { q: "ماذا آكل قبل التمرين؟", a: "كربوهيدرات معقدة (مثل البطاطا أو الشوفان) قبل التمرين بـ ساعتين لتعطيك طاقة مستدامة طوال الحصة." },
-                    { q: "كم كمية المياه التي أحتاجها؟", a: "كشخص رياضي تحتاج من 3.5 إلى 5 لتر مياه يومياً للحفاظ على الأداء البدني والكلى." },
-                    { q: "أهمية المغنيسيوم للرياضي؟", a: "يساعد في ارتخاء العضلات، يحسن جودة النوم، ويمنع التشنجات العضلية المزعجة ليلاً." },
-                    { q: "هل القهوة مفيدة قبل التمرين؟", a: "نعم، الكافيين يحسن التركيز الذهني ويزيد من معدل حرق الدهون ويرفع من تحمل الألم خلال العدات الصعبة." },
-                    { q: "لماذا يجب الإحماء جيداً؟", a: "الإحماء يرفع درجة حرارة الجسم ويزيت المفاصل، مما يقلل احتمالية الإصابة بنسبة 90%." },
-                    { q: "هل الدهون مفيدة في النظام الغذائي؟", a: "نعم، الدهون الصحية (زيت زيتون، مكسرات) ضرورية لإنتاج الهرمونات وامتصاص الفيتامينات." },
                     { q: "سر الاستمرارية في الجيم؟", a: "أن تحب العملية وليس النتيجة فقط. ابدأ بأوزان مناسبة وتدرج ببطء لتتجنب الانقطاع أو الملل." }
                 ];
-                
                 for(let item of base) {
                     await db.collection('knowledge_bank').add({ ...item, ts: firebase.firestore.FieldValue.serverTimestamp() });
                 }
-                
-                Swal.fire('تم التحديث بنجاح! ✅', 'كل الأبطال يقدروا يشوفوا الـ 12 معلومة دلوقتي.', 'success');
+                Swal.fire('تم بنجاح! ✅', 'بنك المعلومات جاهز للأبطال.', 'success');
                 loadKnowledgeAdmin();
             } catch(e) { Swal.fire('خطأ', e.message, 'error'); }
         }
 
-        // دالة عرض مكتبة التكنيك
         async function loadTechniques() {
             const list = document.getElementById('technique-list');
+            if(!list) return;
             list.innerHTML = '<p style="text-align:center; color:#555;">جاري تحميل مكتبة التكنيك... 🎥</p>';
             try {
                 const snap = await db.collection('techniques').orderBy('ts', 'desc').get();
                 let h = "";
                 const isAdmin = (currentUser && currentUser.role === 'admin');
-                
                 snap.forEach(doc => {
                     const d = doc.data();
                     h += `
@@ -2301,52 +2311,39 @@
                         </div>
                     </div>`;
                 });
-                list.innerHTML = h || '<p style="text-align:center; color:#444; padding:20px;">لسا مفيش تمارين متضافة في التكنيك، انتظروا فيديوهات الكوتش قريباً! 🔥</p>';
-            } catch(e) {
-                console.error("Load Techniques Error:", e);
-                list.innerHTML = '<p style="text-align:center; color:var(--primary); padding:20px;">عذراً، فشل التحميل. يرجى التأكد من الإنترنت.</p>';
-            }
+                list.innerHTML = h || '<p style="text-align:center; color:#444; padding:20px;">انتظروا فيديوهات الكوتش قريباً! 🔥</p>';
+            } catch(e) { console.error("Tech Load Error:", e); }
         }
 
-        // دالة حفظ التكنيك الجديد
         async function saveTechnique() {
             const name = document.getElementById('tech-name').value.trim();
             const correctUrl = document.getElementById('tech-correct').value.trim();
             const wrongUrl = document.getElementById('tech-wrong').value.trim();
-            
-            if(!name) return Swal.fire('تنبيه', 'يجب إدخال اسم التمرين على الأقل', 'warning');
-            
+            if(!name) return Swal.fire('تنبيه', 'يجب إدخال اسم التمرين', 'warning');
             Swal.fire({ title: 'جاري الحفظ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            
             try {
-                await db.collection('techniques').add({
-                    name: name,
-                    correctUrl: correctUrl,
-                    wrongUrl: wrongUrl,
-                    ts: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
+                await db.collection('techniques').add({ name, correctUrl, wrongUrl, ts: firebase.firestore.FieldValue.serverTimestamp() });
                 document.getElementById('tech-name').value = '';
                 document.getElementById('tech-correct').value = '';
                 document.getElementById('tech-wrong').value = '';
                 document.getElementById('technique-modal').classList.add('hidden');
-                
-                Swal.fire('تم العظمة! 🔥', 'التكنيك نزل في المكتبة وكل الأبطال يقدروا يشوفوه دلوقتي', 'success');
+                Swal.fire('تم العظمة! 🔥', 'التكنيك نزل في المكتبة', 'success');
                 loadTechniques();
-            } catch(e) { Swal.fire('خطأ', 'فشل الحفظ: ' + e.message, 'error'); }
+            } catch(e) { Swal.fire('خطأ', e.message, 'error'); }
         }
 
-        // دالة حذف التكنيك
         async function deleteTechnique(id) {
-            if(!confirm('هل أنت متأكد من حذف هذا التمرين من المكتبة؟')) return;
-            try {
-                await db.collection('techniques').doc(id).delete();
-                loadTechniques();
-            } catch(e) { alert('خطأ في الحذف: ' + e.message); }
+            if(!confirm('حذف؟')) return;
+            try { await db.collection('techniques').doc(id).delete(); loadTechniques(); } catch(e) { alert(e.message); }
         }
 
-        window.onload = () => { seedKnowledge(); const p = localStorage.getItem('fire_gym_phone'); if(p) db.collection('users').doc(p).get().then(s => s.exists?enterApp(s.data()):logout()); };
+        function logout() { localStorage.removeItem('fire_gym_phone'); location.reload(); }
+
+        window.onload = async () => { 
+            await seedInitialKnowledge(); 
+            const p = localStorage.getItem('fire_gym_phone'); 
+            if(p) db.collection('users').doc(p).get().then(s => s.exists?enterApp(s.data()):logout()).catch(() => logout()); 
+        };
     </script>
-    <script src="firegym_auth.js"></script>
 </body>
 </html>
