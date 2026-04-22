@@ -1,38 +1,44 @@
-const CACHE_NAME = 'v11-FIRE';
-const ASSETS = [
-    './',
-    './index.html',
-    './firegym_auth.js',
-    './manifest.json'
+// sw.js (Legacy Optimized)
+var CACHE_NAME = 'firegym-cache-v10';
+var urlsToCache = [
+  './',
+  './index.html',
+  './firegym_auth.js'
 ];
 
-// التثبيت: إجبار السيرفس وركر الجديد على البدء فوراً
-self.addEventListener('install', e => {
-    self.skipWaiting();
-    e.waitUntil(
-        caches.open(CACHE_NAME).then(c => c.addAll(ASSETS))
-    );
+self.addEventListener('install', function(event) {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(function(cache) {
+        return cache.addAll(urlsToCache);
+      })
+  );
 });
 
-// التنشيط: مسح كل الكاش القديم (تنظيف شامل)
-self.addEventListener('activate', e => {
-    e.waitUntil(
-        caches.keys().then(ks => Promise.all(
-            ks.map(k => {
-                if (k !== CACHE_NAME) {
-                    console.log('Cleaning old cache:', k);
-                    return caches.delete(k);
-                }
-            })
-        ))
-    );
-    self.clients.claim();
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.match(event.request)
+      .then(function(response) {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request);
+      }
+    )
+  );
 });
 
-// جلب الملفات: يحاول يجيب من النت أولاً، ولو مفيش نت يشوف الكاش
-self.addEventListener('fetch', e => {
-    e.respondWith(
-        fetch(e.request).catch(() => caches.match(e.request))
-    );
+self.addEventListener('activate', function(event) {
+  var cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames.map(function(cacheName) {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
 });
-
