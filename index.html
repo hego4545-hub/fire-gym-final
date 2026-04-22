@@ -530,20 +530,20 @@
     <!-- نافذة من نحن -->
     <div id="about-us-modal" class="modal hidden" style="background:rgba(0,0,0,0.9); z-index:10002; padding:20px;">
         <div
-            style="background:linear-gradient(to bottom, #1a1a1a, #0a0a0a); max-width:400px; width:100%; border-radius:30px; padding:30px; padding-top:40px; position:relative; border:2px solid #333; text-align:center; box-shadow:0 10px 40px rgba(0,0,0,0.8);">
+            style="background:linear-gradient(to bottom, #1a1a1a, #0a0a0a); max-width:400px; width:100%; border-radius:30px; padding:30px; padding-top:40px; position:relative; border:2px solid #333; text-align:center; box-shadow:0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; max-height: 90vh;">
             <div
-                style="position:absolute; top:-25px; left:50%; transform:translateX(-50%); background:var(--primary); width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow:0 5px 15px rgba(229,57,53,0.5);">
+                style="position:absolute; top:-25px; left:50%; transform:translateX(-50%); background:var(--primary); width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow:0 5px 15px rgba(229,57,53,0.5); z-index:2;">
                 ℹ️</div>
 
-            <h2 style="color:#fff; font-size:26px; margin-bottom:15px; font-weight:900;">من نحن 🔥</h2>
+            <h2 style="color:#fff; font-size:26px; margin-bottom:15px; font-weight:900; flex-shrink: 0;">من نحن 🔥</h2>
 
-            <div id="about-us-content" style="color:#ccc; font-size:15px; line-height:1.8; text-align:right; margin-bottom:20px; overflow-y:auto; max-height:60vh; padding-right:10px;" class="hide-scrollbar">
+            <div id="about-us-content" style="color:#ccc; font-size:15px; line-height:1.8; text-align:right; margin-bottom:20px; overflow-y:auto; flex: 1; padding-right:10px;" class="hide-scrollbar">
                 
                 <h3 style="color:var(--primary); font-size:20px; text-align:center; margin-bottom:5px;">FIRE GYM - مدربك في جيبك 📱🔥</h3>
                 <h4 style="color:#fff; font-size:16px; text-align:center; margin-bottom:15px;">تحت قيادة الكابتن/ أحمد هجرس<br><span style="font-size:12px; color:var(--text-muted);">(16 سنة من الخبرة في صناعة الأبطال)</span></h4>
 
                 <!-- المعرض المتحرك (Carousel) -->
-                <div style="position:relative; width:100%; height:350px; border-radius:15px; overflow:hidden; margin-bottom:20px; box-shadow:0 5px 15px rgba(0,0,0,0.5); background:#000;">
+                <div style="position:relative; width:100%; height:250px; border-radius:15px; overflow:hidden; margin-bottom:20px; box-shadow:0 5px 15px rgba(0,0,0,0.5); background:#000;">
                     <div id="about-carousel" style="width:100%; height:100%; position:relative;">
                         <img class="carousel-img active" src="images/about1.jpg" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0; opacity:1; transition:opacity 1s ease-in-out;">
                         <img class="carousel-img" src="images/about2.jpg" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0; opacity:0; transition:opacity 1s ease-in-out;">
@@ -575,7 +575,7 @@
             </div>
 
             <button onclick="document.getElementById('about-us-modal').classList.add('hidden')"
-                style="background:var(--primary); color:#fff; border:none; width:100%; padding:15px; border-radius:20px; font-weight:900; font-size:16px; cursor:pointer;">ممتاز،
+                style="background:var(--primary); color:#fff; border:none; width:100%; padding:15px; border-radius:20px; font-weight:900; font-size:16px; cursor:pointer; flex-shrink: 0;">ممتاز،
                 إغلاق</button>
         </div>
     </div>
@@ -665,6 +665,7 @@
                     <h2
                         style="font-size:36px; font-weight:900; letter-spacing:-1.5px; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">
                         يا كابتن <span id="user-display-name" style="color:var(--primary);">بطلنا</span> 👋</h2>
+                    <marquee id="coach-marquee" class="hidden" scrollamount="5" direction="right" style="color:var(--text); font-size:18px; margin-top:20px; background:rgba(229,57,53,0.15); padding:10px; border-radius:15px; font-weight:900; border:1px solid var(--primary); text-shadow: 0 2px 5px rgba(0,0,0,0.5);"></marquee>
                 </header>
                 <!-- بنر النظام المخصص (تم تحسين التنسيق) -->
                 <div id="system-banner"
@@ -1547,11 +1548,20 @@
                     document.getElementById('me-goal-badge').innerText = (data.role === 'admin' ? '👑 كابتن الفريق' : (data.goal || 'بطل فير جيم'));
                     if (data.photo) document.getElementById('me-photo').src = data.photo;
 
+                    const marquee = document.getElementById('coach-marquee');
+                    if (marquee) {
+                        if (data.captainNotes) {
+                            marquee.classList.remove('hidden');
+                            marquee.innerText = "📢 ملاحظات الكابتن: " + data.captainNotes;
+                        } else { marquee.classList.add('hidden'); }
+                    }
                     const noteBox = document.getElementById('captain-notes-box');
-                    if (data.captainNotes) {
-                        noteBox.classList.remove('hidden');
-                        document.getElementById('captain-notes-text').innerText = data.captainNotes;
-                    } else { noteBox.classList.add('hidden'); }
+                    if (noteBox) {
+                        if (data.captainNotes) {
+                            noteBox.classList.remove('hidden');
+                            document.getElementById('captain-notes-text').innerText = data.captainNotes;
+                        } else { noteBox.classList.add('hidden'); }
+                    }
 
                     renderUserPlanTabs();
                 }
@@ -1645,39 +1655,39 @@
                 return;
             }
 
-            // نظام الجدول الأفقي المجمع للتمارين
+            // جدول التمرين الثابت المريح للموبايل
             let tableHtml = `
-                <div style="overflow-x:auto; background:rgba(0,0,0,0.2); border-radius:15px; border:1px solid #333; margin-bottom:20px;">
-                    <table style="width:100%; border-collapse:collapse; text-align:center; min-width:600px;">
+                <div style="background:rgba(0,0,0,0.2); border-radius:15px; border:1px solid #333; margin-bottom:20px; overflow:hidden;">
+                    <table style="width:100%; border-collapse:collapse; text-align:center;">
                         <thead>
                             <tr style="background:#111; color:#777; font-size:11px;">
-                                <th style="padding:12px; border:1px solid #222; position:sticky; right:0; background:#111; z-index:2;">التمرين</th>
-                                <th style="padding:12px; border:1px solid #222;">مج</th>
                                 <th style="padding:12px; border:1px solid #222;">نوع</th>
-                                ${[1, 2, 3, 4, 5, 6].map(n => `<th style="padding:12px; border:1px solid #222;">${n}</th>`).join('')}
-                                <th style="padding:12px; border:1px solid #222;">صح</th>
+                                <th style="padding:12px; border:1px solid #222;">مج</th>
+                                <th style="padding:12px; border:1px solid #222; width:50%;">التمرين</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${exs.map((ex, i) => `
-                                <tr style="border-top:2px solid #333;">
-                                    <td rowspan="2" style="padding:10px; border:1px solid #222; position:sticky; right:0; background:#0a0a0a; color:#fff; font-weight:bold; z-index:2;">${ex.name}</td>
-                                    <td rowspan="2" style="padding:10px; border:1px solid #222; color:var(--primary); font-weight:bold;">${ex.sets || '4'}</td>
-                                    <td style="padding:8px; border:1px solid #222; color:var(--accent); font-size:10px; background:rgba(255,215,0,0.05);">وزن</td>
-                                    ${[1, 2, 3, 4, 5, 6].map(n => `<td style="padding:8px; border:1px solid #222; color:var(--accent); font-weight:bold; font-size:13px; background:rgba(255,215,0,0.02);">${ex['w' + n] || '-'}</td>`).join('')}
-                                    <td rowspan="2" style="padding:10px; border:1px solid #222;">
-                                        <input type="checkbox" style="width:28px; height:28px; accent-color:var(--success);" ${ex.done ? 'checked' : ''} onchange="toggleExDone('${cat}', ${i}, this.checked, '${ex.name}')">
-                                    </td>
-                                </tr>
                                 <tr>
-                                    <td style="padding:8px; border:1px solid #222; color:var(--success); font-size:10px; background:rgba(76,175,80,0.05);">عدة</td>
-                                    ${[1, 2, 3, 4, 5, 6].map(n => `<td style="padding:8px; border:1px solid #222; color:var(--success); font-weight:bold; font-size:13px; background:rgba(76,175,80,0.02);">${ex['r' + n] || '-'}</td>`).join('')}
+                                    <td style="padding:8px; border:1px solid #222;">
+                                        <div style="color:var(--accent); font-size:11px; margin-bottom:5px;">وزن</div>
+                                        <div style="color:var(--success); font-size:11px;">عدة</div>
+                                    </td>
+                                    <td style="padding:10px; border:1px solid #222; color:var(--primary); font-weight:bold; font-size:16px;">
+                                        ${ex.sets || '4'}
+                                    </td>
+                                    <td style="padding:10px; border:1px solid #222; font-weight:bold; color:#fff; position:relative; background:rgba(255,255,255,0.02);">
+                                        <div style="margin-bottom:8px; text-align:right;">${ex.name}</div>
+                                        <label style="position:absolute; bottom:5px; left:5px; font-size:10px; background:var(--primary); color:#fff; padding:2px 8px; border-radius:10px; display:flex; align-items:center; gap:4px; font-family:sans-serif;">
+                                            <input type="checkbox" style="accent-color:var(--success); margin:0;" ${ex.done ? 'checked' : ''} onchange="toggleExDone('${cat}', ${i}, this.checked, '${ex.name}')"> تم
+                                        </label>
+                                    </td>
                                 </tr>
                             `).join('')}
                         </tbody>
                     </table>
                 </div>
-                <button onclick="startRestTimer(60)" class="btn-full" style="background:#222; font-size:13px; padding:12px; border:1px solid #333;">⏱️ ابدأ مؤقت الراحة (60 ثانية)</button>
+                <button onclick="startRestTimer(60)" class="btn-full" style="background:#222; font-size:13px; padding:12px; border:1px solid #333; border-radius:15px; margin-top:5px; color:#aaa;">⏱️ ابدأ مؤقت الراحة (60 ثانية)</button>
             `;
 
             if (!document.getElementById('plan-cards-container')) {
@@ -1993,28 +2003,29 @@
                             try {
                                 const exs = JSON.parse(d.val);
                                 valHtml = `
-                                    <div style="overflow-x:auto; background:rgba(0,0,0,0.3); border-radius:15px; border:1px solid #222; margin-top:15px;">
-                                        <table style="width:100%; border-collapse:collapse; text-align:center; min-width:500px; font-size:11px;">
+                                    <div style="background:rgba(0,0,0,0.2); border-radius:15px; border:1px solid #333; margin-top:15px; overflow:hidden;">
+                                        <table style="width:100%; border-collapse:collapse; text-align:center;">
                                             <thead>
-                                                <tr style="background:#111; color:#777;">
-                                                    <th style="padding:10px; border:1px solid #222; position:sticky; right:0; background:#111; z-index:2;">التمرين</th>
+                                                <tr style="background:#111; color:#777; font-size:11px;">
                                                     <th style="padding:10px; border:1px solid #222;">نوع</th>
-                                                    ${[1, 2, 3, 4, 5, 6].map(n => `<th style="padding:10px; border:1px solid #222;">${n}</th>`).join('')}
+                                                    <th style="padding:10px; border:1px solid #222;">مج</th>
+                                                    <th style="padding:10px; border:1px solid #222; width:50%;">التمرين</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 ${exs.map(ex => `
-                                                    <tr style="border-top:2px solid #222;">
-                                                        <td rowspan="2" style="padding:10px; border:1px solid #222; position:sticky; right:0; background:#0a0a0a; color:var(--primary); font-weight:bold; z-index:2;">
-                                                            ${ex.name}
-                                                            <div style="font-size:8px; color:#555; font-weight:normal; margin-top:4px; display:block;">🕒 ${ex.time || '--:--'}</div>
-                                                        </td>
-                                                        <td style="padding:5px; border:1px solid #222; color:var(--accent); background:rgba(255,215,0,0.05);">وزن</td>
-                                                        ${[0, 1, 2, 3, 4, 5].map(idx => `<td style="padding:5px; border:1px solid #222; color:var(--accent); font-weight:bold;">${(ex.w && ex.w[idx]) || ex['w' + (idx + 1)] || '-'}</td>`).join('')}
-                                                    </tr>
                                                     <tr>
-                                                        <td style="padding:5px; border:1px solid #222; color:var(--success); background:rgba(76,175,80,0.05);">عدة</td>
-                                                        ${[0, 1, 2, 3, 4, 5].map(idx => `<td style="padding:5px; border:1px solid #222; color:var(--success); font-weight:bold;">${(ex.r && ex.r[idx]) || ex['r' + (idx + 1)] || '-'}</td>`).join('')}
+                                                        <td style="padding:8px; border:1px solid #222;">
+                                                            <div style="color:var(--accent); font-size:11px; margin-bottom:5px;">وزن</div>
+                                                            <div style="color:var(--success); font-size:11px;">عدة</div>
+                                                        </td>
+                                                        <td style="padding:10px; border:1px solid #222; color:var(--primary); font-weight:bold; font-size:16px;">
+                                                            ${ex.sets || '4'}
+                                                        </td>
+                                                        <td style="padding:10px; border:1px solid #222; font-weight:bold; color:#fff; text-align:right; background:rgba(255,255,255,0.02);">
+                                                            ${ex.name}
+                                                            <div style="font-size:9px; color:#555; font-weight:normal; margin-top:4px;">🕒 ${ex.time || '--:--'}</div>
+                                                        </td>
                                                     </tr>
                                                 `).join('')}
                                             </tbody>
@@ -3057,17 +3068,20 @@
         }
 
         window.onload = () => {
-            // إظهار شاشة التحميل لمدة ثانيتين
-            setTimeout(() => {
-                const splash = document.getElementById('splash-screen');
-                if (splash) {
-                    splash.style.opacity = '0';
-                    splash.style.visibility = 'hidden';
-                    setTimeout(() => splash.remove(), 500); // إزالتها من الـ DOM نهائياً
-                }
-            }, 2000);
+            const splash = document.getElementById('splash-screen');
+            if (sessionStorage.getItem('splashShown')) {
+                if (splash) splash.remove();
+            } else {
+                sessionStorage.setItem('splashShown', 'true');
+                setTimeout(() => {
+                    if (splash) {
+                        splash.style.opacity = '0';
+                        splash.style.visibility = 'hidden';
+                        setTimeout(() => splash.remove(), 500); // إزالتها من الـ DOM نهائياً
+                    }
+                }, 2000);
+            }
 
-            seedKnowledge();
             initAboutCarousel();
             const p = localStorage.getItem('fire_gym_phone');
             if (p) {
