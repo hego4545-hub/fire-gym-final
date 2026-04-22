@@ -1,20 +1,24 @@
+// manifest.json
 {
-  "name": "Fire Gym Pro",
+  "name": "Fire Gym Elite",
   "short_name": "FireGym",
-  "start_url": "/fire-gym/",
+  "start_url": ".",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#e53935",
+  "background_color": "#121212",
+  "theme_color": "#ff3d00",
+  "description": "نظام متابعة أبطال كابتن أحمد هيجو 💎",
   "icons": [
     {
-      "src": "logo.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/3105/3105807.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "logo.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/3105/3105807.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
