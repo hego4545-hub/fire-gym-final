@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Fire Gym | V.10.0.0</title>
+    <title>Fire Gym | V.10.1.0</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
@@ -54,8 +54,8 @@
 
         .card {
             background: rgba(20, 20, 20, 0.7);
-            backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
             padding: 25px;
             border-radius: 30px;
             margin-bottom: 20px;
@@ -67,9 +67,22 @@
         /* تصميم لوحة الدخول الأسطورية الجديدة */
         #auth-section {
             min-height: 100vh;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
             display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -webkit-flex-direction: column;
+            -ms-flex-direction: column;
             flex-direction: column;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
             align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            -ms-flex-pack: center;
             justify-content: center;
             padding: 20px;
             background: rgba(0, 0, 0, 0.6);
@@ -658,7 +671,7 @@
                 <header style="padding: 40px 0 20px; text-align: center; background: none; border-bottom: none;">
                     <div
                         style="display:inline-block; font-size:10px; color:var(--accent); font-weight:bold; background:rgba(0,0,0,0.5); padding:4px 15px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); margin-bottom:15px;">
-                        V.10.0.0 ELITE 🔥</div>
+                        V.10.1.0 ELITE 🔥</div>
                     <h2
                         style="font-size:36px; font-weight:900; letter-spacing:-1.5px; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">
                         يا كابتن <span id="user-display-name" style="color:var(--primary);">بطلنا</span> 👋</h2>
@@ -1432,8 +1445,19 @@
     <script src="firegym_auth.js?v=9"></script>
 
     <script>
+        // كاشف الأخطاء العالمي للأندرويد
+        window.onerror = function(message, source, lineno, colno, error) {
+            var errorInfo = "خطأ في النسخة (Android Compatibility):\n" + message + "\nفي السطر: " + lineno;
+            console.error(errorInfo);
+            // إظهار التنبيه فقط في حالة المراجعة أو إذا كان الخطأ حرجاً
+            if (window.location.search.indexOf('debug=true') !== -1) {
+                alert(errorInfo);
+            }
+            return false;
+        };
+
         // إعدادات Firebase الحقيقية والمستقرة والمسترجعة
-        const firebaseConfig = {
+        var firebaseConfig = {
             apiKey: "AIzaSyAxMNBdkNk_brPMlq1O3_HPRWOIqj-lb24",
             authDomain: "fire-gym-9c753.firebaseapp.com",
             projectId: "fire-gym-9c753",
@@ -1442,33 +1466,33 @@
             appId: "1:417014585133:web:38f62686ae2e133298a5a4"
         };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        var db = firebase.firestore();
 
-        let currentUser = null; let activeTarget = null; let currentPlanData = {}; let finalBase64 = "";
-        let allUsersData = [];
-        const ADMIN_PHONE = "01100896637";
+        var currentUser = null; var activeTarget = null; var currentPlanData = {}; var finalBase64 = "";
+        var allUsersData = [];
+        var ADMIN_PHONE = "01100896637";
 
-        const PLAN_CATS = ['بنج', 'ظهر', 'كتف', 'دراع', 'رجل', 'بطن'];
-        const NUTRI_CATS = ['فطار', 'غداء', 'عشاء', 'سناك', 'قبل التمرين', 'بعد التمرين', 'فيتامينات ومكملات'];
+        var PLAN_CATS = ['بنج', 'ظهر', 'كتف', 'دراع', 'رجل', 'بطن'];
+        var NUTRI_CATS = ['فطار', 'غداء', 'عشاء', 'سناك', 'قبل التمرين', 'بعد التمرين', 'فيتامينات ومكملات'];
 
         async function login() {
-            const p = document.getElementById('login-phone').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
+            var p = document.getElementById('login-phone').value.trim();
+            var pass = document.getElementById('login-pass').value.trim();
             if (!p || !pass) return Swal.fire('خطأ', 'برجاء كتابة البيانات', 'error');
 
-            const btn = document.querySelector('#login-form button');
-            const originalText = btn.innerText;
+            var btn = document.querySelector('#login-form button');
+            var originalText = btn.innerText;
             btn.innerText = "جاري الدخول... ⏳";
             btn.disabled = true;
 
             try {
-                if (typeof Swal !== 'undefined') Swal.fire({ title: 'جاري التحقق...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+                if (typeof Swal !== 'undefined') Swal.fire({ title: 'جاري التحقق...', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); } });
             } catch(e) {}
 
             try {
                 if (p === ADMIN_PHONE) {
                     localStorage.setItem('fire_gym_phone', p);
-                    const adminDoc = { phone: p, name: "كابتن أحمد", status: "approved", role: "admin" };
+                    var adminDoc = { phone: p, name: "كابتن أحمد", status: "approved", role: "admin" };
                     // تأمين وجود مستند للأدمن في الداتابيز لتمكين تغيير الباسورد وغيره
                     await db.collection('users').doc(p).set(adminDoc, { merge: true });
                     if (typeof Swal !== 'undefined') Swal.close();
@@ -1477,11 +1501,11 @@
                     btn.disabled = false;
                     return;
                 }
-                const snap = await db.collection('users').doc(p).get();
+                var snap = await db.collection('users').doc(p).get();
                 if (typeof Swal !== 'undefined') Swal.close();
                 
                 if (snap.exists) {
-                    const data = snap.data();
+                    var data = snap.data();
                     if (data.password.toString().trim() === pass) {
                         if (data.status !== 'approved') {
                             btn.innerText = originalText;
@@ -1515,7 +1539,7 @@
         }
 
 
-        let userListener = null;
+        var userListener = null;
         async function enterApp(u) {
             currentUser = u;
             document.getElementById('auth-section').classList.add('hidden');
@@ -1527,17 +1551,17 @@
             listenForCustomNotifications(); // تشغيل استماع مستمر لسجل الإشعارات
 
             if (userListener) userListener();
-            userListener = db.collection('users').doc(u.phone).onSnapshot((doc) => {
+            userListener = db.collection('users').doc(u.phone).onSnapshot(function(doc) {
                 if (doc.exists) {
-                    const data = doc.data();
+                    var data = doc.data();
                     currentUser = data;
                     currentPlanData = data.workoutPlan || {};
 
                     // تحديث صور النظام المخصصة
-                    const goal = data.goal || "";
-                    const banner = document.getElementById('system-banner');
-                    const title = document.getElementById('system-main-title');
-                    const badge = document.getElementById('system-title-badge');
+                    var goal = data.goal || "";
+                    var banner = document.getElementById('system-banner');
+                    var title = document.getElementById('system-main-title');
+                    var badge = document.getElementById('system-title-badge');
 
                     if (data.role === 'admin') {
                         banner.style.background = "linear-gradient(135deg, #0f0f0f, #2a2a2a)";
@@ -1545,13 +1569,13 @@
                         title.innerText = "لوحة قيادة الكابتن 👨‍🏫";
                         badge.innerText = "مدير المنظومة";
                         badge.style.background = "linear-gradient(to right, #e53935, #b71c1c)";
-                    } else if (goal.includes('VIP')) {
+                    } else if (goal.indexOf('VIP') !== -1) {
                         banner.style.background = "linear-gradient(135deg, #1a1500, #4d3d00)";
                         banner.style.backgroundImage = "none";
                         title.innerText = "نظام VIP الملكي ⭐";
                         badge.innerText = "نظام VIP";
                         badge.style.background = "linear-gradient(to right, #ffb300, #ff8f00)";
-                    } else if (goal.includes('تغذيه')) {
+                    } else if (goal.indexOf('تغذيه') !== -1) {
                         banner.style.background = "linear-gradient(135deg, #0a140a, #1b5c2a)";
                         banner.style.backgroundImage = "none";
                         title.innerText = "نظام التغذية المتكامل 🥗";
@@ -1573,14 +1597,14 @@
                     document.getElementById('me-goal-badge').innerText = (data.role === 'admin' ? '👑 كابتن الفريق' : (data.goal || 'بطل فير جيم'));
                     if (data.photo) document.getElementById('me-photo').src = data.photo;
 
-                    const marquee = document.getElementById('coach-marquee');
+                    var marquee = document.getElementById('coach-marquee');
                     if (marquee) {
                         if (data.captainNotes) {
                             marquee.classList.remove('hidden');
                             marquee.innerText = "📢 ملاحظات الكابتن: " + data.captainNotes;
                         } else { marquee.classList.add('hidden'); }
                     }
-                    const noteBox = document.getElementById('captain-notes-box');
+                    var noteBox = document.getElementById('captain-notes-box');
                     if (noteBox) {
                         if (data.captainNotes) {
                             noteBox.classList.remove('hidden');
@@ -1623,17 +1647,39 @@
             const g = currentUser.goal || ""; let html = "";
             if (g.includes('VIP')) { document.getElementById('vip-toggle-container').classList.remove('hidden'); switchVipMode('workout'); extras.classList.remove('hidden'); loadFoodPrefs(); loadRecipes(); }
             else {
-                if (g.includes('تدريب')) html += PLAN_CATS.map(c => `<button class="sub-btn" style="background:#1a1a1a; color:var(--primary); font-size:12px;" onclick="viewCatPlan('${c}')">🏋️ ${c}</button>`).join('');
-                if (g.includes('تغذيه')) { html += NUTRI_CATS.map(c => `<button class="sub-btn" style="background:#1a1a1a; color:#4caf50; font-size:12px;" onclick="viewCatPlan('${c}')">🥗 ${c}</button>`).join(''); extras.classList.remove('hidden'); loadFoodPrefs(); loadRecipes(); }
+                if (g.indexOf('تدريب') !== -1) {
+                    html += PLAN_CATS.map(function(c) {
+                        return '<button class="sub-btn" style="background:#1a1a1a; color:var(--primary); font-size:12px;" onclick="viewCatPlan(\'' + c + '\')">🏋️ ' + c + '</button>';
+                    }).join('');
+                }
+                if (g.indexOf('تغذيه') !== -1) {
+                    html += NUTRI_CATS.map(function(c) {
+                        return '<button class="sub-btn" style="background:#1a1a1a; color:#4caf50; font-size:12px;" onclick="viewCatPlan(\'' + c + '\')">🥗 ' + c + '</button>';
+                    }).join('');
+                    extras.classList.remove('hidden');
+                    loadFoodPrefs();
+                    loadRecipes();
+                }
             }
             container.innerHTML = html;
             // Removed redundant db.get() call as currentUser already has the workoutPlan
         }
 
         function switchVipMode(mode) {
-            const container = document.getElementById('user-plan-tabs'); const btnW = document.getElementById('btn-show-workout'); const btnN = document.getElementById('btn-show-nutrition');
-            if (mode === 'workout') { btnW.style.background = 'var(--primary)'; btnN.style.background = 'transparent'; container.innerHTML = PLAN_CATS.map(c => `<button class="sub-btn" style="background:rgba(229,57,53,0.1); color:var(--primary);" onclick="viewCatPlan('${c}')">🏋️ ${c}</button>`).join(''); }
-            else { btnN.style.background = '#4caf50'; btnW.style.background = 'transparent'; container.innerHTML = NUTRI_CATS.map(c => `<button class="sub-btn" style="background:rgba(76,175,80,0.1); color:#4caf50;" onclick="viewCatPlan('${c}')">🥗 ${c}</button>`).join(''); }
+            var container = document.getElementById('user-plan-tabs'); var btnW = document.getElementById('btn-show-workout'); var btnN = document.getElementById('btn-show-nutrition');
+            if (mode === 'workout') {
+                btnW.style.background = 'var(--primary)';
+                btnN.style.background = 'transparent';
+                container.innerHTML = PLAN_CATS.map(function(c) {
+                    return '<button class="sub-btn" style="background:rgba(229,57,53,0.1); color:var(--primary);" onclick="viewCatPlan(\'' + c + '\')">🏋️ ' + c + '</button>';
+                }).join('');
+            } else {
+                btnN.style.background = '#4caf50';
+                btnW.style.background = 'transparent';
+                container.innerHTML = NUTRI_CATS.map(function(c) {
+                    return '<button class="sub-btn" style="background:rgba(76,175,80,0.1); color:#4caf50;" onclick="viewCatPlan(\'' + c + '\')">🥗 ' + c + '</button>';
+                }).join('');
+            }
         }
 
         function viewCatPlan(cat) {
@@ -1647,30 +1693,29 @@
             document.getElementById('vip-timer-box').classList.toggle('hidden', isNutri);
 
             if (isNutri) {
-                let tableHtml = `
-                    <div style="background:rgba(255,179,0,0.05); border:1px solid rgba(255,179,0,0.2); border-radius:20px; padding:20px; margin-bottom:15px; position:relative; overflow:hidden;">
-                        <h5 style="color:var(--accent); margin-bottom:15px; display:flex; align-items:center; gap:8px;">🥗 البرنامج الغذائي: ${cat}</h5>
-                        <div style="overflow-x:auto; border-radius:15px; border:1px solid #222;">
-                            <table style="width:100%; border-collapse:collapse; text-align:right;">
-                                <thead>
-                                    <tr style="background:#111; color:var(--accent); font-size:11px;">
-                                        <th style="padding:15px; border:1px solid #222;">نوع الأكل</th>
-                                        <th style="padding:15px; border:1px solid #222;">التفاصيل</th>
-                                        <th style="padding:15px; border:1px solid #222;">الكمية</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${exs.map(ex => `
-                                        <tr style="border-bottom:1px solid #222; transition:0.3s;" onmouseover="this.style.background='rgba(255,179,0,0.03)'" onmouseout="this.style.background='transparent'">
-                                            <td style="padding:15px; color:#fff; font-weight:bold; font-size:14px;">${ex.name}</td>
-                                            <td style="padding:15px; color:#aaa; font-size:13px;">${ex.note || '---'}</td>
-                                            <td style="padding:15px; color:var(--accent); font-weight:bold;">${ex.weight || 'حسب الرغبة'}</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>`;
+                var rowsHtml = exs.map(function(ex) {
+                    return '<tr style="border-bottom:1px solid #222; transition:0.3s;" onmouseover="this.style.background=\'rgba(255,179,0,0.03)\'" onmouseout="this.style.background=\'transparent\'">' +
+                                '<td style="padding:15px; color:#fff; font-weight:bold; font-size:14px;">' + ex.name + '</td>' +
+                                '<td style="padding:15px; color:#aaa; font-size:13px;">' + (ex.note || '---') + '</td>' +
+                                '<td style="padding:15px; color:var(--accent); font-weight:bold;">' + (ex.weight || 'حسب الرغبة') + '</td>' +
+                            '</tr>';
+                }).join('');
+
+                var tableHtml = '<div style="background:rgba(255,179,0,0.05); border:1px solid rgba(255,179,0,0.2); border-radius:20px; padding:20px; margin-bottom:15px; position:relative; overflow:hidden;">' +
+                        '<h5 style="color:var(--accent); margin-bottom:15px; display:flex; align-items:center; gap:8px;">🥗 البرنامج الغذائي: ' + cat + '</h5>' +
+                        '<div style="overflow-x:auto; border-radius:15px; border:1px solid #222;">' +
+                            '<table style="width:100%; border-collapse:collapse; text-align:right;">' +
+                                '<thead>' +
+                                    '<tr style="background:#111; color:var(--accent); font-size:11px;">' +
+                                        '<th style="padding:15px; border:1px solid #222;">نوع الأكل</th>' +
+                                        '<th style="padding:15px; border:1px solid #222;">التفاصيل</th>' +
+                                        '<th style="padding:15px; border:1px solid #222;">الكمية</th>' +
+                                    '</tr>' +
+                                '</thead>' +
+                                '<tbody>' + rowsHtml + '</tbody>' +
+                            '</table>' +
+                        '</div>' +
+                    '</div>';
 
                 if (!document.getElementById('plan-cards-container')) {
                     const c = document.createElement('div'); c.id = "plan-cards-container";
@@ -1681,40 +1726,48 @@
                 return;
             }
 
-            // جدول التمرين الثابت الشامل للموبايل بدون محرك
-            let tableHtml = `
-                <div style="background:rgba(0,0,0,0.2); border-radius:15px; border:1px solid #333; margin-bottom:20px; overflow:hidden;">
-                    <table style="width:100%; border-collapse:collapse; text-align:center; font-size:10px; table-layout:fixed;">
-                        <thead>
-                            <tr style="background:#111; color:#aaa; font-size:9px;">
-                                <th style="width:18%; border:1px solid #222; padding:5px 2px;">تمرين</th>
-                                <th style="width:8%; border:1px solid #222; padding:5px 2px;">نوع</th>
-                                ${[1, 2, 3, 4, 5, 6].map(n => `<th style="width:9%; border:1px solid #222; padding:5px 2px;">${n}</th>`).join('')}
-                                <th style="width:15%; border:1px solid #222; padding:5px 2px;">تم</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${exs.map((ex, i) => `
-                                <tr>
-                                    <td rowspan="2" style="border:1px solid #222; font-weight:bold; color:#fff; padding:3px; word-wrap:break-word; max-width:100%;">
-                                        ${ex.name}<br><span style="color:var(--primary); font-size:8px;">(${ex.sets} مج)</span>
-                                    </td>
-                                    <td style="border:1px solid #222; color:var(--accent); font-size:8px;">وزن</td>
-                                    ${[1, 2, 3, 4, 5, 6].map(n => `<td style="border:1px solid #222; color:var(--accent); font-weight:bold; padding:2px;">${ex['w' + n] || '-'}</td>`).join('')}
-                                    <td rowspan="2" style="border:1px solid #222; padding:2px;">
-                                        <input type="checkbox" style="width:16px; height:16px; accent-color:var(--success);" ${ex.done ? 'checked' : ''} onchange="toggleExDone('${cat}', ${i}, this.checked, '${ex.name}')">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="border:1px solid #222; color:var(--success); font-size:8px;">عدة</td>
-                                    ${[1, 2, 3, 4, 5, 6].map(n => `<td style="border:1px solid #222; color:var(--success); font-weight:bold; padding:2px;">${ex['r' + n] || '-'}</td>`).join('')}
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-                <button onclick="startRestTimer(60)" class="btn-full" style="background:#222; font-size:13px; padding:12px; border:1px solid #333; border-radius:15px; margin-top:5px; color:#aaa;">⏱️ ابدأ مؤقت الراحة (60 ثانية)</button>
-            `;
+            var headCells = [1, 2, 3, 4, 5, 6].map(function(n) {
+                return '<th style="width:9%; border:1px solid #222; padding:5px 2px;">' + n + '</th>';
+            }).join('');
+
+            var bodyRows = exs.map(function(ex, i) {
+                var weightCells = [1, 2, 3, 4, 5, 6].map(function(n) {
+                    return '<td style="border:1px solid #222; color:var(--accent); font-weight:bold; padding:2px;">' + (ex['w' + n] || '-') + '</td>';
+                }).join('');
+                var repCells = [1, 2, 3, 4, 5, 6].map(function(n) {
+                    return '<td style="border:1px solid #222; color:var(--success); font-weight:bold; padding:2px;">' + (ex['r' + n] || '-') + '</td>';
+                }).join('');
+
+                return '<tr>' +
+                            '<td rowspan="2" style="border:1px solid #222; font-weight:bold; color:#fff; padding:3px; word-wrap:break-word; max-width:100%;">' +
+                                ex.name + '<br><span style="color:var(--primary); font-size:8px;">(' + ex.sets + ' مج)</span>' +
+                            '</td>' +
+                            '<td style="border:1px solid #222; color:var(--accent); font-size:8px;">وزن</td>' +
+                            weightCells +
+                            '<td rowspan="2" style="border:1px solid #222; padding:2px;">' +
+                                '<input type="checkbox" style="width:16px; height:16px; accent-color:var(--success);" ' + (ex.done ? 'checked' : '') + ' onchange="toggleExDone(\'' + cat + '\', ' + i + ', this.checked, \'' + ex.name + '\')">' +
+                            '</td>' +
+                        '</tr>' +
+                        '<tr>' +
+                            '<td style="border:1px solid #222; color:var(--success); font-size:8px;">عدة</td>' +
+                            repCells +
+                        '</tr>';
+            }).join('');
+
+            var tableHtml = '<div style="background:rgba(0,0,0,0.2); border-radius:15px; border:1px solid #333; margin-bottom:20px; overflow:hidden;">' +
+                    '<table style="width:100%; border-collapse:collapse; text-align:center; font-size:10px; table-layout:fixed;">' +
+                        '<thead>' +
+                            '<tr style="background:#111; color:#aaa; font-size:9px;">' +
+                                '<th style="width:18%; border:1px solid #222; padding:5px 2px;">تمرين</th>' +
+                                '<th style="width:8%; border:1px solid #222; padding:5px 2px;">نوع</th>' +
+                                headCells +
+                                '<th style="width:15%; border:1px solid #222; padding:5px 2px;">تم</th>' +
+                            '</tr>' +
+                        '</thead>' +
+                        '<tbody>' + bodyRows + '</tbody>' +
+                    '</table>' +
+                '</div>' +
+                '<button onclick="startRestTimer(60)" class="btn-full" style="background:#222; font-size:13px; padding:12px; border:1px solid #333; border-radius:15px; margin-top:5px; color:#aaa;">⏱️ ابدأ مؤقت الراحة (60 ثانية)</button>';
 
             if (!document.getElementById('plan-cards-container')) {
                 const c = document.createElement('div'); c.id = "plan-cards-container";
@@ -1733,12 +1786,12 @@
                 isWorkoutRunning = true;
                 box.style.background = "#ff3b30"; // تغيير اللون للأحمر عند البدء
                 finishBtn.classList.remove('hidden');
-                workoutInterval = setInterval(() => {
+                workoutInterval = setInterval(function() {
                     totalSeconds++;
-                    const h = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-                    const m = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-                    const s = (totalSeconds % 60).toString().padStart(2, '0');
-                    display.innerText = `${h}:${m}:${s}`;
+                    var h = Math.floor(totalSeconds / 3600).toString(); if(h.length<2) h='0'+h;
+                    var m = Math.floor((totalSeconds % 3600) / 60).toString(); if(m.length<2) m='0'+m;
+                    var s = (totalSeconds % 60).toString(); if(s.length<2) s='0'+s;
+                    display.innerText = h + ":" + m + ":" + s;
                 }, 1000);
                 Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'بدأ وقت التمرين 🔥', showConfirmButton: false, timer: 1500, background: '#1e1e1e', color: '#fff' });
             } else {
@@ -1759,9 +1812,9 @@
             document.getElementById('finish-workout-btn').classList.add('hidden');
 
             // تصفير كل علامات الصح في جدول التمرين
-            for (let cat in currentPlanData) {
-                if (Array.isArray(currentPlanData[cat])) {
-                    currentPlanData[cat].forEach(ex => ex.done = false);
+            for (var cKey in currentPlanData) {
+                if (Array.isArray(currentPlanData[cKey])) {
+                    currentPlanData[cKey].forEach(function(ex) { ex.done = false; });
                 }
             }
             await db.collection('users').doc(currentUser.phone).update({
@@ -1812,9 +1865,9 @@
                     let targetDoc = null;
                     const twoHoursAgo = Date.now() - (2 * 60 * 60 * 1000);
 
-                    snap.forEach(doc => {
-                        const data = doc.data();
-                        const ts = data.ts ? data.ts.toMillis() : 0;
+                    snap.forEach(function(doc) {
+                        var data = doc.data();
+                        var ts = data.ts ? data.ts.toMillis() : 0;
                         if (ts > twoHoursAgo) {
                             if (!targetDoc || ts > targetDoc.data().ts.toMillis()) targetDoc = doc;
                         }
@@ -1840,11 +1893,46 @@
             }
         }
 
-        const CATS = { 'وجبة': ['فطار', 'غداء', 'عشاء', 'سناك', 'فيتامينات ومكملات'], 'تمرين': ['بنج', 'ظهر', 'كتف', 'دراع', 'رجل', 'بطن'] }; let cType = "", cSub = "";
-        function openLogger(t) { cType = t; cSub = ""; finalBase64 = ""; document.getElementById('logger-title').innerText = "تسجيل " + t; document.getElementById('logger-modal').classList.remove('hidden'); document.getElementById('img-preview').classList.add('hidden'); document.getElementById('log-val').value = ""; document.getElementById('log-note').value = ""; if (CATS[t]) { document.getElementById('category-menu').classList.remove('hidden'); document.getElementById('log-inputs').classList.add('hidden'); document.getElementById('category-btns').innerHTML = CATS[t].map(s => `<button class="track-btn" onclick="setSub('${s}')">${s}</button>`).join(''); } else showInputs(); }
+        var CATS = { 'وجبة': ['فطار', 'غداء', 'عشاء', 'سناك', 'فيتامينات ومكملات'], 'تمرين': ['بنج', 'ظهر', 'كتف', 'دراع', 'رجل', 'بطن'] }; var cType = "", cSub = "";
+        function openLogger(t) {
+            cType = t; cSub = ""; finalBase64 = "";
+            document.getElementById('logger-title').innerText = "تسجيل " + t;
+            document.getElementById('logger-modal').classList.remove('hidden');
+            document.getElementById('img-preview').classList.add('hidden');
+            document.getElementById('log-val').value = "";
+            document.getElementById('log-note').value = "";
+            if (CATS[t]) {
+                document.getElementById('category-menu').classList.remove('hidden');
+                document.getElementById('log-inputs').classList.add('hidden');
+                document.getElementById('category-btns').innerHTML = CATS[t].map(function(s) {
+                    return '<button class="track-btn" onclick="setSub(\'' + s + '\')">' + s + '</button>';
+                }).join('');
+            } else {
+                showInputs();
+            }
+        }
         function setSub(s) { cSub = s; if (cType === 'تمرين') { closeLogger(); openWorkoutTable(s); } else showInputs(); }
         function showInputs() { document.getElementById('category-menu').classList.add('hidden'); document.getElementById('log-inputs').classList.remove('hidden'); document.getElementById('file-wrapper').classList.toggle('hidden', cType !== 'صور'); }
-        function handleImageProcessing(input) { if (input.files[0]) { const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); canvas.width = 600; canvas.height = (img.height / img.width) * 600; ctx.drawImage(img, 0, 0, 600, canvas.height); finalBase64 = canvas.toDataURL('image/jpeg', 0.5); document.getElementById('img-preview').src = finalBase64; document.getElementById('img-preview').classList.remove('hidden'); }; img.src = e.target.result; }; reader.readAsDataURL(input.files[0]); } }
+        function handleImageProcessing(input) {
+            if (input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = new Image();
+                    img.onload = function() {
+                        var canvas = document.createElement('canvas');
+                        var ctx = canvas.getContext('2d');
+                        canvas.width = 600;
+                        canvas.height = (img.height / img.width) * 600;
+                        ctx.drawImage(img, 0, 0, 600, canvas.height);
+                        finalBase64 = canvas.toDataURL('image/jpeg', 0.5);
+                        document.getElementById('img-preview').src = finalBase64;
+                        document.getElementById('img-preview').classList.remove('hidden');
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
         async function saveLog() {
             const v = document.getElementById('log-val').value;
             const n = document.getElementById('log-note').value;
@@ -1856,15 +1944,21 @@
         function closeLogger() { document.getElementById('logger-modal').classList.add('hidden'); }
         function autosaveWorkoutDraft() {
             if (!currentUser) return;
-            const cards = document.querySelectorAll('.workout-card-input');
-            let draft = [];
-            cards.forEach(card => {
-                let data = { name: card.querySelector('.ex-name').value, sets: card.querySelector('.ex-sets').value, w: [], r: [] };
-                for (let i = 1; i <= 6; i++) {
+            var cards = document.querySelectorAll('.workout-card-input');
+            var draft = [];
+            cards.forEach(function(card) {
+                var data = { name: card.querySelector('.ex-name').value, sets: card.querySelector('.ex-sets').value, w: [], r: [] };
+                for (var i = 1; i <= 6; i++) {
                     data.w.push(card.querySelector('.w' + i).value || "");
                     data.r.push(card.querySelector('.r' + i).value || "");
                 }
-                if(data.name || data.w.some(v => v !== "") || data.r.some(v => v !== "")) {
+                var hasAnyData = false;
+                if (data.name) hasAnyData = true;
+                else {
+                    for (var j = 0; j < data.w.length; j++) { if (data.w[j] !== "") { hasAnyData = true; break; } }
+                    for (var k = 0; k < data.r.length; k++) { if (data.r[k] !== "") { hasAnyData = true; break; } }
+                }
+                if (hasAnyData) {
                     draft.push(data);
                 }
             });
@@ -1879,9 +1973,9 @@
             const draftStr = localStorage.getItem('firegym_draft_' + currentUser.phone + '_' + s);
             if (draftStr) {
                 try {
-                    const draft = JSON.parse(draftStr);
+                    var draft = JSON.parse(draftStr);
                     if (draft && draft.length > 0) {
-                        draft.forEach(ex => addExerciseRow(ex));
+                        draft.forEach(function(ex) { addExerciseRow(ex); });
                         return;
                     }
                 } catch(e) {}
@@ -1889,33 +1983,36 @@
             addExerciseRow();
         }
 
-        function addExerciseRow(exData = null) {
-            const container = document.getElementById('exercise-rows');
-            const card = document.createElement('div');
+        function addExerciseRow(exData) {
+            exData = exData || null;
+            var container = document.getElementById('exercise-rows');
+            var card = document.createElement('div');
             card.className = "workout-card-input";
-            card.style = "background:#161616; border:1px solid #333; border-radius:20px; padding:20px; position:relative; margin-bottom:20px; border-top:4px solid var(--primary);";
+            card.style.cssText = "background:#161616; border:1px solid #333; border-radius:20px; padding:20px; position:relative; margin-bottom:20px; border-top:4px solid var(--primary);";
             
-            let nameVal = exData ? (exData.name || '') : '';
-            let setsVal = exData ? (exData.sets || '4') : '4';
+            var nameVal = exData ? (exData.name || '') : '';
+            var setsVal = exData ? (exData.sets || '4') : '4';
 
-            card.innerHTML = `
-                <div style="position:absolute; left:12px; top:12px; color:#ff3b30; cursor:pointer; font-size:24px;" onclick="this.parentElement.remove(); autosaveWorkoutDraft();">🗑️</div>
-                <div style="margin-bottom:20px;">
-                    <label style="color:var(--primary); font-weight:bold;">اسم التمرين</label>
-                    <input type="text" class="ex-name" placeholder="مثلاً: بنج عالي بالدبل" value="${nameVal}" style="font-size:18px !important; text-align:right !important;" oninput="autosaveWorkoutDraft()">
-                </div>
-                <div style="margin-bottom:15px; width:100px;"><label>المجموعات</label><input type="number" class="ex-sets" value="${setsVal}" oninput="autosaveWorkoutDraft()"></div>
-                
-                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; background:#000; padding:15px; border-radius:15px; border:1px solid #222;">
-                    ${[1, 2, 3, 4, 5, 6].map(n => `
-                        <div style="border-bottom:1px solid #222; padding-bottom:8px;">
-                            <label style="font-size:8px; text-align:center;">مجموعة ${n}</label>
-                            <input type="text" class="w${n}" placeholder="وزن" value="${exData && exData.w && exData.w[n-1] ? exData.w[n-1] : ''}" style="padding:6px !important; font-size:12px !important; margin-bottom:5px;" oninput="autosaveWorkoutDraft()">
-                            <input type="text" class="r${n}" placeholder="عدات" value="${exData && exData.r && exData.r[n-1] ? exData.r[n-1] : ''}" style="padding:6px !important; font-size:12px !important; border-color:var(--success) !important;" oninput="autosaveWorkoutDraft()">
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+            var cellsHtml = [1, 2, 3, 4, 5, 6].map(function(n) {
+                var wVal = (exData && exData.w && exData.w[n-1]) ? exData.w[n-1] : '';
+                var rVal = (exData && exData.r && exData.r[n-1]) ? exData.r[n-1] : '';
+                return '<div style="border-bottom:1px solid #222; padding-bottom:8px;">' +
+                            '<label style="font-size:8px; text-align:center;">مجموعة ' + n + '</label>' +
+                            '<input type="text" class="w' + n + '" placeholder="وزن" value="' + wVal + '" style="padding:6px !important; font-size:12px !important; margin-bottom:5px;" oninput="autosaveWorkoutDraft()">' +
+                            '<input type="text" class="r' + n + '" placeholder="عدات" value="' + rVal + '" style="padding:6px !important; font-size:12px !important; border-color:var(--success) !important;" oninput="autosaveWorkoutDraft()">' +
+                        '</div>';
+            }).join('');
+
+            card.innerHTML = '<div style="position:absolute; left:12px; top:12px; color:#ff3b30; cursor:pointer; font-size:24px;" onclick="this.parentElement.remove(); autosaveWorkoutDraft();">🗑️</div>' +
+                '<div style="margin-bottom:20px;">' +
+                    '<label style="color:var(--primary); font-weight:bold;">اسم التمرين</label>' +
+                    '<input type="text" class="ex-name" placeholder="مثلاً: بنج عالي بالدبل" value="' + nameVal + '" style="font-size:18px !important; text-align:right !important;" oninput="autosaveWorkoutDraft()">' +
+                '</div>' +
+                '<div style="margin-bottom:15px; width:100px;"><label>المجموعات</label><input type="number" class="ex-sets" value="' + setsVal + '" oninput="autosaveWorkoutDraft()"></div>' +
+                '<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; background:#000; padding:15px; border-radius:15px; border:1px solid #222;">' +
+                    cellsHtml +
+                '</div>';
+
             container.appendChild(card);
             autosaveWorkoutDraft();
         }
@@ -1923,11 +2020,12 @@
         async function saveWorkoutTable() {
             const cards = document.querySelectorAll('.workout-card-input');
             let exs = [];
-            cards.forEach(card => {
-                const name = card.querySelector('.ex-name').value;
+            cards.forEach(function(card) {
+                var nameInput = card.querySelector('.ex-name');
+                var name = nameInput ? nameInput.value : '';
                 if (name) {
-                    let data = { name, sets: card.querySelector('.ex-sets').value, w: [], r: [] };
-                    for (let i = 1; i <= 6; i++) {
+                    var data = { name: name, sets: card.querySelector('.ex-sets').value, w: [], r: [] };
+                    for (var i = 1; i <= 6; i++) {
                         data.w.push(card.querySelector('.w' + i).value || "-");
                         data.r.push(card.querySelector('.r' + i).value || "-");
                     }
@@ -1975,18 +2073,22 @@
             if (!list) return;
 
             const snap = await db.collection('logs').where('uPhone', '==', phone).get();
-            let arr = []; snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-            arr.sort((a, b) => {
-                const aTs = (a.ts && a.ts.seconds) ? a.ts.seconds : 0;
-                const bTs = (b.ts && b.ts.seconds) ? b.ts.seconds : 0;
+            var arr = []; snap.forEach(function(d) {
+                var data = d.data();
+                data.id = d.id;
+                arr.push(data);
+            });
+            arr.sort(function(a, b) {
+                var aTs = (a.ts && a.ts.seconds) ? a.ts.seconds : 0;
+                var bTs = (b.ts && b.ts.seconds) ? b.ts.seconds : 0;
                 return bTs - aTs;
             });
 
             let months = {};
-            arr.forEach(d => {
-                const dateObj = d.ts ? d.ts.toDate() : new Date();
-                const monthStr = dateObj.toLocaleDateString('ar-EG', { month: 'long', year: 'numeric' });
-                const dayStr = dateObj.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long' });
+            arr.forEach(function(d) {
+                var dateObj = d.ts ? d.ts.toDate() : new Date();
+                var monthStr = dateObj.toLocaleDateString('ar-EG', { month: 'long', year: 'numeric' });
+                var dayStr = dateObj.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long' });
 
                 if (!months[monthStr]) months[monthStr] = {};
                 if (!months[monthStr][dayStr]) months[monthStr][dayStr] = [];
@@ -1995,56 +2097,61 @@
 
             let h = "";
             let mIdx = 0;
-            Object.keys(months).forEach(monthStr => {
-                const daysObj = months[monthStr];
-                const isMonthOpen = (mIdx === 0) ? "" : "hidden";
-                const chevronM = (mIdx === 0) ? "▲" : "▼";
+            Object.keys(months).forEach(function(monthStr) {
+                var daysObj = months[monthStr];
+                var isMonthOpen = (mIdx === 0) ? "" : "hidden";
+                var chevronM = (mIdx === 0) ? "▲" : "▼";
                 
-                h += `
-                <div style="background:rgba(255,255,255,0.02); border:1px solid #333; border-radius:15px; margin-bottom:15px; overflow:hidden;">
-                    <div onclick="const e=document.getElementById('m-${mIdx}-container'); e.classList.toggle('hidden'); this.querySelector('.chv').innerText=e.classList.contains('hidden')?'▼':'▲';" style="padding:15px; background:linear-gradient(45deg, #111, #1a1a1a); display:flex; justify-content:space-between; align-items:center; cursor:pointer; border-bottom:1px solid #222;">
-                        <b style="color:var(--accent); font-size:16px;">📁 شهر ${monthStr}</b>
-                        <span class="chv" style="color:#777; font-size:12px;">${chevronM}</span>
-                    </div>
-                    <div id="m-${mIdx}-container" class="${isMonthOpen}" style="padding:12px;">
-                `;
+                h += '<div style="background:rgba(255,255,255,0.02); border:1px solid #333; border-radius:15px; margin-bottom:15px; overflow:hidden;">' +
+                    '<div onclick="const e=document.getElementById(\'m-' + mIdx + '-container\'); e.classList.toggle(\'hidden\'); this.querySelector(\'.chv\').innerText=e.classList.contains(\'hidden\')?\'▼\':\'▲\';" style="padding:15px; background:linear-gradient(45deg, #111, #1a1a1a); display:flex; justify-content:space-between; align-items:center; cursor:pointer; border-bottom:1px solid #222;">' +
+                        '<b style="color:var(--accent); font-size:16px;">📁 شهر ' + monthStr + '</b>' +
+                        '<span class="chv" style="color:#777; font-size:12px;">' + chevronM + '</span>' +
+                    '</div>' +
+                    '<div id="m-' + mIdx + '-container" class="' + isMonthOpen + '" style="padding:12px;">';
                 
-                let dIdx = 0;
-                Object.keys(daysObj).forEach(dayStr => {
-                    const logs = daysObj[dayStr];
-                    const isDayOpen = (mIdx === 0 && dIdx === 0) ? "" : "hidden";
-                    const chevronD = (mIdx === 0 && dIdx === 0) ? "▲" : "▼";
+                var dIdx = 0;
+                Object.keys(daysObj).forEach(function(dayStr) {
+                    var logs = daysObj[dayStr];
+                    var isDayOpen = (mIdx === 0 && dIdx === 0) ? "" : "hidden";
+                    var chevronD = (mIdx === 0 && dIdx === 0) ? "▲" : "▼";
 
-                    h += `
-                    <div style="margin-bottom:12px; background:rgba(0,0,0,0.3); border-radius:12px; border:1px dashed #333; overflow:hidden;">
-                        <div onclick="const e=document.getElementById('m-${mIdx}-d-${dIdx}-container'); e.classList.toggle('hidden'); this.querySelector('.chv').innerText=e.classList.contains('hidden')?'▼':'▲';" style="padding:12px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:rgba(0,0,0,0.5);">
-                            <b style="color:#ddd; font-size:14px;">🗓️ يوم ${dayStr}</b>
-                            <span class="chv" style="color:#555; font-size:10px;">${chevronD}</span>
-                        </div>
-                        <div id="m-${mIdx}-d-${dIdx}-container" class="${isDayOpen}" style="padding:15px 10px 5px;">
-                    `;
+                    h += '<div style="margin-bottom:12px; background:rgba(0,0,0,0.3); border-radius:12px; border:1px dashed #333; overflow:hidden;">' +
+                            '<div onclick="const e=document.getElementById(\'m-' + mIdx + '-d-' + dIdx + '-container\'); e.classList.toggle(\'hidden\'); this.querySelector(\'.chv\').innerText=e.classList.contains(\'hidden\')?\'▼\':\'▲\';" style="padding:12px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:rgba(0,0,0,0.5);">' +
+                                '<b style="color:#ddd; font-size:14px;">🗓️ يوم ' + dayStr + '</b>' +
+                                '<span class="chv" style="color:#555; font-size:10px;">' + chevronD + '</span>' +
+                            '</div>' +
+                            '<div id="m-' + mIdx + '-d-' + dIdx + '-container" class="' + isDayOpen + '" style="padding:15px 10px 5px;">';
 
-                    logs.forEach(d => {
-                        const icon = { 'وزن': '⚖️', 'وجبة': '🥗', 'تمرين': '💪', 'صور': '📸', 'مياه': '💧', 'وقت التمرين': '⏱️' }[d.type] || '✨';
-                        const color = { 'وزن': '#ff3b30', 'وجبة': '#4caf50', 'تمرين': '#5856d6', 'صور': '#ff9500', 'مياه': '#007aff', 'وقت التمرين': '#ffcc00' }[d.type] || '#fff';
-                        let valHtml = d.val;
-                        if (d.type === 'صور') valHtml = `<img src="${d.val}" class="log-img">`;
-                        else if (d.type === 'تمرين' && d.val.startsWith('[')) {
+                    logs.forEach(function(d) {
+                        var icon = ({ 'وزن': '⚖️', 'وجبة': '🥗', 'تمرين': '💪', 'صور': '📸', 'مياه': '💧', 'وقت التمرين': '⏱️' }[d.type]) || '✨';
+                        var color = ({ 'وزن': '#ff3b30', 'وجبة': '#4caf50', 'تمرين': '#5856d6', 'صور': '#ff9500', 'مياه': '#007aff', 'وقت التمرين': '#ffcc00' }[d.type]) || '#fff';
+                        var valHtml = d.val;
+                        if (d.type === 'صور') valHtml = '<img src="' + d.val + '" class="log-img">';
+                        else if (d.type === 'تمرين' && d.val && d.val.indexOf('[') === 0) {
                             try {
-                                const exs = JSON.parse(d.val);
-                                valHtml = `
-                                    <div style="background:rgba(0,0,0,0.2); border-radius:15px; border:1px solid #333; margin-top:15px; overflow:hidden;">
-                                        <table style="width:100%; border-collapse:collapse; text-align:center; font-size:10px; table-layout:fixed;">
-                                            <thead>
-                                                <tr style="background:#111; color:#aaa; font-size:9px;">
-                                                    <th style="width:25%; border:1px solid #222; padding:5px 2px;">تمرين</th>
-                                                    <th style="width:10%; border:1px solid #222; padding:5px 2px;">نوع</th>
-                                                    ${[1, 2, 3, 4, 5, 6].map(n => `<th style="width:10%; border:1px solid #222; padding:5px 2px;">${n}</th>`).join('')}
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                ${exs.map(ex => `
-                                                    <tr>
+                                var exsArr = JSON.parse(d.val);
+                                var headCells = [1, 2, 3, 4, 5, 6].map(function(n) {
+                                    return '<th style="width:10%; border:1px solid #222; padding:5px 2px;">' + n + '</th>';
+                                }).join('');
+                                var bodyRows = exsArr.map(function(ex) {
+                                    var weightCells = [1, 2, 3, 4, 5, 6].map(function(n) {
+                                        return '<td style="border:1px solid #222; color:var(--accent); font-weight:bold; padding:2px;">' + (ex.w && ex.w[n-1] ? ex.w[n-1] : '-') + '</td>';
+                                    }).join('');
+                                    return '<tr><td style="border:1px solid #222; font-weight:bold; color:#fff; padding:3px; word-wrap:break-word;">' + ex.name + '</td><td style="border:1px solid #222; color:var(--accent); font-size:8px;">وزن</td>' + weightCells + '</tr>';
+                                }).join('');
+
+                                valHtml = '<div style="background:rgba(0,0,0,0.2); border-radius:15px; border:1px solid #333; margin-top:15px; overflow:hidden;">' +
+                                                '<table style="width:100%; border-collapse:collapse; text-align:center; font-size:10px; table-layout:fixed;">' +
+                                                    '<thead>' +
+                                                        '<tr style="background:#111; color:#aaa; font-size:9px;">' +
+                                                            '<th style="width:25%; border:1px solid #222; padding:5px 2px;">تمرين</th>' +
+                                                            '<th style="width:10%; border:1px solid #222; padding:5px 2px;">نوع</th>' +
+                                                            headCells +
+                                                        '</tr>' +
+                                                    '</thead>' +
+                                                    '<tbody>' + bodyRows + '</tbody>' +
+                                                '</table>' +
+                                            '</div>';
                                                         <td rowspan="2" style="border:1px solid #222; font-weight:bold; color:#fff; word-wrap:break-word; padding:3px;">
                                                             ${ex.name}
                                                             <div style="font-size:8px; color:#555; margin-top:2px;">🕒 ${ex.time || '--:--'}</div>
@@ -2090,7 +2197,12 @@
             list.innerHTML = h || '<p style="text-align:center; padding:50px; color:#444;">مفيش نشاط مسجل لسه.. ابدأ يا بطل! 🔥</p>';
         }
 
-        async function deleteLog(id, phone, containerId) { if (confirm('حذف؟')) { await db.collection('logs').doc(id).delete(); fetchAndRenderLogs(phone || currentUser.phone, containerId || 'user-history-list'); } }
+        async function deleteLog(id, phone, containerId) {
+            if (confirm('حذف؟')) {
+                await db.collection('logs').doc(id).delete();
+                fetchAndRenderLogs(phone || currentUser.phone, containerId || 'user-history-list');
+            }
+        }
 
         // Admin Functions
         // دالة تحميل بيانات الأدمن
@@ -2098,24 +2210,27 @@
             const list = document.getElementById('all-users-list');
             const snap = await db.collection('users').orderBy('name').get();
             allUsersData = [];
-            snap.forEach(d => allUsersData.push({ id: d.id, ...d.data() }));
+            snap.forEach(function(d) {
+                var data = d.data();
+                data.id = d.id;
+                allUsersData.push(data);
+            });
             filterAdminUsers('all');
 
             const pSnap = await db.collection('users').where('status', '==', 'pending').get();
-            let ph = "";
-            pSnap.forEach(d => {
-                const u = d.data();
-                ph += `
-                <div class="card" style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02);">
-                    <div>
-                        <b style="color:#fff;">${u.name}</b>
-                        <div style="font-size:10px; color:var(--accent);">${u.goal || 'بطل جديد'}</div>
-                    </div>
-                    <div style="display:flex; gap:8px;">
-                        <button onclick="openProfile('${d.id}')" style="background:#222; border:1px solid #444; color:#fff; padding:8px 12px; border-radius:12px; font-size:11px; cursor:pointer;">تجهيز البطل ✍️</button>
-                        <button onclick="approveUser('${d.id}')" style="background:var(--success); color:#000; border:none; padding:8px 15px; border-radius:12px; font-weight:bold; font-size:11px; cursor:pointer;">تفعيل ✅</button>
-                    </div>
-                </div>`;
+            var ph = "";
+            pSnap.forEach(function(d) {
+                var u = d.data();
+                ph += '<div class="card" style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02);">' +
+                        '<div>' +
+                            '<b style="color:#fff;">' + u.name + '</b>' +
+                            '<div style="font-size:10px; color:var(--accent);">' + (u.goal || 'بطل جديد') + '</div>' +
+                        '</div>' +
+                        '<div style="display:flex; gap:8px;">' +
+                            '<button onclick="openProfile(\'' + d.id + '\')" style="background:#222; border:1px solid #444; color:#fff; padding:8px 12px; border-radius:12px; font-size:11px; cursor:pointer;">تجهيز البطل ✍️</button>' +
+                            '<button onclick="approveUser(\'' + d.id + '\')" style="background:var(--success); color:#000; border:none; padding:8px 15px; border-radius:12px; font-weight:bold; font-size:11px; cursor:pointer;">تفعيل ✅</button>' +
+                        '</div>' +
+                    '</div>';
             });
             document.getElementById('pending-users-list').innerHTML = ph || '<p style="text-align:center; padding:20px; color:#444; font-size:13px;">لا توجد طلبات معلقة حالياً.. الجيم هادئ ومستقر 🧘‍♂️</p>';
 
@@ -2126,24 +2241,23 @@
             let gh = "";
             let hasRequests = false;
 
-            gSnap.forEach(d => {
-                const u = d.data();
+            gSnap.forEach(function(d) {
+                var u = d.data();
                 // التأكد أن الـ pendingGoal ليس هو الهدف الحالي فعلاً
                 if (u.pendingGoal && u.pendingGoal !== u.goal) {
                     hasRequests = true;
-                    gh += `
-                    <div class="card" style="background:rgba(255,179,0,0.02); border:1px solid rgba(255,179,0,0.2); display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding:15px;">
-                        <div style="flex:1;">
-                            <b style="color:#fff; font-size:16px;">${u.name}</b>
-                            <div style="font-size:11px; color:#aaa; margin-top:4px;">
-                                النظام الحالي: <span style="color:#888;">${u.goal}</span> ➡️ <span style="color:var(--accent); font-weight:bold;">${u.pendingGoal}</span>
-                            </div>
-                        </div>
-                        <div style="display:flex; gap:8px;">
-                            <button onclick="approveGoalChange('${d.id}', '${u.pendingGoal}')" style="background:var(--success); color:#000; border:none; padding:8px 15px; border-radius:12px; font-weight:bold; font-size:11px; cursor:pointer;">موافقة ✅</button>
-                            <button onclick="rejectGoalChange('${d.id}')" style="background:rgba(255,59,48,0.1); color:#ff3b30; border:1px solid #ff3b30; padding:8px 15px; border-radius:12px; font-weight:bold; font-size:11px; cursor:pointer;">رفض ❌</button>
-                        </div>
-                    </div>`;
+                    gh += '<div class="card" style="background:rgba(255,179,0,0.02); border:1px solid rgba(255,179,0,0.2); display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding:15px;">' +
+                            '<div style="flex:1;">' +
+                                '<b style="color:#fff; font-size:16px;">' + u.name + '</b>' +
+                                '<div style="font-size:11px; color:#aaa; margin-top:4px;">' +
+                                    'النظام الحالي: <span style="color:#888;">' + u.goal + '</span> ➡️ <span style="color:var(--accent); font-weight:bold;">' + u.pendingGoal + '</span>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div style="display:flex; gap:8px;">' +
+                                '<button onclick="approveGoalChange(\'' + d.id + '\', \'' + u.pendingGoal + '\')" style="background:var(--success); color:#000; border:none; padding:8px 15px; border-radius:12px; font-weight:bold; font-size:11px; cursor:pointer;">موافقة ✅</button>' +
+                                '<button onclick="rejectGoalChange(\'' + d.id + '\')" style="background:rgba(255,59,48,0.1); color:#ff3b30; border:1px solid #ff3b30; padding:8px 15px; border-radius:12px; font-weight:bold; font-size:11px; cursor:pointer;">رفض ❌</button>' +
+                            '</div>' +
+                        '</div>';
                 }
             });
             gList.innerHTML = gh;
@@ -2159,29 +2273,30 @@
             const btns = document.querySelectorAll('#admin-user-filters button');
             btns.forEach(b => b.style.background = "#222");
 
-            let filtered = allUsersData.filter(u => u.status === 'approved');
+            var filtered = allUsersData.filter(function(u) { return u.status === 'approved'; });
             if (goal !== 'all') {
-                filtered = filtered.filter(u => u.goal === goal);
-                const activeBtn = Array.from(btns).find(b => b.innerText.includes(goal.replace('نظام ', '')));
+                filtered = filtered.filter(function(u) { return u.goal === goal; });
+                var activeBtn = null;
+                for(var i=0; i<btns.length; i++) { if(btns[i].innerText.indexOf(goal.replace('نظام ', '')) !== -1) { activeBtn = btns[i]; break; } }
                 if (activeBtn) activeBtn.style.background = "var(--primary)";
             } else { btns[0].style.background = "var(--primary)"; }
 
-            list.innerHTML = filtered.map(u => `
-                <div style="margin-bottom:12px; display:flex; gap:10px;">
-                    <button class="track-btn" style="flex:1; text-align:right; background:#1a1a1a; border:1px solid #333; padding:18px; border-radius:15px;" onclick="openProfile('${u.id}')">
-                        <b style="color:#fff; font-size:17px; display:block; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${u.name}</b>
-                        <small style="color:var(--accent); font-weight:bold;">${u.goal || ''}</small>
-                    </button>
-                    <button onclick="activeTarget='${u.id}'; viewSelectedUserLogs()" style="background:#333; border:1px solid #444; border-radius:15px; padding:0 15px; color:var(--accent); font-size:20px;">📜</button>
-                </div>
-            `).join('') || '<p style="text-align:center; padding:20px; color:#555;">مفيش أبطال هنا لسه.</p>';
+            list.innerHTML = filtered.map(function(u) {
+                return '<div style="margin-bottom:12px; display:flex; gap:10px;">' +
+                        '<button class="track-btn" style="flex:1; text-align:right; background:#1a1a1a; border:1px solid #333; padding:18px; border-radius:15px;" onclick="openProfile(\'' + u.id + '\')">' +
+                            '<b style="color:#fff; font-size:17px; display:block; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">' + u.name + '</b>' +
+                            '<small style="color:var(--accent); font-weight:bold;">' + (u.goal || '') + '</small>' +
+                        '</button>' +
+                        '<button onclick="activeTarget=\'' + u.id + '\'; viewSelectedUserLogs()" style="background:#333; border:1px solid #444; border-radius:15px; padding:0 15px; color:var(--accent); font-size:20px;">📜</button>' +
+                    '</div>';
+            }).join('') || '<p style="text-align:center; padding:20px; color:#555;">مفيش أبطال هنا لسه.</p>';
         }
 
         async function openProfile(id) {
             activeTarget = id;
             document.getElementById('profile-modal').dataset.activeId = id;
 
-            Swal.fire({ title: 'جاري تحميل الملف...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+            Swal.fire({ title: 'جاري تحميل الملف...', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); } });
 
             try {
                 const d = await db.collection('users').doc(id).get();
@@ -2201,12 +2316,12 @@
                 const prefs = data.foodPrefs || [];
                 if (prefs.length > 0) {
                     prefsBox.classList.remove('hidden');
-                    prefsDiv.innerHTML = prefs.map(p => `
-                        <div style="background:rgba(255,255,255,0.03); padding:8px 12px; border-radius:10px; margin-bottom:5px; border-right:3px solid ${p.status === 'like' ? '#4caf50' : '#ff3b30'}; display:flex; justify-content:space-between;">
-                            <span>${p.name}</span>
-                            <span>${p.status === 'like' ? '❤️' : '💔'}</span>
-                        </div>
-                    `).join('');
+                    prefsDiv.innerHTML = prefs.map(function(p) {
+                        return '<div style="background:rgba(255,255,255,0.03); padding:8px 12px; border-radius:10px; margin-bottom:5px; border-right:3px solid ' + (p.status === 'like' ? '#4caf50' : '#ff3b30') + '; display:flex; justify-content:space-between;">' +
+                                '<span>' + p.name + '</span>' +
+                                '<span>' + (p.status === 'like' ? '❤️' : '💔') + '</span>' +
+                            '</div>';
+                    }).join('');
                 } else {
                     prefsBox.classList.add('hidden');
                 }
@@ -2222,8 +2337,12 @@
                 document.getElementById('admin-workout-section').classList.toggle('hidden', isNutri && !isVIP);
                 document.getElementById('admin-nutri-section').classList.toggle('hidden', isTraining && !isVIP);
 
-                document.getElementById('admin-plan-cats-workout').innerHTML = PLAN_CATS.map(c => `<button class="sub-btn" style="background:#111; color:#ff3b30; border:1px solid #333;" onclick="editAdminPlan('${c}')">${c}</button>`).join('');
-                document.getElementById('admin-plan-cats-nutri').innerHTML = NUTRI_CATS.map(c => `<button class="sub-btn" style="background:#111; color:#4caf50; border:1px solid #333;" onclick="editAdminPlan('${c}')">${c}</button>`).join('');
+                document.getElementById('admin-plan-cats-workout').innerHTML = PLAN_CATS.map(function(c) {
+                    return '<button class="sub-btn" style="background:#111; color:#ff3b30; border:1px solid #333;" onclick="editAdminPlan(\'' + c + '\')">' + c + '</button>';
+                }).join('');
+                document.getElementById('admin-plan-cats-nutri').innerHTML = NUTRI_CATS.map(function(c) {
+                    return '<button class="sub-btn" style="background:#111; color:#4caf50; border:1px solid #333;" onclick="editAdminPlan(\'' + c + '\')">' + c + '</button>';
+                }).join('');
 
                 document.getElementById('admin-plan-editor').classList.add('hidden');
             } catch (e) {
@@ -2252,58 +2371,59 @@
             editingCat = cat;
             document.getElementById('admin-plan-editor').classList.remove('hidden');
             document.getElementById('editing-cat-name').innerText = "تعديل: " + cat;
-            const container = document.getElementById('admin-plan-rows');
+            var container = document.getElementById('admin-plan-rows');
             container.innerHTML = "";
-            const exs = currentPlanData[cat] || [];
-            exs.forEach(ex => addAdminPlanRow(ex));
+            var exs = currentPlanData[cat] || [];
+            exs.forEach(function(ex) { addAdminPlanRow(ex); });
             if (exs.length === 0) addAdminPlanRow();
             document.getElementById('admin-plan-editor').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function addAdminPlanRow(d = {}) {
-            const container = document.getElementById('admin-plan-rows');
-            const card = document.createElement('div');
+        function addAdminPlanRow(d) {
+            d = d || {};
+            var container = document.getElementById('admin-plan-rows');
+            var card = document.createElement('div');
             card.className = "plan-edit-card";
-            const isNutri = NUTRI_CATS.includes(editingCat);
+            var isNutri = NUTRI_CATS.indexOf(editingCat) !== -1;
 
-            card.style = "background:rgba(0,0,0,0.3); border:1px solid #333; border-radius:20px; padding:20px; position:relative; margin-bottom:20px; border-right:5px solid " + (isNutri ? '#4caf50' : 'var(--primary)') + ";";
+            card.style.cssText = "background:rgba(0,0,0,0.3); border:1px solid #333; border-radius:20px; padding:20px; position:relative; margin-bottom:20px; border-right:5px solid " + (isNutri ? '#4caf50' : 'var(--primary)') + ";";
 
             if (isNutri) {
                 // شكل التعديل لقسم التغذية
-                card.innerHTML = `
-                    <div style="position:absolute; left:12px; top:12px; color:#ff3b30; font-size:22px; cursor:pointer;" onclick="this.parentElement.remove()">🗑️</div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-top:10px;">
-                        <div>
-                            <label style="display:block; color:#777; font-size:10px; margin-bottom:5px;">نوع الأكل 🍗</label>
-                            <input type="text" value="${d.name || ''}" class="p-name" placeholder="مثلاً: صدور دجاج" style="width:100%; background:#111; border:1px solid #444; color:#fff; padding:10px; border-radius:10px; font-weight:bold; font-size:13px;">
-                        </div>
-                        <div>
-                            <label style="display:block; color:#777; font-size:10px; margin-bottom:5px;">التفاصيل 📝</label>
-                            <input type="text" value="${d.note || ''}" class="p-note" placeholder="مثلاً: مسلوق/مشوي" style="width:100%; background:#111; border:1px solid #444; color:#aaa; padding:10px; border-radius:10px; font-size:13px;">
-                        </div>
-                        <div>
-                            <label style="display:block; color:#777; font-size:10px; margin-bottom:5px;">الكمية ⚖️</label>
-                            <input type="text" value="${d.weight || ''}" class="p-weight" placeholder="مثلاً: 200 جرام" style="width:100%; background:#111; border:1px solid #444; color:var(--accent); padding:10px; border-radius:10px; font-weight:bold; font-size:13px;">
-                        </div>
-                    </div>`;
+                card.innerHTML = '<div style="position:absolute; left:12px; top:12px; color:#ff3b30; font-size:22px; cursor:pointer;" onclick="this.parentElement.remove()">🗑️</div>' +
+                    '<div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-top:10px;">' +
+                        '<div>' +
+                            '<label style="display:block; color:#777; font-size:10px; margin-bottom:5px;">نوع الأكل 🍗</label>' +
+                            '<input type="text" value="' + (d.name || '') + '" class="p-name" placeholder="مثلاً: صدور دجاج" style="width:100%; background:#111; border:1px solid #444; color:#fff; padding:10px; border-radius:10px; font-weight:bold; font-size:13px;">' +
+                        '</div>' +
+                        '<div>' +
+                            '<label style="display:block; color:#777; font-size:10px; margin-bottom:5px;">التفاصيل 📝</label>' +
+                            '<input type="text" value="' + (d.note || '') + '" class="p-note" placeholder="مثلاً: مسلوق/مشوي" style="width:100%; background:#111; border:1px solid #444; color:#aaa; padding:10px; border-radius:10px; font-size:13px;">' +
+                        '</div>' +
+                        '<div>' +
+                            '<label style="display:block; color:#777; font-size:10px; margin-bottom:5px;">الكمية ⚖️</label>' +
+                            '<input type="text" value="' + (d.weight || '') + '" class="p-weight" placeholder="مثلاً: 200 جرام" style="width:100%; background:#111; border:1px solid #444; color:var(--accent); padding:10px; border-radius:10px; font-weight:bold; font-size:13px;">' +
+                        '</div>' +
+                    '</div>';
             } else {
                 // شكل التعديل لقسم التمارين (النظام الحالي المطور)
-                card.innerHTML = `
-                    <div style="position:absolute; left:12px; top:12px; color:#ff3b30; font-size:22px; cursor:pointer;" onclick="this.parentElement.remove()">🗑️</div>
-                    <div style="margin-bottom:15px;">
-                        <label style="display:block; color:#777; font-size:11px; margin-bottom:5px;">اسم التمرين 💪</label>
-                        <input type="text" value="${d.name || ''}" class="p-name" placeholder="بنج عالي.." style="width:100%; background:#111; border:1px solid #444; color:#fff; padding:12px; border-radius:12px; font-weight:bold;">
-                    </div>
-                    <div style="margin-bottom:10px; width:100px;"><label style="font-size:11px; color:#777;">المجموعات</label><input type="text" value="${d.sets || '4'}" class="p-sets" style="width:100%; background:#111; border:1px solid #444; color:var(--success); padding:8px; border-radius:10px; text-align:center;"></div>
-                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; background:#000; padding:12px; border-radius:15px; border:1px solid #222;">
-                        ${[1, 2, 3, 4, 5, 6].map(n => `
-                            <div style="border-bottom:1px solid #222; padding-bottom:5px;">
-                                <label style="font-size:8px; display:block; text-align:center; color:#555;">مج ${n}</label>
-                                <input type="text" value="${d['w' + n] || ''}" class="w${n}" placeholder="وزن" style="width:100%; padding:5px !important; font-size:11px !important; background:none !important; border:1px solid #333 !important; color:var(--accent) !important; margin-bottom:3px;">
-                                <input type="text" value="${d['r' + n] || ''}" class="r${n}" placeholder="عدة" style="width:100%; padding:5px !important; font-size:11px !important; background:none !important; border:1px solid #333 !important; color:var(--success) !important;">
-                            </div>
-                        `).join('')}
-                    </div>`;
+                var cellsHtml = [1, 2, 3, 4, 5, 6].map(function(n) {
+                    return '<div style="border-bottom:1px solid #222; padding-bottom:5px;">' +
+                                '<label style="font-size:8px; display:block; text-align:center; color:#555;">مج ' + n + '</label>' +
+                                '<input type="text" value="' + (d['w' + n] || '') + '" class="w' + n + '" placeholder="وزن" style="width:100%; padding:5px !important; font-size:11px !important; background:none !important; border:1px solid #333 !important; color:var(--accent) !important; margin-bottom:3px;">' +
+                                '<input type="text" value="' + (d['r' + n] || '') + '" class="r' + n + '" placeholder="عدة" style="width:100%; padding:5px !important; font-size:11px !important; background:none !important; border:1px solid #333 !important; color:var(--success) !important;">' +
+                            '</div>';
+                }).join('');
+
+                card.innerHTML = '<div style="position:absolute; left:12px; top:12px; color:#ff3b30; font-size:22px; cursor:pointer;" onclick="this.parentElement.remove()">🗑️</div>' +
+                    '<div style="margin-bottom:15px;">' +
+                        '<label style="display:block; color:#777; font-size:11px; margin-bottom:5px;">اسم التمرين 💪</label>' +
+                        '<input type="text" value="' + (d.name || '') + '" class="p-name" placeholder="بنج عالي.." style="width:100%; background:#111; border:1px solid #444; color:#fff; padding:12px; border-radius:12px; font-weight:bold;">' +
+                    '</div>' +
+                    '<div style="margin-bottom:10px; width:100px;"><label style="font-size:11px; color:#777;">المجموعات</label><input type="text" value="' + (d.sets || '4') + '" class="p-sets" style="width:100%; background:#111; border:1px solid #444; color:var(--success); padding:8px; border-radius:10px; text-align:center;"></div>' +
+                    '<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; background:#000; padding:12px; border-radius:15px; border:1px solid #222;">' +
+                        cellsHtml +
+                    '</div>';
             }
             container.appendChild(card);
         }
@@ -2345,7 +2465,7 @@
         async function approveUser(id) { await db.collection('users').doc(id).update({ status: 'approved' }); loadAdmin(); }
         async function deleteUser() {
             if (confirm('هل أنت متأكد من حذف هذا البطل نهائياً؟ ⚠️')) {
-                Swal.fire({ title: 'جاري الحذف...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+                Swal.fire({ title: 'جاري الحذف...', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); } });
                 try {
                     await db.collection('users').doc(activeTarget).delete();
                     document.getElementById('profile-modal').classList.add('hidden');
@@ -2374,7 +2494,7 @@
         function switchTab(t, el) {
             document.querySelectorAll('.content-tab').forEach(c => c.classList.add('hidden'));
             document.getElementById(t + '-tab').classList.remove('hidden');
-            document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(function(x) { x.classList.remove('active'); });
 
             if (el) el.classList.add('active');
             else {
@@ -2432,7 +2552,7 @@
             if (!("Notification" in window)) {
                 return Swal.fire('معلومة', 'تطبيقك الحالي مغلف بطريقة لا تدعم إشعارات النظام، لكن سيصلك تنبيهات داخلية وأنت فاتح الأبلكيشن! 🔔', 'info');
             }
-            Notification.requestPermission().then(p => {
+            Notification.requestPermission().then(function(p) {
                 if (p === "granted") {
                     startWaterInterval();
                     listenForCustomNotifications();
@@ -2461,7 +2581,7 @@
                 updateNotifUI(true);
             } else if (Notification.permission === "default") {
                 updateNotifUI(false);
-                setTimeout(() => {
+                setTimeout(function() {
                     if (localStorage.getItem('notif_asked')) return;
                     Swal.fire({
                         title: 'تفعيل الإشعارات 🔔',
@@ -2472,7 +2592,7 @@
                         cancelButtonText: 'ليس الآن',
                         background: '#1e1e1e',
                         color: '#fff'
-                    }).then((result) => {
+                    }).then(function(result) {
                         localStorage.setItem('notif_asked', 'true');
                         if (result.isConfirmed) {
                             enableNotificationsManual();
@@ -2494,23 +2614,25 @@
             // الاستماع لكل الإشعارات الخاصة بالبطل لجلب السجل
             notifListener = db.collection('notifications')
                 .where('targetPhone', '==', currentUser.phone)
-                .onSnapshot(snap => {
+                .onSnapshot(function(snap) {
                     allMyNotifs = [];
-                    snap.forEach(d => {
-                        allMyNotifs.push({ id: d.id, ...d.data() });
+                    snap.forEach(function(d) {
+                        var data = d.data();
+                        data.id = d.id;
+                        allMyNotifs.push(data);
                     });
 
                     // ترتيب محلي (الأحدث يظهر أولاً) لتجنب أخطاء الفهرسة في Firebase
-                    allMyNotifs.sort((a, b) => {
-                        const aMs = (a.ts && typeof a.ts.toMillis === 'function') ? a.ts.toMillis() : 0;
-                        const bMs = (b.ts && typeof b.ts.toMillis === 'function') ? b.ts.toMillis() : 0;
+                    allMyNotifs.sort(function(a, b) {
+                        var aMs = (a.ts && typeof a.ts.toMillis === 'function') ? a.ts.toMillis() : 0;
+                        var bMs = (b.ts && typeof b.ts.toMillis === 'function') ? b.ts.toMillis() : 0;
                         return bMs - aMs;
                     });
 
-                    snap.docChanges().forEach(change => {
+                    snap.docChanges().forEach(function(change) {
                         if (change.type === 'added') {
-                            const d = change.doc.data();
-                            const notifMs = (d.ts && typeof d.ts.toMillis === 'function') ? d.ts.toMillis() : 0;
+                            var d = change.doc.data();
+                            var notifMs = (d.ts && typeof d.ts.toMillis === 'function') ? d.ts.toMillis() : 0;
                             // إشعار منبثق للمسجات اللحظية الجديدة فقط اللي هتيجي وإحنا فاتحين التطبيق
                             if (notifMs > appSessionStartMs) {
                                 showPhoneNotification(d.title || "تحديث من الكابتن 🔥", d.message);
@@ -2525,11 +2647,11 @@
 
         function updateNotifBadge() {
             const lastSeen = parseFloat(localStorage.getItem('last_notif_seen_ms') || "0");
-            const unreads = allMyNotifs.filter(n => {
-                const nMs = (n.ts && typeof n.ts.toMillis === 'function') ? n.ts.toMillis() : 0;
+            const unreads = allMyNotifs.filter(function(n) {
+                var nMs = (n.ts && typeof n.ts.toMillis === 'function') ? n.ts.toMillis() : 0;
                 return nMs > lastSeen;
             }).length;
-            const badge = document.getElementById('notif-badge');
+            var badge = document.getElementById('notif-badge');
             if (unreads > 0) {
                 badge.innerText = unreads > 9 ? '+9' : unreads;
                 badge.classList.remove('hidden');
@@ -2560,19 +2682,20 @@
             let h = "";
             const lastSeen = parseFloat(localStorage.getItem('last_notif_seen_ms') || "0");
 
-            allMyNotifs.forEach(n => {
-                const nMs = (n.ts && typeof n.ts.toMillis === 'function') ? n.ts.toMillis() : 0;
-                const isNew = nMs > lastSeen;
-                h += `
-                <div style="background:${isNew ? 'rgba(229,57,53,0.1)' : 'rgba(255,255,255,0.03)'}; border:1px solid ${isNew ? 'rgba(229,57,53,0.3)' : '#222'}; border-radius:15px; padding:15px; position:relative;">
-                    ${isNew ? '<span style="position:absolute; top:15px; left:15px; width:10px; height:10px; background:var(--primary); border-radius:50%; box-shadow:0 0 10px var(--primary);"></span>' : ''}
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-                        <span style="font-size:20px; background:rgba(0,0,0,0.5); padding:8px; border-radius:12px;">${n.title?.includes('تغذية') || n.title?.includes('وجبة') ? '🥗' : n.title?.includes('مياه') ? '💧' : '🔥'}</span>
-                        <b style="color:var(--accent); font-size:14px;">${n.title || 'إشعار من الكابتن'}</b>
-                    </div>
-                    <p style="color:#ddd; font-size:12px; margin:0; line-height:1.6; padding-right:45px;">${n.message}</p>
-                    <div style="text-align:left; font-size:9px; color:#555; margin-top:8px;">${n.ts ? n.ts.toDate().toLocaleString('ar-EG') : 'بدون توقيت'}</div>
-                </div>`;
+            allMyNotifs.forEach(function(n) {
+                var nMs = (n.ts && typeof n.ts.toMillis === 'function') ? n.ts.toMillis() : 0;
+                var isNew = nMs > lastSeen;
+                var icon = (n.title && (n.title.indexOf('تغذية') !== -1 || n.title.indexOf('وجبة') !== -1)) ? '🥗' : (n.title && n.title.indexOf('مياه') !== -1 ? '💧' : '🔥');
+                
+                h += '<div style="background:' + (isNew ? 'rgba(229,57,53,0.1)' : 'rgba(255,255,255,0.03)') + '; border:1px solid ' + (isNew ? 'rgba(229,57,53,0.3)' : '#222') + '; border-radius:15px; padding:15px; position:relative;">' +
+                    (isNew ? '<span style="position:absolute; top:15px; left:15px; width:10px; height:10px; background:var(--primary); border-radius:50%; box-shadow:0 0 10px var(--primary);"></span>' : '') +
+                    '<div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">' +
+                        '<span style="font-size:20px; background:rgba(0,0,0,0.5); padding:8px; border-radius:12px;">' + icon + '</span>' +
+                        '<b style="color:var(--accent); font-size:14px;">' + (n.title || 'إشعار من الكابتن') + '</b>' +
+                    '</div>' +
+                    '<p style="color:#ddd; font-size:12px; margin:0; line-height:1.6; padding-right:45px;">' + n.message + '</p>' +
+                    '<div style="text-align:left; font-size:9px; color:#555; margin-top:8px;">' + (n.ts ? n.ts.toDate().toLocaleString('ar-EG') : 'بدون توقيت') + '</div>' +
+                '</div>';
             });
             list.innerHTML = h;
         }
@@ -2594,16 +2717,16 @@
                 return;
             }
 
-            const options = {
+            var options = {
                 body: body,
                 icon: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png",
                 vibrate: [200, 100, 200]
             };
 
             if (navigator.serviceWorker && navigator.serviceWorker.ready) {
-                navigator.serviceWorker.ready.then(reg => {
+                navigator.serviceWorker.ready.then(function(reg) {
                     reg.showNotification(title, options);
-                }).catch(e => {
+                }).catch(function(e) {
                     new Notification(title, options);
                 });
             } else {
@@ -2625,16 +2748,16 @@
 
         function startWaterInterval() {
             if (window.waterIntervalObj) clearInterval(window.waterIntervalObj);
-            window.waterIntervalObj = setInterval(() => {
-                const msgs = ["اشرب مياه يا بطل! 🔥💧", "متنساش المياه! 💪🧊", "كوباية مياه دلوقتي هتفرق! 🏆💧", "المياه هي وقود الجسم! 🚀🌊"];
-                const msg = msgs[Math.floor(Math.random() * msgs.length)];
+            window.waterIntervalObj = setInterval(function() {
+                var msgs = ["اشرب مياه يا بطل! 🔥💧", "متنساش المياه! 💪🧊", "كوباية مياه دلوقتي هتفرق! 🏆💧", "المياه هي وقود الجسم! 🚀🌊"];
+                var msg = msgs[Math.floor(Math.random() * msgs.length)];
                 if (Notification.permission === "granted") {
-                    const title = "Fire Gym 💎 تذكير مياه";
-                    const options = { body: msg, icon: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png" };
+                    var title = "Fire Gym 💎 تذكير مياه";
+                    var options = { body: msg, icon: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png" };
                     if (navigator.serviceWorker && navigator.serviceWorker.ready) {
-                        navigator.serviceWorker.ready.then(reg => {
+                        navigator.serviceWorker.ready.then(function(reg) {
                             reg.showNotification(title, options);
-                        }).catch(e => new Notification(title, options));
+                        }).catch(function(e) { new Notification(title, options); });
                     } else {
                         new Notification(title, options);
                     }
@@ -2644,12 +2767,12 @@
         async function register() {
             const n = document.getElementById('reg-name').value.trim();
             const p = document.getElementById('reg-phone').value.trim();
-            const pass = document.getElementById('reg-pass').value.trim();
+            var pass = document.getElementById('reg-pass').value.trim();
             if (!n || !p || !pass) return Swal.fire('نقص بيانات', 'برجاء ملء كل الخانات يا بطل', 'warning');
 
-            Swal.fire({ title: 'جاري إرسال طلبك...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+            Swal.fire({ title: 'جاري إرسال طلبك...', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); } });
 
-            const data = {
+            var data = {
                 name: n, phone: p, age: document.getElementById('reg-age').value,
                 height: document.getElementById('reg-height').value, weight: document.getElementById('reg-weight').value,
                 fat: document.getElementById('reg-fat').value, goal: document.getElementById('reg-goal').value,
@@ -2663,60 +2786,76 @@
             } catch (e) { Swal.close(); Swal.fire('خطأ', 'فشل إرسال الطلب، حاول تاني', 'error'); }
         }
 
-        function startRestTimer(s) { document.getElementById('rest-timer-overlay').style.display = 'flex'; let r = s; document.getElementById('rest-seconds').innerText = r; restInterval = setInterval(() => { r--; document.getElementById('rest-seconds').innerText = r; if (r <= 0) { stopRestTimer(); } }, 1000); }
+        function startRestTimer(s) {
+            document.getElementById('rest-timer-overlay').style.display = 'flex';
+            var r = s;
+            document.getElementById('rest-seconds').innerText = r;
+            restInterval = setInterval(function() {
+                r--;
+                document.getElementById('rest-seconds').innerText = r;
+                if (r <= 0) { stopRestTimer(); }
+            }, 1000);
+        }
         function stopRestTimer() { clearInterval(restInterval); document.getElementById('rest-timer-overlay').style.display = 'none'; }
-        async function uploadMePhoto(el) { const file = el.files[0]; if (!file) return; const r = new FileReader(); r.onload = async (e) => { const b64 = e.target.result; document.getElementById('me-photo').src = b64; await db.collection('users').doc(currentUser.phone).update({ photo: b64 }); }; r.readAsDataURL(file); }
+        async function uploadMePhoto(el) {
+            var file = el.files[0];
+            if (!file) return;
+            var r = new FileReader();
+            r.onload = async function(e) {
+                var b64 = e.target.result;
+                document.getElementById('me-photo').src = b64;
+                await db.collection('users').doc(currentUser.phone).update({ photo: b64 });
+            };
+            r.readAsDataURL(file);
+        }
         function editMyInfo() {
             Swal.fire({
                 title: '<span style="color:var(--primary); font-size:20px;">تعديل بياناتي الحيوية</span>',
-                html: `
-                    <div style="text-align: right; margin-top: 10px; font-family: inherit;">
-                        <label style="color:#aaa; font-size:13px; margin-bottom:5px; display:block;">الوزن (كجم)</label>
-                        <input id="swal-w" type="number" value="${currentUser.weight || ''}" placeholder="مثال: 85" style="width:100%; padding:15px; box-sizing:border-box; background:rgba(0,0,0,0.5); color:#fff; border:1px solid #333; border-radius:15px; margin-bottom:15px; font-size:16px; outline:none; text-align:right;">
-                        
-                        <label style="color:#aaa; font-size:13px; margin-bottom:5px; display:block;">الطول (سم)</label>
-                        <input id="swal-h" type="number" value="${currentUser.height || ''}" placeholder="مثال: 180" style="width:100%; padding:15px; box-sizing:border-box; background:rgba(0,0,0,0.5); color:#fff; border:1px solid #333; border-radius:15px; margin-bottom:15px; font-size:16px; outline:none; text-align:right;">
-                        
-                        <label style="color:#aaa; font-size:13px; margin-bottom:5px; display:block;">نسبة الدهون (%)</label>
-                        <input id="swal-f" type="number" value="${currentUser.fat || ''}" placeholder="مثال: 15" style="width:100%; padding:15px; box-sizing:border-box; background:rgba(0,0,0,0.5); color:#fff; border:1px solid #333; border-radius:15px; font-size:16px; outline:none; text-align:right;">
-                    </div>
-                `,
+                html: '<div style="text-align: right; margin-top: 10px; font-family: inherit;">' +
+                        '<label style="color:#aaa; font-size:13px; margin-bottom:5px; display:block;">الوزن (كجم)</label>' +
+                        '<input id="swal-w" type="number" value="' + (currentUser.weight || '') + '" placeholder="مثال: 85" style="width:100%; padding:15px; box-sizing:border-box; background:rgba(0,0,0,0.5); color:#fff; border:1px solid #333; border-radius:15px; margin-bottom:15px; font-size:16px; outline:none; text-align:right;">' +
+                        '<label style="color:#aaa; font-size:13px; margin-bottom:5px; display:block;">الطول (سم)</label>' +
+                        '<input id="swal-h" type="number" value="' + (currentUser.height || '') + '" placeholder="مثال: 180" style="width:100%; padding:15px; box-sizing:border-box; background:rgba(0,0,0,0.5); color:#fff; border:1px solid #333; border-radius:15px; margin-bottom:15px; font-size:16px; outline:none; text-align:right;">' +
+                        '<label style="color:#aaa; font-size:13px; margin-bottom:5px; display:block;">نسبة الدهون (%)</label>' +
+                        '<input id="swal-f" type="number" value="' + (currentUser.fat || '') + '" placeholder="مثال: 15" style="width:100%; padding:15px; box-sizing:border-box; background:rgba(0,0,0,0.5); color:#fff; border:1px solid #333; border-radius:15px; font-size:16px; outline:none; text-align:right;">' +
+                    '</div>',
                 background: '#161616',
                 showCancelButton: true,
                 confirmButtonText: 'حفظ التعديلات',
                 cancelButtonText: 'إلغاء',
                 confirmButtonColor: 'var(--primary)',
                 cancelButtonColor: '#333',
-                preConfirm: () => {
+                preConfirm: function() {
                     return [
                         document.getElementById('swal-w').value,
                         document.getElementById('swal-h').value,
                         document.getElementById('swal-f').value
-                    ]
+                    ];
                 }
-            }).then((result) => {
+            }).then(function(result) {
                 if (result.isConfirmed) {
-                    const [w, h, f] = result.value;
-                    Swal.fire({ title: 'جاري الحفظ...', allowOutsideClick: false, background: '#1e1e1e', didOpen: () => { Swal.showLoading(); }});
+                    var vals = result.value;
+                    var w = vals[0], h = vals[1], f = vals[2];
+                    Swal.fire({ title: 'جاري الحفظ...', allowOutsideClick: false, background: '#1e1e1e', didOpen: function() { Swal.showLoading(); }});
                     db.collection('users').doc(currentUser.phone).update({
                         weight: w || currentUser.weight,
                         height: h || currentUser.height,
                         fat: f || currentUser.fat
-                    }).then(() => {
+                    }).then(function() {
                         location.reload();
-                    }).catch(e => Swal.fire({title: 'خطأ', text: 'فشل التحديث', icon: 'error', background: '#1e1e1e', color: '#fff'}));
+                    }).catch(function(e) { Swal.fire({title: 'خطأ', text: 'فشل التحديث', icon: 'error', background: '#1e1e1e', color: '#fff'}); });
                 }
             });
         }
-        let recipeBase64 = "";
+        var recipeBase64 = "";
         function processRecipeImg(input) {
             if (input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = new Image();
+                    img.onload = function() {
+                        var canvas = document.createElement('canvas');
+                        var ctx = canvas.getContext('2d');
                         canvas.width = 600; canvas.height = (img.height / img.width) * 600;
                         ctx.drawImage(img, 0, 0, 600, canvas.height);
                         recipeBase64 = canvas.toDataURL('image/jpeg', 0.6);
@@ -2729,15 +2868,15 @@
         }
 
         async function saveRecipe() {
-            const name = document.getElementById('recipe-name').value.trim();
-            const desc = document.getElementById('recipe-desc').value.trim();
+            var name = document.getElementById('recipe-name').value.trim();
+            var desc = document.getElementById('recipe-desc').value.trim();
             if (!name || !desc || !recipeBase64) return Swal.fire('نقص بيانات', 'برجاء كتابة الاسم والوصف ورفع صورة الوجبة 🔥', 'warning');
 
-            Swal.fire({ title: 'جاري النشر...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+            Swal.fire({ title: 'جاري النشر...', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); } });
 
             try {
                 await db.collection('recipes').add({
-                    name, desc, img: recipeBase64, ts: firebase.firestore.FieldValue.serverTimestamp()
+                    name: name, desc: desc, img: recipeBase64, ts: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 Swal.fire('تم النشر! 🔥', 'الوجبة بقت متاحة دلوقت لكل الأبطال', 'success');
                 document.getElementById('recipe-name').value = "";
@@ -2774,8 +2913,8 @@
         async function showRecipeDetail(id) {
             const d = await db.collection('recipes').doc(id).get();
             if (!d.exists) return;
-            const r = d.data();
-            document.getElementById('recipe-detail-img').style.backgroundImage = `url('${r.img}')`;
+            var r = d.data();
+            document.getElementById('recipe-detail-img').style.backgroundImage = "url('" + r.img + "')";
             document.getElementById('recipe-detail-name').innerText = r.name;
             document.getElementById('recipe-detail-desc').innerText = r.desc;
             document.getElementById('recipe-detail-modal').classList.remove('hidden');
@@ -2783,8 +2922,8 @@
 
         async function hideRecipe(id) {
             if (!confirm('مش محتاج الوصفة دي في قائمتك؟')) return;
-            let hidden = currentUser.hiddenRecipes || [];
-            if (!hidden.includes(id)) {
+            var hidden = currentUser.hiddenRecipes || [];
+            if (hidden.indexOf(id) === -1) {
                 hidden.push(id);
                 await db.collection('users').doc(currentUser.phone).update({ hiddenRecipes: hidden });
                 currentUser.hiddenRecipes = hidden;
@@ -2817,8 +2956,8 @@
             document.getElementById('coach-note-bubble').innerText = lastEval.note;
 
             // تجهيز البيانات للرسم البياني الموحد
-            const labels = weights.map(w => w.ts.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' }));
-            const wVals = weights.map(w => w.val);
+            var labels = weights.map(function(w) { return w.ts.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' }); });
+            var wVals = weights.map(function(w) { return w.val; });
 
             if (myChart) myChart.destroy();
             const ctx = document.getElementById('evalChart').getContext('2d');
@@ -2841,16 +2980,16 @@
                 }
             });
 
-            let h = evals.map(e => `
-                <div style="background:rgba(255,255,255,0.03); border:1px solid #222; border-radius:15px; padding:15px; margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <b style="color:var(--success);">الالتزام: ${e.score}/10</b>
-                        <span style="color:#555; font-size:10px;">📅 ${e.ts?.toDate().toLocaleDateString('ar-EG')}</span>
-                    </div>
-                    <div style="color:#eee; font-size:13px; line-height:1.6;">${e.note}</div>
-                    ${e.fat ? `<div style="margin-top:8px; font-size:11px; color:var(--accent);">🔥 نسبة الدهون المسجلة: ${e.fat}%</div>` : ''}
-                </div>
-            `).join('');
+            var h = evals.map(function(e) {
+                return '<div style="background:rgba(255,255,255,0.03); border:1px solid #222; border-radius:15px; padding:15px; margin-bottom:12px;">' +
+                    '<div style="display:flex; justify-content:space-between; margin-bottom:8px;">' +
+                        '<b style="color:var(--success);">الالتزام: ' + e.score + '/10</b>' +
+                        '<span style="color:#555; font-size:10px;">📅 ' + (e.ts ? e.ts.toDate().toLocaleDateString('ar-EG') : '') + '</span>' +
+                    '</div>' +
+                    '<div style="color:#eee; font-size:13px; line-height:1.6;">' + e.note + '</div>' +
+                    (e.fat ? '<div style="margin-top:8px; font-size:11px; color:var(--accent);">🔥 نسبة الدهون المسجلة: ' + e.fat + '%</div>' : '') +
+                '</div>';
+            }).join('');
             document.getElementById('eval-history-list').innerHTML = h || '<p style="text-align:center; padding:20px; color:#444;">مفيش تاريخ تقييمات لسه.</p>';
         }
 
@@ -2862,7 +3001,7 @@
 
             if (!note) return Swal.fire('نقص بيانات', 'اكتب ملاحظة للبطل عشان يعرف يطور نفسه', 'warning');
 
-            Swal.fire({ title: 'جاري الحفظ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+            Swal.fire({ title: 'جاري الحفظ...', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); } });
             try {
                 await db.collection('evaluations').add({
                     uPhone: targetId,
@@ -2877,18 +3016,39 @@
         }
 
         async function deleteRecipe(id) { if (confirm('حذف نهائي للوصفة من عند الكل؟')) { await db.collection('recipes').doc(id).delete(); loadRecipes(); } }
-        function addPrefRow(n = "", s = "like") { const tr = document.createElement('tr'); tr.innerHTML = `<td><input type="text" class="pref-name" value="${n}" style="width:100%; background:none; border:none; color:#fff;"></td><td><select class="pref-status" style="background:#000; color:#fff; border:none;"><option value="like" ${s === 'like' ? 'selected' : ''}>❤️</option><option value="dislike" ${s === 'dislike' ? 'selected' : ''}>💔</option></select></td><td onclick="this.parentElement.remove()">🗑️</td>`; document.getElementById('food-prefs-body').appendChild(tr); }
-        async function saveFoodPrefs() { let prefs = []; document.querySelectorAll('#food-prefs-body tr').forEach(r => { const n = r.querySelector('.pref-name').value; if (n) prefs.push({ name: n, status: r.querySelector('.pref-status').value }); }); await db.collection('users').doc(currentUser.phone).update({ foodPrefs: prefs }); Swal.fire('تم', 'تم حفظ تفضيلاتك', 'success'); }
-        function loadFoodPrefs() { db.collection('users').doc(currentUser.phone).get().then(doc => { const p = doc.data().foodPrefs || []; document.getElementById('food-prefs-body').innerHTML = ""; if (p.length === 0) addPrefRow(); else p.forEach(x => addPrefRow(x.name, x.status)); }); }
+        function addPrefRow(n, s) { 
+            n = n || ""; s = s || "like";
+            var tr = document.createElement('tr'); 
+            tr.innerHTML = '<td><input type="text" class="pref-name" value="' + n + '" style="width:100%; background:none; border:none; color:#fff;"></td><td><select class="pref-status" style="background:#000; color:#fff; border:none;"><option value="like" ' + (s === 'like' ? 'selected' : '') + '>❤️</option><option value="dislike" ' + (s === 'dislike' ? 'selected' : '') + '>💔</option></select></td><td onclick="this.parentElement.remove()">🗑️</td>';
+            document.getElementById('food-prefs-body').appendChild(tr); 
+        }
+        async function saveFoodPrefs() { 
+            var prefs = []; 
+            document.querySelectorAll('#food-prefs-body tr').forEach(function(r) { 
+                var nameInput = r.querySelector('.pref-name');
+                var n = nameInput ? nameInput.value : '';
+                if (n) prefs.push({ name: n, status: r.querySelector('.pref-status').value }); 
+            }); 
+            await db.collection('users').doc(currentUser.phone).update({ foodPrefs: prefs }); 
+            Swal.fire('تم', 'تم حفظ تفضيلاتك', 'success'); 
+        }
+        function loadFoodPrefs() { 
+            db.collection('users').doc(currentUser.phone).get().then(function(doc) { 
+                var p = doc.data().foodPrefs || []; 
+                document.getElementById('food-prefs-body').innerHTML = ""; 
+                if (p.length === 0) addPrefRow(); 
+                else p.forEach(function(x) { addPrefRow(x.name, x.status); }); 
+            }); 
+        }
 
         async function saveKnowledge() {
             const q = document.getElementById('info-q').value.trim();
             const a = document.getElementById('info-a').value.trim();
             if (!q || !a) return Swal.fire('نقص بيانات', 'اكتب السؤال والإجابة يا كوتش', 'warning');
 
-            Swal.fire({ title: 'جاري الحفظ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+            Swal.fire({ title: 'جاري الحفظ...', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); } });
             try {
-                await db.collection('knowledge_bank').add({ q, a, ts: firebase.firestore.FieldValue.serverTimestamp() });
+                await db.collection('knowledge_bank').add({ q: q, a: a, ts: firebase.firestore.FieldValue.serverTimestamp() });
                 Swal.fire('تم الحفظ! ✅', 'المعلومة بقت متاحة لكل الأبطال', 'success');
                 document.getElementById('info-q').value = "";
                 document.getElementById('info-a').value = "";
@@ -2899,17 +3059,16 @@
         async function loadKnowledgeAdmin() {
             const list = document.getElementById('admin-info-list');
             const snap = await db.collection('knowledge_bank').orderBy('ts', 'desc').get();
-            let h = "";
-            snap.forEach(doc => {
-                const d = doc.data();
-                h += `
-                <div style="background:#111; padding:15px; border-radius:12px; border:1px solid #222; position:relative;">
-                    <i onclick="deleteKnowledge('${doc.id}')" style="position:absolute; left:10px; top:10px; color:#ff3b30; cursor:pointer;">🗑️</i>
-                    <b style="color:var(--accent); font-size:12px; display:block; margin-bottom:5px;">س: ${d.q}</b>
-                    <p style="color:#aaa; font-size:11px; margin:0;">ج: ${d.a}</p>
-                </div>`;
+            var hList = "";
+            snap.forEach(function(doc) {
+                var d = doc.data();
+                hList += '<div style="background:#111; padding:15px; border-radius:12px; border:1px solid #222; position:relative;">' +
+                    '<i onclick="deleteKnowledge(\'' + doc.id + '\')" style="position:absolute; left:10px; top:10px; color:#ff3b30; cursor:pointer;">🗑️</i>' +
+                    '<b style="color:var(--accent); font-size:12px; display:block; margin-bottom:5px;">س: ' + d.q + '</b>' +
+                    '<p style="color:#aaa; font-size:11px; margin:0;">ج: ' + d.a + '</p>' +
+                '</div>';
             });
-            list.innerHTML = h || '<p style="text-align:center; color:#444;">مفيش معلومات لسه.</p>';
+            list.innerHTML = hList || '<p style="text-align:center; color:#444;">مفيش معلومات لسه.</p>';
         }
 
         async function deleteKnowledge(id) {
@@ -2919,26 +3078,25 @@
         }
 
         async function openInfoBank() {
-            const modal = document.getElementById('info-bank-modal');
+            var modal = document.getElementById('info-bank-modal');
             modal.classList.remove('hidden');
-            const container = document.getElementById('info-bank-content');
+            var container = document.getElementById('info-bank-content');
             container.innerHTML = '<p style="text-align:center; color:#555; padding:20px;">جاري تحميل الحكمة... 🧬</p>';
 
             try {
-                const snap = await db.collection('knowledge_bank').orderBy('ts', 'desc').get();
-                let h = "";
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    h += `
-                    <div style="background:rgba(255,255,255,0.02); border:1px solid #222; border-radius:20px; padding:20px;">
-                        <div style="color:var(--accent); font-weight:bold; margin-bottom:12px; display:flex; align-items:start; gap:10px;">
-                            <span style="background:var(--accent); color:#000; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0;">؟</span>
-                            <span>${d.q}</span>
-                        </div>
-                        <div style="color:#eee; font-size:14px; line-height:1.6; padding-right:34px;">${d.a}</div>
-                    </div>`;
+                var snap = await db.collection('knowledge_bank').orderBy('ts', 'desc').get();
+                var hHtml = "";
+                snap.forEach(function(doc) {
+                    var d = doc.data();
+                    hHtml += '<div style="background:rgba(255,255,255,0.02); border:1px solid #222; border-radius:20px; padding:20px;">' +
+                        '<div style="color:var(--accent); font-weight:bold; margin-bottom:12px; display:flex; align-items:start; gap:10px;">' +
+                            '<span style="background:var(--accent); color:#000; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0;">؟</span>' +
+                            '<span>' + d.q + '</span>' +
+                        '</div>' +
+                        '<div style="color:#eee; font-size:14px; line-height:1.6; padding-right:34px;">' + d.a + '</div>' +
+                    '</div>';
                 });
-                container.innerHTML = h || '<p style="text-align:center; color:#444; padding:20px;">لسه مفيش معلومات، انتظر نصائح الكوتش قريباً! 🔥</p>';
+                container.innerHTML = hHtml || '<p style="text-align:center; color:#444; padding:20px;">لسه مفيش معلومات، انتظر نصائح الكوتش قريباً! 🔥</p>';
             } catch (e) {
                 console.error("InfoBank Error:", e);
                 container.innerHTML = '<p style="text-align:center; color:var(--primary); padding:20px;">عذراً، فشل التحميل. تأكد من اتصالك بالإنترنت يا بطل ❌</p>';
@@ -2947,9 +3105,9 @@
 
         // حقن المعلومات المبدئية عند الحاجة (أول مرة فقط)
         async function seedKnowledge() {
-            const snap = await db.collection('knowledge_bank').limit(1).get();
+            var snap = await db.collection('knowledge_bank').limit(1).get();
             if (snap.empty) {
-                const base = [
+                var base = [
                     { q: "ما هو الوقت المثالي لشرب البروتين؟", a: "بعد التمرين بـ 30-60 دقيقة هو أفضل وقت لامتصاص سريع، لكن الأهم هو إكمال حصتك اليومية كاملة." },
                     { q: "هل الكارديو يحرق العضلات؟", a: "لا، الكارديو المعتدل يحسن الدورة الدموية ويساعد في نقل الغذاء للعضلات، المهم أن لا تبالغ فيه." },
                     { q: "لماذا تشعر بالشد العضلي أحياناً؟", a: "نقص السوائل أو المعادن (بوتاسيوم، مغنسيوم). حافظ على توازن الأملاح في جسمك." },
@@ -2963,8 +3121,9 @@
                     { q: "هل الدهون مفيدة في النظام الغذائي؟", a: "نعم، الدهون الصحية (زيت زيتون، مكسرات) ضرورية لإنتاج الهرمونات وامتصاص الفيتامينات." },
                     { q: "سر الاستمرارية في الجيم؟", a: "أن تحب العملية وليس النتيجة فقط. ابدأ بأوزان مناسبة وتدرج ببطء لتتجنب الانقطاع أو الملل." }
                 ];
-                for (let item of base) {
-                    await db.collection('knowledge_bank').add({ ...item, ts: firebase.firestore.FieldValue.serverTimestamp() });
+                for (var i = 0; i < base.length; i++) {
+                    var item = base[i];
+                    await db.collection('knowledge_bank').add({ q: item.q, a: item.a, ts: firebase.firestore.FieldValue.serverTimestamp() });
                 }
             }
         }
@@ -2972,12 +3131,12 @@
         // تحديث شامل ومسح القديم
         async function forceSeedKnowledge() {
             if (!confirm('هل تريد مسح المعلومات القديمة وتنزيل الـ 12 معلومة الذهبية الجديدة؟')) return;
-            Swal.fire({ title: 'جاري التحديث الشامل...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+            Swal.fire({ title: 'جاري التحديث الشامل...', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); } });
 
             try {
-                const snap = await db.collection('knowledge_bank').get();
-                const batch = db.batch();
-                snap.forEach(doc => batch.delete(doc.ref));
+                var snap = await db.collection('knowledge_bank').get();
+                var batch = db.batch();
+                snap.forEach(function(doc) { batch.delete(doc.ref); });
                 await batch.commit();
 
                 const base = [
@@ -3013,17 +3172,17 @@
                 let h = "";
                 const isAdmin = (currentUser && currentUser.role === 'admin');
 
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    h += `
-                    <div style="background:rgba(255,255,255,0.02); border:1px solid #222; border-radius:20px; padding:20px; position:relative;">
-                        ${isAdmin ? `<button onclick="deleteTechnique('${doc.id}')" style="position:absolute; top:15px; left:15px; background:rgba(255,59,48,0.2); color:#ff3b30; border:1px solid #ff3b30; border-radius:8px; padding:5px 10px; font-size:11px; font-weight:bold;">حذف 🗑️</button>` : ''}
-                        <h4 style="color:#fff; margin-bottom:15px; font-size:18px;">${d.name}</h4>
-                        <div style="display:flex; gap:10px;">
-                            ${d.correctUrl ? `<a href="${d.correctUrl}" target="_blank" style="flex:1; text-align:center; padding:10px; background:rgba(76,175,80,0.1); color:var(--success); border:1px solid rgba(76,175,80,0.3); border-radius:10px; text-decoration:none; font-weight:bold; font-size:13px;">✅ الأداء الصحيح</a>` : ''}
-                            ${d.wrongUrl ? `<a href="${d.wrongUrl}" target="_blank" style="flex:1; text-align:center; padding:10px; background:rgba(255,59,48,0.1); color:#ff3b30; border:1px solid rgba(255,59,48,0.3); border-radius:10px; text-decoration:none; font-weight:bold; font-size:13px;">❌ شائع الخطأ</a>` : ''}
-                        </div>
-                    </div>`;
+                snap.forEach(function(doc) {
+                    var d = doc.data();
+                    var techHtml = '<div style="background:rgba(255,255,255,0.02); border:1px solid #222; border-radius:20px; padding:20px; position:relative;">' +
+                        (isAdmin ? '<button onclick="deleteTechnique(\'' + doc.id + '\')" style="position:absolute; top:15px; left:15px; background:rgba(255,59,48,0.2); color:#ff3b30; border:1px solid #ff3b30; border-radius:8px; padding:5px 10px; font-size:11px; font-weight:bold;">حذف 🗑️</button>' : '') +
+                        '<h4 style="color:#fff; margin-bottom:15px; font-size:18px;">' + d.name + '</h4>' +
+                        '<div style="display:flex; gap:10px;">' +
+                            (d.correctUrl ? '<a href="' + d.correctUrl + '" target="_blank" style="flex:1; text-align:center; padding:10px; background:rgba(76,175,80,0.1); color:var(--success); border:1px solid rgba(76,175,80,0.3); border-radius:10px; text-decoration:none; font-weight:bold; font-size:13px;">✅ الأداء الصحيح</a>' : '') +
+                            (d.wrongUrl ? '<a href="' + d.wrongUrl + '" target="_blank" style="flex:1; text-align:center; padding:10px; background:rgba(255,59,48,0.1); color:#ff3b30; border:1px solid rgba(255,59,48,0.3); border-radius:10px; text-decoration:none; font-weight:bold; font-size:13px;">❌ شائع الخطأ</a>' : '') +
+                        '</div>' +
+                    '</div>';
+                    h += techHtml;
                 });
                 list.innerHTML = h || '<p style="text-align:center; color:#444; padding:20px;">لسه مفيش تمارين متضافة في التكنيك، انتظروا فيديوهات الكوتش قريباً! 🔥</p>';
             } catch (e) {
@@ -3040,7 +3199,7 @@
 
             if (!name) return Swal.fire('تنبيه', 'يجب إدخال اسم التمرين على الأقل', 'warning');
 
-            Swal.fire({ title: 'جاري الحفظ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'جاري الحفظ...', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); } });
 
             try {
                 await db.collection('techniques').add({
@@ -3090,16 +3249,14 @@
         }
 
         // منطق تشغيل المعرض المتحرك (Carousel) في صفحة من نحن
-        let currentCarouselIndex = 0;
+        var currentCarouselIndex = 0;
         function initAboutCarousel() {
             const items = document.querySelectorAll('#about-carousel .carousel-img');
             if (items.length === 0) return;
             
-            setInterval(() => {
+            setInterval(function() {
                 items[currentCarouselIndex].style.opacity = '0';
-                
                 currentCarouselIndex = (currentCarouselIndex + 1) % items.length;
-                
                 items[currentCarouselIndex].style.opacity = '1';
             }, 5000); // 5 ثواني
         }
@@ -3114,7 +3271,7 @@
             try {
                 if (typeof initAboutCarousel === 'function') initAboutCarousel();
                 
-                const p = localStorage.getItem('fire_gym_phone');
+                var p = localStorage.getItem('fire_gym_phone');
                 if (p) {
                     // دخول فوري للشاشة الرئيسية لتجنب التعليق
                     if (authSection) authSection.classList.add('hidden');
