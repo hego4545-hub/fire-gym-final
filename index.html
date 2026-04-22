@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Fire Gym | V8</title>
+    <title>Fire Gym | V.10.0.0</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
@@ -658,7 +658,7 @@
                 <header style="padding: 40px 0 20px; text-align: center; background: none; border-bottom: none;">
                     <div
                         style="display:inline-block; font-size:10px; color:var(--accent); font-weight:bold; background:rgba(0,0,0,0.5); padding:4px 15px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); margin-bottom:15px;">
-                        V.8.0.0 ELITE 🔥</div>
+                        V.10.0.0 ELITE 🔥</div>
                     <h2
                         style="font-size:36px; font-weight:900; letter-spacing:-1.5px; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">
                         يا كابتن <span id="user-display-name" style="color:var(--primary);">بطلنا</span> 👋</h2>
@@ -1429,7 +1429,7 @@
     <!-- Library Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="firegym_auth.js"></script>
+    <script src="firegym_auth.js?v=9"></script>
 
     <script>
         // إعدادات Firebase الحقيقية والمستقرة والمسترجعة
@@ -1626,7 +1626,8 @@
                 if (g.includes('تدريب')) html += PLAN_CATS.map(c => `<button class="sub-btn" style="background:#1a1a1a; color:var(--primary); font-size:12px;" onclick="viewCatPlan('${c}')">🏋️ ${c}</button>`).join('');
                 if (g.includes('تغذيه')) { html += NUTRI_CATS.map(c => `<button class="sub-btn" style="background:#1a1a1a; color:#4caf50; font-size:12px;" onclick="viewCatPlan('${c}')">🥗 ${c}</button>`).join(''); extras.classList.remove('hidden'); loadFoodPrefs(); loadRecipes(); }
             }
-            container.innerHTML = html; db.collection('users').doc(currentUser.phone).get().then(doc => currentPlanData = doc.data().workoutPlan || {});
+            container.innerHTML = html;
+            // Removed redundant db.get() call as currentUser already has the workoutPlan
         }
 
         function switchVipMode(mode) {
@@ -1975,7 +1976,11 @@
 
             const snap = await db.collection('logs').where('uPhone', '==', phone).get();
             let arr = []; snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-            arr.sort((a, b) => (b.ts?.seconds || 0) - (a.ts?.seconds || 0));
+            arr.sort((a, b) => {
+                const aTs = (a.ts && a.ts.seconds) ? a.ts.seconds : 0;
+                const bTs = (b.ts && b.ts.seconds) ? b.ts.seconds : 0;
+                return bTs - aTs;
+            });
 
             let months = {};
             arr.forEach(d => {
@@ -2496,12 +2501,16 @@
                     });
 
                     // ترتيب محلي (الأحدث يظهر أولاً) لتجنب أخطاء الفهرسة في Firebase
-                    allMyNotifs.sort((a, b) => (b.ts?.toMillis() || 0) - (a.ts?.toMillis() || 0));
+                    allMyNotifs.sort((a, b) => {
+                        const aMs = (a.ts && typeof a.ts.toMillis === 'function') ? a.ts.toMillis() : 0;
+                        const bMs = (b.ts && typeof b.ts.toMillis === 'function') ? b.ts.toMillis() : 0;
+                        return bMs - aMs;
+                    });
 
                     snap.docChanges().forEach(change => {
                         if (change.type === 'added') {
                             const d = change.doc.data();
-                            const notifMs = d.ts?.toMillis() || 0;
+                            const notifMs = (d.ts && typeof d.ts.toMillis === 'function') ? d.ts.toMillis() : 0;
                             // إشعار منبثق للمسجات اللحظية الجديدة فقط اللي هتيجي وإحنا فاتحين التطبيق
                             if (notifMs > appSessionStartMs) {
                                 showPhoneNotification(d.title || "تحديث من الكابتن 🔥", d.message);
@@ -2516,7 +2525,10 @@
 
         function updateNotifBadge() {
             const lastSeen = parseFloat(localStorage.getItem('last_notif_seen_ms') || "0");
-            const unreads = allMyNotifs.filter(n => (n.ts?.toMillis() || 0) > lastSeen).length;
+            const unreads = allMyNotifs.filter(n => {
+                const nMs = (n.ts && typeof n.ts.toMillis === 'function') ? n.ts.toMillis() : 0;
+                return nMs > lastSeen;
+            }).length;
             const badge = document.getElementById('notif-badge');
             if (unreads > 0) {
                 badge.innerText = unreads > 9 ? '+9' : unreads;
@@ -2530,7 +2542,7 @@
             document.getElementById('notif-drawer').classList.remove('hidden');
             if (allMyNotifs.length > 0) {
                 // نحدث تاريخ آخر مشاهدة ليكون توقيت أحدث إشعار
-                const latestMs = allMyNotifs[0].ts?.toMillis() || Date.now();
+                const latestMs = (allMyNotifs[0].ts && typeof allMyNotifs[0].ts.toMillis === 'function') ? allMyNotifs[0].ts.toMillis() : Date.now();
                 localStorage.setItem('last_notif_seen_ms', latestMs);
                 updateNotifBadge();
                 renderNotifDrawer(); // تحديث الألوان عشان الجديد يختفي تمييزه
@@ -2549,7 +2561,8 @@
             const lastSeen = parseFloat(localStorage.getItem('last_notif_seen_ms') || "0");
 
             allMyNotifs.forEach(n => {
-                const isNew = (n.ts?.toMillis() || 0) > lastSeen;
+                const nMs = (n.ts && typeof n.ts.toMillis === 'function') ? n.ts.toMillis() : 0;
+                const isNew = nMs > lastSeen;
                 h += `
                 <div style="background:${isNew ? 'rgba(229,57,53,0.1)' : 'rgba(255,255,255,0.03)'}; border:1px solid ${isNew ? 'rgba(229,57,53,0.3)' : '#222'}; border-radius:15px; padding:15px; position:relative;">
                     ${isNew ? '<span style="position:absolute; top:15px; left:15px; width:10px; height:10px; background:var(--primary); border-radius:50%; box-shadow:0 0 10px var(--primary);"></span>' : ''}
@@ -3091,38 +3104,54 @@
             }, 5000); // 5 ثواني
         }
 
-        window.onload = () => {
-            const splash = document.getElementById('splash-screen');
-            if (!sessionStorage.getItem('splashShown')) {
-                sessionStorage.setItem('splashShown', 'true');
-                if (splash) {
-                    splash.style.display = 'flex';
-                    splash.style.opacity = '1';
-                    splash.style.visibility = 'visible';
-                    setTimeout(() => {
-                        splash.style.opacity = '0';
-                        splash.style.visibility = 'hidden';
-                        setTimeout(() => splash.remove(), 500); 
-                    }, 2000);
+        // النهائي: تشغيل التطبيق فوراً وبدون تعليق
+        document.addEventListener('DOMContentLoaded', function() {
+            const authSection = document.getElementById('auth-section');
+            const appContent = document.getElementById('app-content');
+            
+            console.log("APP STARTING V.10...");
+
+            try {
+                if (typeof initAboutCarousel === 'function') initAboutCarousel();
+                
+                const p = localStorage.getItem('fire_gym_phone');
+                if (p) {
+                    // دخول فوري للشاشة الرئيسية لتجنب التعليق
+                    if (authSection) authSection.classList.add('hidden');
+                    if (appContent) appContent.classList.remove('hidden');
+                    
+                    if (typeof db !== 'undefined') {
+                        db.collection('users').doc(p).get()
+                            .then(function(s) {
+                                if (s.exists) {
+                                    enterApp(s.data());
+                                } else {
+                                    logout();
+                                }
+                            })
+                            .catch(function(e) {
+                                console.error("Firebase Error:", e);
+                                // لا تغلق الشاشة، دع المستخدم يرى ما تم تحميله بالفعل
+                                Swal.fire({
+                                    title: 'تنبيه',
+                                    text: 'فشل مزامنة البيانات السحابية، سيتم العرض من الذاكرة المحلية.',
+                                    icon: 'info',
+                                    toast: true,
+                                    position: 'top',
+                                    timer: 3000
+                                });
+                            });
+                    }
+                } else {
+                    if (authSection) authSection.classList.remove('hidden');
                 }
-            } else {
-                if (splash) splash.remove();
+            } catch (e) {
+                console.error("Critical Start Error:", e);
+                if (authSection) authSection.classList.remove('hidden');
             }
-
-            initAboutCarousel();
-            const p = localStorage.getItem('fire_gym_phone');
-            if (p) {
-                // إخفاء شاشة التسجيل وعرض التطبيق فوراً لمنع الوميض
-                document.getElementById('auth-section').classList.add('hidden');
-                document.getElementById('app-content').classList.remove('hidden');
-
-                db.collection('users').doc(p).get()
-                    .then(s => s.exists ? enterApp(s.data()) : logout())
-                    .catch(e => console.error(e));
-            }
-        };
+        });
     </script>
-    <script src="firegym_auth.js"></script>
+    <!-- firegym_auth included in head section -->
 </body>
 
 </html>
