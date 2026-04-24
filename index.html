@@ -436,9 +436,9 @@
             to { transform: rotate(360deg); }
         }
         .share-photo-container {
-            width: 110px; height: 110px; border-radius: 50%;
+            width: 110px !important; height: 110px !important; border-radius: 50% !important;
             border: 3px solid var(--primary);
-            overflow: hidden; flex-shrink: 0;
+            overflow: hidden; flex-shrink: 0 !important;
             box-shadow: 0 0 25px var(--primary-glow);
             background: #111;
         }
@@ -448,15 +448,18 @@
             0% { transform: scale(1) translateY(0); }
             100% { transform: scale(1.1) translateY(-8px); }
         }
-        .share-name { font-size: 32px; font-weight: 900; color: #fff; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
-        .share-text { font-size: 17px; color: #ccc; font-weight: 600; line-height: 1.4; margin-bottom: 10px; }
+        .share-name { font-size: 32px; font-weight: 900; color: #fff; margin-bottom: 5px; text-transform: uppercase; }
+        .share-text { font-size: 17px; color: #ccc; font-weight: 600; line-height: 1.4; margin-bottom: 10px; direction: rtl; }
         .share-badge { 
             background: linear-gradient(45deg, var(--primary), var(--primary-dark)); 
-            color: #fff; padding: 8px 25px; border-radius: 25px; 
-            font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px;
+            color: #fff; padding: 10px 25px; border-radius: 25px; 
+            font-size: 14px; font-weight: 900; text-transform: uppercase;
             box-shadow: 0 5px 15px var(--primary-glow);
+            display: inline-block; direction: rtl;
         }
-        .share-logo { position: absolute; bottom: 20px; font-weight: 900; color: rgba(255,255,255,0.05); letter-spacing: 6px; font-size: 10px; }
+        .share-logo-tags { margin-top: 20px; direction: ltr; }
+        .share-tags { color: #444; font-size: 9px; font-weight: bold; letter-spacing: 1px; margin-bottom: 10px; }
+        .share-logo { font-weight: 900; color: rgba(255,255,255,0.05); letter-spacing: 5px; font-size: 10px; text-transform: uppercase; }
     </style>
 
 </head>
@@ -1121,8 +1124,10 @@
                 <div class="share-name" id="share-user-name">اسم البطل</div>
                 <div class="share-text" id="share-workout-text">خلصت تمرينة النهاردة<br>مع <span style="color:var(--primary);">Fire Gym</span></div>
                 <div class="share-badge" id="share-random-phrase">Official Athlete</div>
-                <div style="margin-top:40px; color:#333; font-size:10px; font-weight:bold; letter-spacing:2px;">#FIRE_GYM #NO_LIMITS #WORKOUT</div>
-                <div class="share-logo">FIRE GYM ELITE</div>
+                <div class="share-logo-tags">
+                    <div class="share-tags">#FIRE_GYM #NO_LIMITS #WORKOUT</div>
+                    <div class="share-logo">FIRE GYM ELITE</div>
+                </div>
             </div>
         </div>
         <div style="display:flex; gap:12px; margin-top:25px; width:100%; max-width:360px;">
@@ -1135,7 +1140,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="scripts_bundle.js?v=7.0.1"></script>
+    <script src="scripts_bundle.js?v=7.0.5"></script>
 
 </body>
 </html>
