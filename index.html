@@ -22,17 +22,17 @@
     </script>
     <style>
         :root { 
-            --primary: #ff3b30; 
-            --primary-glow: rgba(255, 59, 48, 0.4);
-            --primary-dark: #8e0000; 
-            --bg: #050505; 
-            --surface: rgba(25, 25, 25, 0.7); 
-            --text: #ffffff; 
-            --text-muted: #888888; 
-            --accent: #ffcc00; 
-            --success: #4cd964; 
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #c62828; 
+            --primary-glow: rgba(198, 40, 40, 0.2);
+            --primary-dark: #8b1a1a; 
+            --bg: #0a0a0a; 
+            --surface: rgba(20, 20, 20, 0.8); 
+            --text: #e0e0e0; 
+            --text-muted: #777777; 
+            --accent: #b8860b; 
+            --success: #2e7d32; 
+            --glass: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.05);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
@@ -129,9 +129,30 @@
             box-shadow: 0 0 20px rgba(255,59,48,0.15); 
         }
 
-        /* Responsive Design - Enhanced for Mobile */
+        /* Premium Registration Bottom Sheet for Mobile */
         @media (max-width: 600px) {
             .auth-card { padding: 35px 20px; border-radius: 25px; margin: 10px; width: 95%; }
+            .auth-bottom-sheet {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100% !important;
+                max-width: none !important;
+                border-radius: 40px 40px 0 0 !important;
+                margin: 0 !important;
+                padding: 30px 20px 40px !important;
+                max-height: 90vh;
+                overflow-y: auto;
+                animation: slideUpSheet 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                z-index: 10002;
+                border: 1px solid rgba(255, 59, 48, 0.3);
+                border-bottom: none;
+            }
+            @keyframes slideUpSheet {
+                from { transform: translateY(100%); }
+                to { transform: translateY(0); }
+            }
             h1 { font-size: 36px !important; }
             h2 { font-size: 28px !important; }
             .btn-full { padding: 18px; font-size: 17px; border-radius: 18px; }
@@ -460,6 +481,8 @@
         .share-logo-tags { margin-top: 20px; direction: ltr; }
         .share-tags { color: #444; font-size: 9px; font-weight: bold; letter-spacing: 1px; margin-bottom: 10px; }
         .share-logo { font-weight: 900; color: rgba(255,255,255,0.05); letter-spacing: 5px; font-size: 10px; text-transform: uppercase; }
+        .user-admin-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.15); background: linear-gradient(135deg, #161616, #0a0a0a) !important; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .user-admin-card:active { transform: scale(0.97); }
     </style>
 
 </head>
@@ -509,7 +532,8 @@
             <button onclick="localStorage.clear(); sessionStorage.clear(); location.reload(true);" style="margin-top:25px; background:#222; border:1px solid #333; color:#fff; padding:10px; border-radius:10px; font-size:11px; width:100%; cursor:pointer;">🔄 تحديث إجباري (حل مشاكل تسجيل الدخول)</button>
         </div>
 
-        <div class="auth-card hidden" id="register-form">
+        <div class="auth-card auth-bottom-sheet hidden" id="register-form">
+            <div style="width:40px; height:5px; background:rgba(255,255,255,0.1); border-radius:10px; margin:0 auto 20px;"></div>
             <h2 style="margin-bottom:20px; color:var(--primary);">بيانات البطل 🔥</h2>
             <div class="input-group"><label>الاسم بالكامل</label><input type="text" id="reg-name"></div>
             <div class="input-group"><label>رقم الموبايل</label><input type="tel" id="reg-phone"></div>
@@ -527,6 +551,14 @@
                     <option value="نظام تدريب">نظام تدريب 🏋️‍♂️</option>
                     <option value="نظام تغذيه">نظام تغذيه 🥗</option>
                     <option value="نظام VIP">نظام VIP ⭐</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>مدة الاشتراك 🗓️</label>
+                <select id="reg-duration">
+                    <option value="1">اشتراك شهري (1 شهر) 🗓️</option>
+                    <option value="3">اشتراك ربع سنوي (3 شهور) 🔋</option>
+                    <option value="12">اشتراك سنوي (12 شهر) 🔥</option>
                 </select>
             </div>
             <div class="input-group"><label>اختر كلمة سر</label><input type="password" id="reg-pass" placeholder="******"></div>
@@ -694,10 +726,22 @@
                     </div>
                     <h2 id="me-name" style="font-size:24px; margin-bottom:5px;">البطل</h2>
                     <p id="me-goal-badge" style="display:inline-block; background:var(--primary); color:#fff; padding:5px 15px; border-radius:20px; font-size:12px; font-weight:bold;"></p>
-                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:30px;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:30px;">
+                        <div style="background:#111; padding:15px; border-radius:18px; border:1px solid #333;"><small style="color:#777; display:block; margin-bottom:5px;">السن</small><b id="me-age" style="color:var(--accent); font-size:20px;">--</b></div>
                         <div style="background:#111; padding:15px; border-radius:18px; border:1px solid #333;"><small style="color:#777; display:block; margin-bottom:5px;">الوزن</small><b id="me-weight" style="color:var(--accent); font-size:20px;">--</b></div>
                         <div style="background:#111; padding:15px; border-radius:18px; border:1px solid #333;"><small style="color:#777; display:block; margin-bottom:5px;">الطول</small><b id="me-height" style="color:var(--accent); font-size:20px;">--</b></div>
                         <div style="background:#111; padding:15px; border-radius:18px; border:1px solid #333;"><small style="color:#777; display:block; margin-bottom:5px;">دهون %</small><b id="me-fat" style="color:var(--accent); font-size:20px;">--</b></div>
+                    </div>
+                    
+                    <div style="background:rgba(255,59,48,0.05); padding:20px; border-radius:20px; border:1px solid rgba(255,59,48,0.2); margin-top:20px; text-align:right;">
+                        <small style="color:#aaa; display:block; margin-bottom:5px; font-size:11px;">🚀 حالة الاشتراك الحالي:</small>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <b id="me-expiry-days" style="color:#fff; font-size:18px;">-- يوم</b>
+                            <span id="me-expiry-date" style="color:var(--accent); font-size:13px; font-weight:bold;">-- / -- / ----</span>
+                        </div>
+                        <div id="expiry-progress-bar" style="width:100%; height:6px; background:#222; border-radius:10px; margin-top:12px; overflow:hidden;">
+                            <div id="expiry-progress-fill" style="width:0%; height:100%; background:var(--primary); transition:0.5s;"></div>
+                        </div>
                     </div>
                     <div style="margin-top:30px; display:flex; flex-direction:column; gap:12px;">
                         <button onclick="editMyInfo()" class="btn-full" style="background:rgba(255,255,255,0.05); border:1px solid #444; font-size:14px;">✏️ تعديل بياناتي الحيوية</button>
@@ -724,33 +768,36 @@
 
                 <div class="card" style="margin-top:20px; border-right:5px solid var(--accent);">
                     <h3 style="margin-bottom:20px; display:flex; align-items:center; gap:10px;">📊 نظرة عامة على الجيم <span style="font-size:12px; font-weight:normal; color:var(--text-muted);">(تحديث لحظي)</span></h3>
-                <div class="tracker-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:25px;">
-                    <div class="track-btn" style="padding:15px; border-radius:18px;">
-                        <b id="stat-total" style="font-size:24px; color:var(--text);">0</b>
-                        <span style="font-size:10px; color:var(--text-muted);">إجمالي الأبطال</span>
+                <div class="tracker-grid" style="grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:25px;">
+                    <!-- إجمالي المشتركين -->
+                    <div class="track-btn" style="padding:15px; border-radius:20px; position:relative; background:rgba(255,255,255,0.03);">
+                        <b id="stat-total-val" style="font-size:24px; color:#fff;">0</b>
+                        <span style="font-size:10px; color:#aaa;">عدد المشتركين 👥</span>
                     </div>
-                    <div class="track-btn" style="padding:15px; border-radius:18px;">
-                        <b id="stat-active" style="font-size:24px; color:var(--success);">0</b>
-                        <span style="font-size:10px; color:var(--text-muted);">اشتراكات نشطة</span>
+                    
+                    <!-- طلبات الانضمام -->
+                    <div class="track-btn" style="padding:15px; border-radius:20px; position:relative; cursor:pointer; background:rgba(255,255,255,0.03);" onclick="document.getElementById('pending-requests-modal').classList.remove('hidden')">
+                        <b id="stat-pending-val" style="font-size:24px; color:var(--primary);">0</b>
+                        <span style="font-size:10px; color:#aaa;">طلبات انضمام 🆕</span>
+                        <div id="dot-pending" class="notif-dot hidden" style="position:absolute; top:12px; right:12px; width:10px; height:10px; background:#ff3b30; border-radius:50%; box-shadow:0 0 10px #ff3b30;"></div>
                     </div>
-                    <div class="track-btn" style="padding:15px; border-radius:18px;">
-                        <b id="stat-vip" style="font-size:24px; color:var(--accent);">0</b>
-                        <span style="font-size:10px; color:var(--text-muted);">أبطال VIP</span>
+
+                    <!-- اشتراكات منتهية -->
+                    <div class="track-btn" style="padding:15px; border-radius:20px; position:relative; background:rgba(255,255,255,0.03);">
+                        <b id="stat-expired-val" style="font-size:24px; color:#ff3b30;">0</b>
+                        <span style="font-size:10px; color:#aaa;">اشتراكات منتهية ⚠️</span>
                     </div>
-                </div>
-                <div style="height:250px; background:rgba(0,0,0,0.4); border-radius:20px; padding:15px; border:1px solid rgba(255,255,255,0.05);">
-                    <canvas id="adminStatsChart"></canvas>
+
+                    <!-- طلبات تغيير النظام -->
+                    <div class="track-btn" style="padding:15px; border-radius:20px; position:relative; cursor:pointer; background:rgba(255,255,255,0.03);" onclick="document.getElementById('goal-change-modal').classList.remove('hidden')">
+                        <b id="stat-goals-val" style="font-size:24px; color:var(--accent);">0</b>
+                        <span style="font-size:10px; color:#aaa;">تغيير نظام 🚀</span>
+                        <div id="dot-goals" class="notif-dot hidden" style="position:absolute; top:12px; right:12px; width:10px; height:10px; background:#ffb300; border-radius:50%; box-shadow:0 0 10px #ffb300;"></div>
+                    </div>
                 </div>
             </div>
 
-            <div class="card" style="border-right:5px solid var(--accent); margin-top:20px;">
-                    <h3 style="margin-bottom:15px;">طلبات اشتراك 🆕</h3>
-                    <div id="pending-users-list"></div>
-                </div>
-                <div class="card" id="goal-change-requests-card" style="border-right:5px solid #ffb300; display:none;">
-                    <h3 style="margin-bottom:15px;">طلبات تغيير النظام 🚀</h3>
-                    <div id="goal-change-list"></div>
-                </div>
+                <!-- تم نقل القوائم لنوافذ مستقلة لترتيب الواجهة -->
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                         <h3 style="margin:0;">قائمة الأبطال 👥</h3>
@@ -771,11 +818,13 @@
                     <div class="input-group" style="margin: 10px 0 20px;">
                         <input type="tel" id="admin-search-phone" placeholder="🔍 ابحث برقم الموبايل..." oninput="filterAdminUsers()" style="border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid #333; padding: 15px; width: 100%; color: #fff; outline: none; transition: 0.3s;">
                     </div>
-                    <div id="admin-user-filters" style="display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:20px;">
-                        <button class="sub-btn" style="background:var(--primary); font-size:10px;" onclick="filterAdminUsers('all')">الكل</button>
-                        <button class="sub-btn" style="background:#222; font-size:10px;" onclick="filterAdminUsers('نظام تدريب')">تدريب</button>
-                        <button class="sub-btn" style="background:#222; font-size:10px;" onclick="filterAdminUsers('نظام تغذيه')">تغذية</button>
-                        <button class="sub-btn" style="background:#222; font-size:10px;" onclick="filterAdminUsers('نظام VIP')">VIP</button>
+                    <div id="admin-user-filters" style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:20px;">
+                        <button class="sub-btn" style="background:var(--primary); font-size:9px; padding:10px 2px;" onclick="filterAdminUsers('all')">الكل</button>
+                        <button class="sub-btn" style="background:#222; font-size:9px; padding:10px 2px;" onclick="filterAdminUsers('نظام تدريب')">تدريب</button>
+                        <button class="sub-btn" style="background:#222; font-size:9px; padding:10px 2px;" onclick="filterAdminUsers('نظام تغذيه')">تغذية</button>
+                        <button class="sub-btn" style="background:#222; font-size:9px; padding:10px 2px;" onclick="filterAdminUsers('نظام تدريب + تغذيه')">مكس 🔄</button>
+                        <button class="sub-btn" style="background:#222; font-size:9px; padding:10px 2px;" onclick="filterAdminUsers('نظام VIP')">VIP</button>
+                        <button class="sub-btn" style="background:#ff3b30; font-size:9px; padding:10px 2px;" onclick="filterAdminUsers('expired')">المنتهي ⌛</button>
                     </div>
                     <div id="all-users-list"></div>
                 </div>
@@ -814,9 +863,9 @@
         </div>
 
         <div class="bottom-tabs hidden" id="bottom-nav-bar">
-            <a href="javascript:void(0)" class="tab active" onclick="switchTab('user', this)"><span>🏋️‍♂️</span>الرئيسية</a>
+            <a href="javascript:void(0)" id="home-tab-nav" class="tab active" onclick="switchTab('user', this)"><span>🏋️‍♂️</span>الرئيسية</a>
             <a href="javascript:void(0)" class="tab" onclick="switchTab('technique', this)"><span>🎥</span>التكنيك</a>
-            <a href="javascript:void(0)" class="tab" onclick="switchTab('history', this)"><span>📝</span>السجل</a>
+            <a href="javascript:void(0)" id="history-tab-nav" class="tab" onclick="switchTab('history', this)"><span>📝</span>السجل</a>
             <a href="javascript:void(0)" class="tab" id="more-nav" onclick="toggleMoreMenu()"><span>🎒</span>المزيد</a>
             <a href="javascript:void(0)" id="admin-nav" class="tab hidden" onclick="switchTab('admin', this)"><span>👑</span>الأدمن</a>
             
@@ -827,9 +876,14 @@
         </div>
     </div>
 
-    <!-- قائمة المزيد المنبثقة (WhatsApp Style) -->
     <div id="more-menu-overlay" class="modal hidden" style="background:rgba(0,0,0,0.2); backdrop-filter:blur(2px); transition: 0.3s; z-index:10001;" onclick="toggleMoreMenu()">
-        <div id="more-menu-content" style="position:fixed; bottom:-100%; left:20px; width:260px; border-radius:25px; padding:10px; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); background:rgba(255,255,255,0.98); border:1px solid #eee; box-shadow:0 15px 40px rgba(0,0,0,0.2);" onclick="event.stopPropagation()">
+        <div id="more-menu-content" style="position:fixed; bottom:-100%; left:20px; width:260px; border-radius:25px; padding:10px; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); background:rgba(255,255,255,0.98); border:1px solid #eee; box-shadow:0 15px 40px rgba(0,0,0,0.2); max-height:70vh; overflow-y:auto; scrollbar-width: none; -ms-overflow-style: none;" onclick="event.stopPropagation()">
+            <!-- Hidden Scrollbar Hack -->
+            <style>#more-menu-content::-webkit-scrollbar { display: none; }</style>
+            <!-- Hidden Scrollbar Hack -->
+            <style>#more-menu-content::-webkit-scrollbar { display: none; }</style>
+            
+            <div style="width:40px; height:5px; background:#ddd; border-radius:10px; margin:0 auto 20px auto;"></div>
             
             <div style="display:flex; flex-direction:column; gap:5px; padding:10px;">
                 <!-- بياناتي الشخصية (أنا) -->
@@ -856,6 +910,12 @@
                     <b style="color:#333; font-size:15px; flex:1; text-align:right;">إدارة المعلومات</b>
                 </div>
 
+                <!-- تواصل مع كابتن (WhatsApp) -->
+                <a href="https://wa.me/201100896637" target="_blank" style="text-decoration:none; display:flex; align-items:center; gap:15px; padding:12px; border-radius:15px; cursor:pointer;" class="menu-item-whatsapp">
+                    <div style="background:#25d366; width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow:0 4px 10px rgba(37,211,102,0.3);">💬</div>
+                    <b style="color:#333; font-size:15px; flex:1; text-align:right;">تواصل مع كابتن (WhatsApp)</b>
+                </a>
+
                 <!-- خروج من الأبلكيشن -->
                 <div onclick="fireGymChangePass(); toggleMoreMenu();" style="display:flex; align-items:center; gap:15px; padding:12px; border-radius:15px; cursor:pointer;" class="menu-item-whatsapp">
                     <div style="background:#ffb300; width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; box-shadow:0 4px 10px rgba(255,179,0,0.3);">🔑</div>
@@ -870,7 +930,7 @@
                 <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
 
                 <div style="text-align:center; padding:10px;">
-                    <p style="font-size:10px; color:#999; margin:0;">Fire Gym Elite V.7.0.7</p>
+                    <p style="font-size:10px; color:#999; margin:0;">Fire Gym Elite V.7.1.3</p>
                 </div>
             </div>
         </div>
@@ -919,6 +979,26 @@
                 <div style="display:flex; gap:8px;">
                     <button onclick="deleteUser()" style="background:rgba(255,59,48,0.2); border:1px solid #ff3b30; color:#ff3b30; padding:8px 15px; border-radius:12px; font-size:12px; display:flex; align-items:center; gap:5px;">🗑️ حذف</button>
                     <button onclick="document.getElementById('profile-modal').classList.add('hidden')" style="background:#333; border:1px solid #444; color:#fff; padding:8px 15px; border-radius:12px; font-size:12px;">إغلاق</button>
+                </div>
+            </div>
+
+            <!-- Vitals Summary for Coach -->
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-bottom:20px;">
+                <div style="background:#111; padding:10px; border-radius:12px; border:1px solid #222; text-align:center;">
+                    <small style="color:#777; font-size:9px; display:block;">السن</small>
+                    <b id="admin-view-age" style="color:var(--accent); font-size:14px;">--</b>
+                </div>
+                <div style="background:#111; padding:10px; border-radius:12px; border:1px solid #222; text-align:center;">
+                    <small style="color:#777; font-size:9px; display:block;">الوزن</small>
+                    <b id="admin-view-weight" style="color:var(--accent); font-size:14px;">--</b>
+                </div>
+                <div style="background:#111; padding:10px; border-radius:12px; border:1px solid #222; text-align:center;">
+                    <small style="color:#777; font-size:9px; display:block;">الطول</small>
+                    <b id="admin-view-height" style="color:var(--accent); font-size:14px;">--</b>
+                </div>
+                <div style="background:#111; padding:10px; border-radius:12px; border:1px solid #222; text-align:center;">
+                    <small style="color:#777; font-size:9px; display:block;">الدهون %</small>
+                    <b id="admin-view-fat" style="color:var(--accent); font-size:14px;">--</b>
                 </div>
             </div>
 
@@ -1037,16 +1117,18 @@
 
     <!-- Admin Info Management Modal -->
     <div id="admin-info-modal" class="modal hidden" style="z-index: 10006;">
-        <div class="card" style="width:95%; max-width:550px; padding:25px; background:#0a0a0a; border:1px solid #333; max-height:85vh; overflow-y:auto; border-radius:30px;">
+        <div id="admin-info-card" class="card" style="width:95%; max-width:550px; padding:25px; background:#0a0a0a; border:1px solid #333; max-height:85vh; overflow-y:auto; border-radius:30px; position:relative;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                 <h3 style="color:var(--accent); margin:0;">📚 إدارة بنك المعلومات</h3>
                 <button onclick="document.getElementById('admin-info-modal').classList.add('hidden')" style="background:#222; border:none; color:#fff; width:35px; height:35px; border-radius:50%;">✕</button>
             </div>
 
             <div style="background:rgba(255,255,255,0.03); border:1px dashed #444; padding:20px; border-radius:20px; margin-top:10px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h4 style="color:var(--accent); margin:0;">✍️ إضافة معلومة سريعة</h4>
-                    <button onclick="forceSeedKnowledge()" style="background:#111; border:1px solid #333; color:#777; padding:5px 10px; border-radius:8px; font-size:10px;">🔄 إعادة تعيين المحتوى</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:rgba(255,255,255,0.02); padding:10px; border-radius:15px; border:1px solid rgba(255,255,255,0.05);">
+                    <h4 style="color:var(--accent); margin:0; font-size:16px;">✍️ إضافة معلومة سريعة</h4>
+                    <button onclick="forceSeedKnowledge()" style="background:rgba(0,122,255,0.1); color:#007aff; border:1px solid #007aff; border-radius:10px; padding:8px 15px; font-size:11px; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:5px; transition:0.3s; box-shadow:0 0 10px rgba(0,122,255,0.2);">
+                        🔄 إعادة تعيين المحتوى
+                    </button>
                 </div>
                 <input type="text" id="info-q" placeholder="السؤال..." style="width:100%; padding:12px; background:#000; border:1px solid #333; color:#fff; border-radius:12px; margin-bottom:10px;">
                 <textarea id="info-a" placeholder="الإجابة..." style="width:100%; height:80px; background:#000; border:1px solid #333; color:#fff; border-radius:12px; padding:12px; margin-bottom:15px;"></textarea>
@@ -1100,6 +1182,28 @@
         </div>
     </div>
 
+    <!-- Modal: Pending Join Requests -->
+    <div id="pending-requests-modal" class="modal hidden" style="z-index: 10002;">
+        <div class="card" style="width:95%; max-width:500px; padding:25px; background:#0a0a0a; border:1px solid #333; max-height:85vh; overflow-y:auto; border-radius:30px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="color:var(--primary); margin:0;">طلبات انضمام جديدة 🆕</h3>
+                <button onclick="document.getElementById('pending-requests-modal').classList.add('hidden')" style="background:#222; border:none; color:#fff; width:35px; height:35px; border-radius:50%;">✕</button>
+            </div>
+            <div id="pending-users-list-modal"></div>
+        </div>
+    </div>
+
+    <!-- Modal: Goal Change Requests -->
+    <div id="goal-change-modal" class="modal hidden" style="z-index: 10002;">
+        <div class="card" style="width:95%; max-width:500px; padding:25px; background:#0a0a0a; border:1px solid #333; max-height:85vh; overflow-y:auto; border-radius:30px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="color:#ffb300; margin:0;">طلبات تغيير النظام 🚀</h3>
+                <button onclick="document.getElementById('goal-change-modal').classList.add('hidden')" style="background:#222; border:none; color:#fff; width:35px; height:35px; border-radius:50%;">✕</button>
+            </div>
+            <div id="goal-change-list-modal"></div>
+        </div>
+    </div>
+
     <!-- Notification Modal -->
     <div id="notif-modal" class="modal hidden" style="z-index: 10008;">
         <div class="card" style="width:95%; max-width:500px; padding:25px; background:#0a0a0a; border:1px solid #333; max-height:85vh; overflow-y:auto; border-radius:30px;">
@@ -1140,16 +1244,22 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="scripts_bundle.js?v=7.0.7"></script>
+    <script src="scripts_bundle.js?v=7.2.2"></script>
 
-    <!-- Full Screen Image Viewer (Fallback for Mobile) -->
-    <div id="full-screen-viewer" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000; z-index:9999999; display:none; flex-direction:column; align-items:center; justify-content:center; padding:20px; overflow:hidden; pointer-events: auto !important;">
-        <button onclick="closeFullViewer()" style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.2); border:none; color:#fff; padding:12px 25px; border-radius:15px; font-weight:bold; z-index:10000000; cursor:pointer;">إغلاق X</button>
-        <p style="color:#fff; font-size:14px; margin-bottom:20px; text-align:center; font-weight:bold; text-shadow: 0 2px 10px #000;">عاش يا بطل! اضغط ضغطة مطولة على الصورة عشان تحفظها 🔥</p>
-        <div style="position:relative; width:100%; display:flex; justify-content:center; align-items:center;">
-            <img id="viewer-img" style="max-width:100%; max-height:75vh; border-radius:15px; box-shadow:0 0 50px rgba(255,59,48,0.5); -webkit-touch-callout: default !important; -webkit-user-select: auto !important; user-select: auto !important; pointer-events: auto !important; display:block; cursor:pointer;">
+    <div id="full-screen-viewer" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000; z-index:9999999; display:none; flex-direction:column; align-items:center; justify-content:center; padding:20px; overflow:hidden;">
+        <button onclick="closeFullViewer()" style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.2); border:none; color:#fff; padding:12px 25px; border-radius:15px; font-weight:bold; z-index:10000000;">إغلاق X</button>
+        
+        <div id="viewer-loading-text" style="color:var(--primary); font-weight:bold; margin-bottom:15px;">جاري معالجة الصورة... 🔥</div>
+
+        <div style="position:relative; width:100%; display:flex; justify-content:center; align-items:center; margin-bottom:20px;">
+            <img id="viewer-img" style="max-width:100%; max-height:65vh; border-radius:15px; box-shadow:0 0 50px rgba(255,59,48,0.5); display:block;">
         </div>
-        <button onclick="closeFullViewer()" class="btn-full" style="margin-top:25px; max-width:250px; background:rgba(255,255,255,0.1); border:1px solid #444;">الرجوع للأبلكيشن</button>
+
+        <div style="display:flex; flex-direction:column; gap:12px; width:100%; max-width:300px;">
+            <button id="direct-download-btn" class="btn-full" style="background:var(--success); color:#000; font-weight:900; font-size:16px; border:none; box-shadow:0 10px 20px rgba(76,175,80,0.3);">📥 حفظ في المعرض (Gallery)</button>
+            <p style="color:#777; font-size:11px; text-align:center;">لو الزرار ما اشتغلش، اضغط ضغطة مطولة على الصورة</p>
+            <button onclick="closeFullViewer()" class="btn-full" style="background:rgba(255,255,255,0.1); border:1px solid #444; font-size:14px;">الرجوع للأبلكيشن</button>
+        </div>
     </div>
 
 </body>
