@@ -1191,39 +1191,41 @@ async function downloadShareCard() {
 }
 
 function saveBlobAsFile(blob) {
-    const url = URL.createObjectURL(blob);
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-        Swal.fire({
-            title: 'جاهز للحفظ! 📸',
-            html: `
-                <p style="font-size:13px; color:#aaa; margin-bottom:15px;">اضغط ضغطة مطولة على الصورة تحت واختار <b>"Save Image"</b></p>
-                <img src="${url}" style="width:100%; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.5); border:1px solid #333;">
-            `,
-            background: '#121212',
-            color: '#fff',
-            showConfirmButton: true,
-            confirmButtonText: 'تم ✅',
-            confirmButtonColor: 'var(--primary)',
-            width: '90%'
-        });
-    } else {
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `FireGym_Workout_${new Date().getTime()}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    const reader = new FileReader();
+    reader.onloadend = function() {
+        const base64data = reader.result;
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         
-        Swal.fire({
-            icon: 'success',
-            title: 'تم الحفظ! 📸',
-            text: 'الصورة بقت جاهزة في التحميلات عندك 🔥',
-            background: '#121212',
-            color: '#fff'
-        });
-    }
-    
-    setTimeout(() => URL.revokeObjectURL(url), 60000); // وقت كافي جداً للحفظ
+        if (isMobile) {
+            Swal.fire({
+                title: 'جاهز للحفظ! 📸',
+                html: `
+                    <p style="font-size:13px; color:#aaa; margin-bottom:15px;">اضغط ضغطة مطولة على الصورة تحت واختار <b>"Save Image"</b> أو <b>"Download Image"</b></p>
+                    <img src="${base64data}" style="width:100%; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.5); border:1px solid #333;">
+                `,
+                background: '#121212',
+                color: '#fff',
+                showConfirmButton: true,
+                confirmButtonText: 'تم ✅',
+                confirmButtonColor: 'var(--primary)',
+                width: '90%'
+            });
+        } else {
+            const link = document.createElement('a');
+            link.href = base64data;
+            link.download = `FireGym_Workout_${new Date().getTime()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'تم الحفظ! 📸',
+                text: 'الصورة بقت جاهزة في التحميلات عندك 🔥',
+                background: '#121212',
+                color: '#fff'
+            });
+        }
+    };
+    reader.readAsDataURL(blob);
 }
