@@ -1150,7 +1150,7 @@ async function downloadShareCard() {
 
     try {
         const canvas = await html2canvas(card, {
-            scale: 3, // جودة أعلى للمشاركة
+            scale: 2, // تقليل الحجم شوية عشان الأبلكيشن يقبله
             backgroundColor: '#000',
             useCORS: true,
             logging: false
