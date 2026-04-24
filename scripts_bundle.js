@@ -1,11 +1,18 @@
 // إعدادات Firebase الحقيقية والمستقرة
 console.log("FIRE GYM SCRIPT INITIALIZING...");
+
+// منع ظهور صفحة الدخول لو المستخدم مسجل دخول بالفعل (Fast Path)
+if(localStorage.getItem('fire_gym_phone')) {
+    const style = document.createElement('style');
+    style.innerHTML = '#auth-section { display: none !important; } #app-content { display: block !important; }';
+    document.head.appendChild(style);
+}
+
 window.onerror = function(m, u, l) { 
     const msg = "CRITICAL ERROR: " + m + "\nLine: " + l + "\nURL: " + u;
-    alert(msg);
     console.error(msg);
 };
-alert("Script Start Check - If you see this, JS is loaded.");
+
 const firebaseConfig = { 
     apiKey: "AIzaSyAxMNBdkNk_brPMlq1O3_HPRWOIqj-lb24", 
     authDomain: "fire-gym-9c753.firebaseapp.com", 
@@ -64,12 +71,20 @@ async function register() {
     const n = document.getElementById('reg-name').value.trim();
     const p = document.getElementById('reg-phone').value.trim();
     const pass = document.getElementById('reg-pass').value.trim();
+    const durationMonths = parseInt(document.getElementById('reg-duration').value) || 1;
+    
     if(!n || !p || !pass) return Swal.fire('نقص بيانات', 'برجاء ملء كل الخانات يا بطل', 'warning');
     Swal.fire({ title: 'جاري إرسال طلبك...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+    
+    // حساب تاريخ انتهاء الاشتراك
+    const expiry = new Date();
+    expiry.setMonth(expiry.getMonth() + durationMonths);
+    
     const data = { 
         name: n, phone: p, age: document.getElementById('reg-age').value, 
         height: document.getElementById('reg-height').value, weight: document.getElementById('reg-weight').value, 
         fat: document.getElementById('reg-fat').value, goal: document.getElementById('reg-goal').value, 
+        duration: durationMonths, expiryDate: expiry.getTime(),
         password: pass, status: 'pending', workoutPlan: {}, ts: firebase.firestore.FieldValue.serverTimestamp() 
     };
     try {
@@ -109,11 +124,41 @@ async function enterApp(u) {
             }
             document.getElementById('user-display-name').innerText = data.name;
             document.getElementById('me-name').innerText = data.name;
+            document.getElementById('me-age').innerText = (data.age || '--');
             document.getElementById('me-weight').innerText = (data.weight || '--') + ' كغم';
             document.getElementById('me-height').innerText = (data.height || '--') + ' سم';
             document.getElementById('me-fat').innerText = (data.fat || '0') + ' %';
             document.getElementById('me-goal-badge').innerText = (data.role === 'admin' ? '👑 كابتن الفريق' : (data.goal || 'بطل فير جيم'));
             if(data.photo) document.getElementById('me-photo').src = data.photo;
+            
+            // تحديث بيانات الاشتراك
+            if(data.expiryDate) {
+                const exp = data.expiryDate;
+                const now = Date.now();
+                const diff = exp - now;
+                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                const dateObj = new Date(exp);
+                const dateStr = `${dateObj.getDate()} / ${dateObj.getMonth()+1} / ${dateObj.getFullYear()}`;
+                
+                document.getElementById('me-expiry-date').innerText = dateStr;
+                const daysEl = document.getElementById('me-expiry-days');
+                
+                if(days > 0) {
+                    daysEl.innerText = `باقي ${days} يوم`;
+                    daysEl.style.color = "#fff";
+                    // حساب النسبة للشريط (بافتراض أقصى مدة 30 يوم للعرض الجمالي لو شهر)
+                    let totalDays = (data.duration || 1) * 30;
+                    let percent = Math.max(0, Math.min(100, (days / totalDays) * 100));
+                    document.getElementById('expiry-progress-fill').style.width = percent + "%";
+                    document.getElementById('expiry-progress-fill').style.background = percent < 20 ? "#ff3b30" : "var(--primary)";
+                } else {
+                    daysEl.innerText = "منتهي ⚠️";
+                    daysEl.style.color = "#ff3b30";
+                    document.getElementById('expiry-progress-fill').style.width = "100%";
+                    document.getElementById('expiry-progress-fill').style.background = "#ff3b30";
+                }
+            }
+
             const noteBox = document.getElementById('captain-notes-box');
             if(data.captainNotes) { noteBox.classList.remove('hidden'); document.getElementById('captain-notes-text').innerText = data.captainNotes; } 
             else { noteBox.classList.add('hidden'); }
@@ -125,7 +170,14 @@ async function enterApp(u) {
     if(u.role === 'admin') { 
         document.getElementById('admin-nav').classList.remove('hidden'); 
         document.getElementById('admin-info-menu-btn').classList.remove('hidden');
-        document.getElementById('add-technique-btn').classList.remove('hidden'); loadAdmin(); 
+        document.getElementById('add-technique-btn').classList.remove('hidden');
+        
+        // Hide Home and History for Admin
+        if(document.getElementById('home-tab-nav')) document.getElementById('home-tab-nav').classList.add('hidden');
+        if(document.getElementById('history-tab-nav')) document.getElementById('history-tab-nav').classList.add('hidden');
+        
+        switchTab('admin', document.getElementById('admin-nav'));
+        loadAdmin(); 
     } else { loadRecipes(); loadFoodPrefs(); }
 }
 
@@ -604,15 +656,55 @@ async function saveWorkoutTable() {
 
 // --- NOTIFICATIONS & MORE MENU ---
 async function sendNotificationTo(p, t, m) { 
-    try { await db.collection('notifications').add({ targetPhone: p.toString().trim(), title: t, message: m, ts: Date.now() }); } catch(e){} 
+    try { await db.collection('notifications').add({ targetPhone: p.toString().trim(), title: t, message: m, ts: Date.now(), read: false }); } catch(e){} 
 }
-function initSystemNotifications() { if (!("Notification" in window)) return; if (Notification.permission === "granted") listenForCustomNotifications(); else Notification.requestPermission().then(p => { if(p==="granted") listenForCustomNotifications(); }); }
-// Deleted duplicate listenForCustomNotifications
+
+function initSystemNotifications() { 
+    if (!("Notification" in window)) return; 
+    if (Notification.permission === "granted") listenForCustomNotifications(); 
+    else Notification.requestPermission().then(p => { if(p==="granted") listenForCustomNotifications(); }); 
+}
+
+function listenForCustomNotifications() {
+    if(!currentUser) return;
+    const p = currentUser.phone.toString().trim();
+    db.collection('notifications').where('targetPhone', '==', p).orderBy('ts', 'desc').limit(20).onSnapshot(snap => {
+        let unread = 0;
+        const list = snap.docs.map(doc => {
+            const d = doc.data();
+            if(!d.read) unread++;
+            return { id: doc.id, ...d };
+        });
+        
+        // تحديث الجرس للأدمن أو المستخدم العادي
+        const badgeAdmin = document.getElementById('notif-badge-admin');
+        if(badgeAdmin) {
+            if(unread > 0) {
+                badgeAdmin.innerText = unread;
+                badgeAdmin.classList.remove('hidden');
+            } else {
+                badgeAdmin.classList.add('hidden');
+            }
+        }
+    });
+}
 function toggleMoreMenu() {
     const overlay = document.getElementById('more-menu-overlay');
     const content = document.getElementById('more-menu-content');
-    if(overlay.classList.contains('hidden')) { overlay.classList.remove('hidden'); setTimeout(()=>content.style.bottom='90px', 10); } 
-    else { content.style.bottom='-100%'; setTimeout(()=>overlay.classList.add('hidden'), 300); }
+    const approved = allUsersData.filter(u => u.status === 'approved').length;
+    const pending = allUsersData.filter(u => u.status === 'pending').length;
+    const expired = allUsersData.filter(u => u.status === 'approved' && u.expiryDate && u.expiryDate < Date.now()).length;
+    
+    document.getElementById('stat-total-val').innerText = approved;
+    document.getElementById('stat-pending-val').innerText = pending;
+    document.getElementById('stat-expired-val').innerText = expired;
+    if(overlay.classList.contains('hidden')) { 
+        overlay.classList.remove('hidden'); 
+        setTimeout(()=>content.style.bottom='90px', 10); 
+    } else { 
+        content.style.bottom='-100%'; 
+        setTimeout(()=>overlay.classList.add('hidden'), 300); 
+    }
 }
 
 // --- EVALUATION & ADMIN ---
@@ -634,11 +726,96 @@ async function submitEvaluation() {
 }
 async function loadAdmin() {
     const snap = await db.collection('users').orderBy('name').get(); allUsersData = [];
-    snap.forEach(d => allUsersData.push({id: d.id, ...d.data()}));
+    let pendingCount = 0;
+    snap.forEach(d => {
+        const u = d.data();
+        allUsersData.push({id: d.id, ...u});
+        if(u.status === 'pending') pendingCount++;
+    });
+    
+    // تحديث الأرقام الأساسية
+    const approvedCount = allUsersData.filter(u => u.status === 'approved').length;
+    const expiredCount = allUsersData.filter(u => u.status === 'approved' && u.expiryDate && u.expiryDate < Date.now()).length;
+    
+    document.getElementById('stat-total-val').innerText = approvedCount;
+    document.getElementById('stat-pending-val').innerText = pendingCount;
+    document.getElementById('stat-expired-val').innerText = expiredCount;
+    document.getElementById('dot-pending').classList.toggle('hidden', pendingCount === 0);
+
+    // رادار لحظي لطلبات تغيير النظام
+    db.collection('goalChanges').onSnapshot(goalsSnap => {
+        const goalsCount = goalsSnap.size;
+        document.getElementById('stat-goals-val').innerText = goalsCount;
+        document.getElementById('dot-goals').classList.toggle('hidden', goalsCount === 0);
+        renderGoalChanges(goalsSnap);
+    });
+
     filterAdminUsers('all');
-    const pSnap = await db.collection('users').where('status','==','pending').get(); let ph = "";
-    pSnap.forEach(d => { const u = d.data(); ph += `<div class="card" style="display:flex; justify-content:space-between;"><b>${u.name}</b><div style="display:flex; gap:5px;"><button onclick="openProfile('${d.id}')">✍️</button><button onclick="approveUser('${d.id}')">✅</button></div></div>`; });
-    document.getElementById('pending-users-list').innerHTML = ph || '<p style="text-align:center; color:#444;">لا طلبات</p>';
+    
+    let ph = "";
+    const pSnap = await db.collection('users').where('status','==','pending').get(); 
+    pSnap.forEach(d => { 
+        const u = d.data(); 
+        ph += `<div class="card" style="display:flex; justify-content:space-between; align-items:center; border-right:4px solid var(--primary); margin-bottom:10px; background:#111;">
+                <b style="font-size:14px; color:#fff;">${u.name}</b>
+                <div style="display:flex; gap:8px;">
+                    <button onclick="openProfile('${d.id}')" style="background:#222; border:1px solid #444; border-radius:8px; padding:8px; cursor:pointer;" title="تجهيز الجدول">✍️</button>
+                    <button onclick="approveUser('${d.id}')" style="background:var(--primary); color:#fff; border:none; border-radius:8px; padding:8px 12px; cursor:pointer; font-weight:bold;">تفعيل ✅</button>
+                    <button onclick="deleteUser('${d.id}')" style="background:rgba(255,0,0,0.1); color:#ff3b30; border:1px solid #ff3b30; border-radius:8px; padding:8px; cursor:pointer;">🗑️</button>
+                </div>
+              </div>`; 
+    });
+    document.getElementById('pending-users-list-modal').innerHTML = ph || '<p style="text-align:center; color:#444; font-size:12px; padding:20px;">لا يوجد طلبات انضمام حالياً</p>';
+}
+
+function renderGoalChanges(snap) {
+    const list = document.getElementById('goal-change-list-modal');
+    let h = "";
+    snap.forEach(doc => {
+        const d = doc.data();
+        const goalId = doc.id;
+        const userPhone = String(d.userPhone || "").trim();
+        const newGoal = String(d.newGoal || "").trim();
+        
+        h += `<div class="card" style="margin-bottom:15px; background:#111; border-right:4px solid #ffb300; display:flex; justify-content:space-between; align-items:center; padding:15px; border-radius:18px;">
+                <div style="flex:1; text-align:right;">
+                    <b style="color:#fff; display:block; font-size:16px;">${d.userName}</b>
+                    <small style="color:#ffb300; font-size:12px;">طلب تغيير إلى: ${newGoal}</small>
+                </div>
+                <button onclick="approveGoalChange('${goalId}', '${userPhone}', '${newGoal}')" style="background:#ffb300; color:#000; border:none; padding:10px 20px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:14px; box-shadow:0 4px 10px rgba(255,179,0,0.2);">
+                    ✅ موافقة
+                </button>
+              </div>`;
+    });
+    list.innerHTML = h || '<div style="text-align:center; padding:40px; color:#444;"><span style="font-size:40px; display:block; margin-bottom:10px;">🚀</span> لا يوجد طلبات تغيير نظام حالياً</div>';
+}
+
+async function approveGoalChange(id, phone, goal) {
+    if(!id || !phone || !goal) return;
+    Swal.fire({ title: 'جاري التحديث...', didOpen: () => Swal.showLoading(), target: document.getElementById('goal-change-modal') });
+    try {
+        const cleanPhone = String(phone).trim();
+        const cleanGoal = String(goal).trim();
+        
+        await db.collection('users').doc(cleanPhone).update({ 
+            goal: cleanGoal,
+            lastUpdate: Date.now()
+        });
+
+        await db.collection('goalChanges').doc(id).delete();
+        sendNotificationTo(cleanPhone, "تم تغيير نظامك! 🚀", `الكابتن وافق على طلبك ودلوقتي نظامك هو: ${cleanGoal}`);
+        
+        Swal.fire({
+            title: 'تم التحديث بنجاح ✅',
+            icon: 'success',
+            timer: 2000,
+            target: document.getElementById('goal-change-modal')
+        });
+        loadAdmin();
+    } catch(e) { 
+        console.error("Error in approveGoalChange:", e);
+        Swal.fire({ title: 'خطأ', text: 'فشل التحديث، تأكد من الاتصال', icon: 'error', target: document.getElementById('goal-change-modal') }); 
+    }
 }
 let currentAdminFilter = 'all';
 function filterAdminUsers(goal = currentAdminFilter) {
@@ -647,25 +824,152 @@ function filterAdminUsers(goal = currentAdminFilter) {
     const list = document.getElementById('all-users-list'); 
     let filtered = allUsersData.filter(u => u.status === 'approved');
     
-    if(goal !== 'all') filtered = filtered.filter(u => u.goal === goal);
+    // تحديث ألوان أزرار الفلتر
+    const filterBtns = document.querySelectorAll('#admin-user-filters .sub-btn');
+    const colors = {
+        'all': 'var(--primary)',
+        'نظام تدريب': 'var(--primary)',
+        'نظام تغذيه': '#2e7d32',
+        'نظام تدريب + تغذيه': '#6a1b9a',
+        'نظام VIP': 'var(--accent)',
+        'expired': '#b71c1c'
+    };
+    
+    filterBtns.forEach(btn => {
+        const btnGoal = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+        btn.style.background = (btnGoal === goal) ? (colors[btnGoal] || '#1a1a1a') : '#1a1a1a';
+    });
+
+    if(goal === 'expired') {
+        filtered = allUsersData.filter(u => u.status === 'approved' && u.expiryDate && u.expiryDate < Date.now());
+    } else if(goal !== 'all') {
+        // فلتر مرن يبحث عن الكلمة الأساسية (مثل VIP أو تغذيه) داخل نص الهدف
+        const searchKey = goal.replace('نظام ', ''); 
+        filtered = filtered.filter(u => (u.goal || "").includes(searchKey));
+    }
     if(searchVal) filtered = filtered.filter(u => u.phone && u.phone.includes(searchVal));
 
-    list.innerHTML = filtered.map(u => `<div style="margin-bottom:10px; display:flex; gap:10px;"><button class="track-btn" style="flex:1; background:#1a1a1a;" onclick="openProfile('${u.id}')"><b>${u.name}</b></button><button onclick="activeTarget='${u.id}'; viewSelectedUserLogs()" style="width:50px;">📜</button></div>`).join('');
+    list.innerHTML = filtered.map(u => {
+        let goalIcon = "🏋️";
+        let goalColor = "var(--primary)";
+        const goalStr = u.goal || "";
+
+        if(goalStr.includes('تغذيه')) { goalIcon = "🥗"; goalColor = "#2e7d32"; }
+        else if(goalStr.includes('VIP')) { goalIcon = "⭐"; goalColor = "var(--accent)"; }
+        else if(goalStr.includes('+') || goalStr.includes('تغذية')) { // handle Mix variations
+             if(goalStr.includes('تدريب')) { goalIcon = "🔄"; goalColor = "#6a1b9a"; }
+        }
+        
+        // Final fallback to double check Mix
+        if(goalStr === 'نظام تدريب + تغذيه') { goalIcon = "🔄"; goalColor = "#6a1b9a"; }
+
+        return `
+            <div class="user-admin-card" style="margin-bottom:12px; display:flex; align-items:center; gap:12px; background:linear-gradient(135deg, #111, #070707); padding:12px; border-radius:20px; border:1px solid #222; transition:0.3s; position:relative; overflow:hidden; border-right:4px solid ${goalColor};">
+                <div style="width:45px; height:45px; border-radius:50%; background:rgba(255,255,255,0.03); display:flex; align-items:center; justify-content:center; font-size:20px; border:1px solid rgba(255,255,255,0.05); flex-shrink:0;">👤</div>
+                <div style="flex:1; text-align:right;" onclick="openProfile('${u.id}')">
+                    <b style="color:#fff; display:block; font-size:15px; margin-bottom:2px;">${u.name}</b>
+                    <span style="font-size:10px; color:${goalColor}; font-weight:bold;">${goalIcon} ${u.goal || 'بدون نظام'}</span>
+                </div>
+                <button onclick="activeTarget='${u.id}'; viewSelectedUserLogs()" style="background:rgba(255,255,255,0.05); border:1px solid #333; color:#fff; width:40px; height:40px; border-radius:12px; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.3s;">📜</button>
+            </div>
+        `;
+    }).join('');
 }
 async function openProfile(id) { 
     activeTarget = id; const d = await db.collection('users').doc(id).get(); const data = d.data();
-    document.getElementById('prof-name').innerText = data.name; document.getElementById('admin-captain-notes').value = data.captainNotes || "";
+    document.getElementById('prof-name').innerText = data.name; 
+    document.getElementById('admin-captain-notes').value = data.captainNotes || "";
+    
+    // Fill Vitals for Admin
+    document.getElementById('admin-view-age').innerText = data.age || '--';
+    document.getElementById('admin-view-weight').innerText = data.weight || '--';
+    document.getElementById('admin-view-height').innerText = data.height || '--';
+    document.getElementById('admin-view-fat').innerText = data.fat || '--';
+
     document.getElementById('profile-modal').classList.remove('hidden'); currentPlanData = data.workoutPlan || {};
-    document.getElementById('admin-plan-cats-workout').innerHTML = PLAN_CATS.map(c => `<button class="sub-btn" onclick="editAdminPlan('${c}')">${c}</button>`).join('');
-    document.getElementById('admin-plan-cats-nutri').innerHTML = NUTRI_CATS.map(c => `<button class="sub-btn" onclick="editAdminPlan('${c}')">${c}</button>`).join('');
+    
+    // ستايل جديد بريميوم للزراير (Workout)
+    document.getElementById('admin-plan-cats-workout').innerHTML = PLAN_CATS.map(c => `
+        <button class="sub-btn" onclick="editAdminPlan('${c}')" style="background:#1a1a1a; border:1px solid #333; color:var(--primary); padding:15px; border-radius:15px; font-weight:bold; font-size:14px; transition:all 0.3s; box-shadow:0 4px 6px rgba(0,0,0,0.3);">
+            🏋️ ${c}
+        </button>`).join('');
+
+    // ستايل جديد بريميوم للزراير (Nutrition)
+    document.getElementById('admin-plan-cats-nutri').innerHTML = NUTRI_CATS.map(c => `
+        <button class="sub-btn" onclick="editAdminPlan('${c}')" style="background:#1a1a1a; border:1px solid #333; color:#4caf50; padding:15px; border-radius:15px; font-weight:bold; font-size:14px; transition:all 0.3s; box-shadow:0 4px 6px rgba(0,0,0,0.3);">
+            🥗 ${c}
+        </button>`).join('');
 }
 function editAdminPlan(cat) { editingCat = cat; document.getElementById('admin-plan-editor').classList.remove('hidden'); const container = document.getElementById('admin-plan-rows'); container.innerHTML = ""; const exs = currentPlanData[cat] || []; exs.forEach(ex => addAdminPlanRow(ex)); if(exs.length===0) addAdminPlanRow(); }
 function addAdminPlanRow(d = {}) {
-    const container = document.getElementById('admin-plan-rows'); const card = document.createElement('div'); card.className = "plan-edit-card"; const isNutri = NUTRI_CATS.includes(editingCat);
-    card.style = "background:#111; border:1px solid #333; border-radius:15px; padding:15px; margin-bottom:10px; position:relative;";
-    if(isNutri) card.innerHTML = `<div onclick="this.parentElement.remove()" style="position:absolute; left:10px; color:#ff3b30;">🗑️</div><input type="text" value="${d.name||''}" class="p-name" placeholder="الصنف"><input type="text" value="${d.note||''}" class="p-note" placeholder="تفاصيل"><input type="text" value="${d.weight||''}" class="p-weight" placeholder="كمية">`;
-    else card.innerHTML = `<div onclick="this.parentElement.remove()" style="position:absolute; left:10px; color:#ff3b30;">🗑️</div><input type="text" value="${d.name||''}" class="p-name" placeholder="اسم التمرين"><input type="number" value="${d.sets||4}" class="p-sets" style="width:60px;"> <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:5px;">${[1,2,3,4,5,6].map(n => `<div><input type="text" value="${d['w'+n]||''}" class="w${n}" placeholder="وزن"><input type="text" value="${d['r'+n]||''}" class="r${n}" placeholder="عدات"></div>`).join('')}</div>`;
+    const container = document.getElementById('admin-plan-rows');
+    const card = document.createElement('div');
+    card.className = "plan-edit-card";
+    const isNutri = NUTRI_CATS.includes(editingCat);
+    const rowId = 'row-' + Date.now() + Math.random().toString(36).substr(2, 5);
+    
+    card.style = `
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-right: 4px solid ${isNutri ? '#4caf50' : 'var(--primary)'};
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 15px;
+        position: relative;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    `;
+
+    // إبعاد السلة قليلاً لليمين
+    const deleteBtn = `<div onclick="this.parentElement.remove()" style="position:absolute; right:15px; top:15px; color:#ff3b30; cursor:pointer; font-size:18px; filter:drop-shadow(0 0 5px rgba(255,59,48,0.3)); z-index:10;">🗑️</div>`;
+
+    if(isNutri) {
+        card.innerHTML = `
+            ${deleteBtn}
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:10px;">
+                <input type="text" value="${d.name||''}" class="p-name" placeholder="🥗 اسم الوجبة (مثلاً: فطار بطل)" style="width:100%; background:#000; border:1px solid #333; color:#fff; padding:12px; border-radius:12px; font-weight:bold;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <input type="text" value="${d.note||''}" class="p-note" placeholder="📝 التفاصيل" style="background:#000; border:1px solid #333; color:#aaa; padding:10px; border-radius:10px; font-size:13px;">
+                    <input type="text" value="${d.weight||''}" class="p-weight" placeholder="⚖️ الكمية" style="background:#000; border:1px solid #333; color:#4caf50; padding:10px; border-radius:10px; font-size:13px; font-weight:bold;">
+                </div>
+            </div>`;
+    } else {
+        const initialSets = d.sets || 4;
+        card.innerHTML = `
+            ${deleteBtn}
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:10px;">
+                <div style="display:flex; gap:10px; align-items:center; padding-left:30px;">
+                    <input type="text" value="${d.name||''}" class="p-name" placeholder="🏋️ اسم التمرين" style="flex:1; background:#000; border:1px solid #333; color:#fff; padding:12px; border-radius:12px; font-weight:bold;">
+                    <div style="display:flex; align-items:center; background:#000; padding:5px 10px; border-radius:10px; border:1px solid #333;">
+                        <small style="color:#777; margin-left:5px;">مجموعات:</small>
+                        <input type="number" value="${initialSets}" class="p-sets" 
+                               oninput="updateSetsVisibility('${rowId}', this.value)"
+                               style="width:45px; background:none; border:none; color:var(--primary); font-weight:bold; text-align:center;">
+                    </div>
+                </div>
+                <div id="${rowId}" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; background:rgba(0,0,0,0.3); padding:15px; border-radius:18px;">
+                    ${[1,2,3,4,5,6].map(n => `
+                        <div class="set-box-${n}" style="display:${n > initialSets ? 'none' : 'flex'}; flex-direction:column; gap:8px; background:#000; padding:10px; border-radius:12px; border:1px solid #222;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-size:10px; color:#777; font-weight:bold;">مجموعة ${n}</span>
+                            </div>
+                            <input type="text" value="${d['w'+n]||''}" class="w${n}" placeholder="الوزن (مثلاً: 20 ك)" style="width:100%; background:rgba(255,179,0,0.05); border:1px solid #333; color:var(--accent); font-size:14px; text-align:center; padding:8px; border-radius:8px;">
+                            <input type="text" value="${d['r'+n]||''}" class="r${n}" placeholder="العدات (مثلاً: 12)" style="width:100%; background:rgba(76,175,80,0.05); border:1px solid #333; color:var(--success); font-size:14px; text-align:center; padding:8px; border-radius:8px;">
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+    }
     container.appendChild(card);
+}
+
+function updateSetsVisibility(rowId, count) {
+    const container = document.getElementById(rowId);
+    if(!container) return;
+    const num = parseInt(count) || 0;
+    for(let i=1; i<=6; i++) {
+        const box = container.querySelector('.set-box-' + i);
+        if(box) box.style.display = (i <= num) ? 'flex' : 'none';
+    }
 }
 
 async function saveAdminPlan(ev) { if(ev) ev.preventDefault(); const targetId = activeTarget; let exs = []; document.querySelectorAll('.plan-edit-card').forEach(card => { const name = card.querySelector('.p-name').value.trim(); if(name) { const isNutri = NUTRI_CATS.includes(editingCat); let row = { name, done: false }; if(isNutri) { row.note = card.querySelector('.p-note').value; row.weight = card.querySelector('.p-weight').value; } else { row.sets = card.querySelector('.p-sets').value; for(let i=1; i<=6; i++) { row['w'+i] = card.querySelector('.w'+i).value; row['r'+i] = card.querySelector('.r'+i).value; } } exs.push(row); } }); currentPlanData[editingCat] = exs; await db.collection('users').doc(targetId).update({ workoutPlan: currentPlanData }); sendNotificationTo(targetId, "تحديث من الكابتن 🔥", `تم تعديل جدول ${editingCat}`); Swal.fire('تم الحفظ', '', 'success'); }
@@ -703,15 +1007,74 @@ async function approveUser(id) {
 }
 
 async function deleteUser(id) {
-    if(confirm('هل أنت متأكد من حذف هذا البطل نهائياً؟ ⚠️')) {
-        await db.collection('users').doc(id).delete();
-        loadAdmin();
-        Swal.fire('تم الحذف بنجاح', '', 'info');
+    const targetId = id || activeTarget;
+    if(!targetId) return;
+
+    const result = await Swal.fire({
+        title: 'هل أنت متأكد؟ ⚠️',
+        text: "سيتم حذف هذا البطل نهائياً!",
+        icon: 'warning',
+        target: document.getElementById('profile-modal'), // الربط بالصفحة الحالية
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#333',
+        confirmButtonText: 'نعم، احذفه! 🗑️',
+        cancelButtonText: 'إلغاء',
+        background: '#181818',
+        color: '#fff',
+        backdrop: 'rgba(0,0,0,0.4)'
+    });
+
+    if (result.isConfirmed) {
+        Swal.fire({ title: 'جاري الحذف...', didOpen: () => Swal.showLoading() });
+        try {
+            await db.collection('users').doc(targetId).delete();
+            
+            // إغلاق كل المودالات المفتوحة
+            document.getElementById('profile-modal').classList.add('hidden');
+            document.getElementById('pending-requests-modal').classList.add('hidden');
+            
+            await loadAdmin();
+            Swal.fire('تم الحذف!', 'تمت إزالة البطل بنجاح.', 'success');
+        } catch(e) {
+            Swal.fire('خطأ', 'فشل حذف المشترك', 'error');
+        }
     }
 }
 
 // --- OTHERS & KNOWLEDGE ---
-function openInfoBank() { document.getElementById('info-bank-modal').classList.remove('hidden'); const content = document.getElementById('info-bank-content'); content.innerHTML = '<p style="text-align:center; color:#777;">جاري التحميل... 🔥</p>'; db.collection('knowledge').orderBy('ts', 'desc').get().then(snap => { let h = ""; snap.forEach(doc => { const d = doc.data(); h += `<div style="background:rgba(255,255,255,0.03); border:1px solid #222; padding:15px; border-radius:15px; margin-bottom:10px;"><b style="color:var(--accent);">💡 ${d.q}</b><p style="color:#eee; font-size:13px; line-height:1.6;">${d.a}</p></div>`; }); content.innerHTML = h || '<p style="text-align:center;">مفيش معلومات لسه.</p>'; }); }
+function openInfoBank() { 
+    document.getElementById('info-bank-modal').classList.remove('hidden'); 
+    const content = document.getElementById('info-bank-content'); 
+    content.innerHTML = '<p style="text-align:center; color:#777;">جاري التحميل... 🔥</p>'; 
+    
+    const fallbackTips = [
+        { q: "أهمية شرب المياة أثناء التمرين 💧", a: "شرب المياة بيحافظ على رطوبة عضلاتك وبيمنع التشنجات، لازم تشرب على الأقل 2 لتر خلال يومك." },
+        { q: "إزاي تستفيد من الـ Creatine؟ 🧪", a: "الكرياتين بيزود القوة والحجم، جرعته اليومية 5 جرام ولازم تشرب معاه مياة كتير." },
+        { q: "ليه النوم مهم لبناء العضلات؟ 😴", a: "العضلات بتكبر وإنت نايم! جسمك بيفرز هرمون النمو خلال النوم العميق، لازم تنام 7-8 ساعات." },
+        { q: "القاعدة الذهبية للتغذية 🥗", a: "عشان تشوف نتيجة، لازم 70% من مجهودك يكون في المطبخ! البروتين هو حجر الأساس لبناء العضلات." }
+    ];
+
+    function renderTips(tips) {
+        let h = "";
+        tips.forEach(t => {
+            h += `<div style="background:rgba(255,255,255,0.03); border:1px solid #222; padding:15px; border-radius:15px; margin-bottom:10px;"><b style="color:var(--accent);">💡 ${t.q}</b><p style="color:#eee; font-size:13px; line-height:1.6;">${t.a}</p></div>`;
+        });
+        content.innerHTML = h;
+    }
+
+    db.collection('knowledge').orderBy('ts', 'desc').get().then(snap => { 
+        if (!snap.empty) {
+            let items = [];
+            snap.forEach(doc => items.push(doc.data()));
+            renderTips(items);
+        } else {
+            renderTips(fallbackTips);
+        }
+    }).catch(() => {
+        renderTips(fallbackTips);
+    });
+}
 async function loadTechniques() { const list = document.getElementById('technique-list'); try { const snap = await db.collection('techniques').orderBy('ts', 'desc').get(); let h = ""; snap.forEach(doc => { const d = doc.data(); h += `<div class="card" style="margin-bottom:15px;"><div style="display:flex; justify-content:space-between; align-items:center;"><b>${d.name}</b>${currentUser.role==='admin'?`<i onclick="deleteTechnique('${doc.id}')" style="color:#ff3b30; cursor:pointer;">🗑️</i>`:''}</div><div style="display:flex; gap:10px; margin-top:10px;">${d.correctUrl?`<a href="${d.correctUrl}" target="_blank" class="sub-btn">✅ الأداء</a>`:''}${d.wrongUrl?`<a href="${d.wrongUrl}" target="_blank" class="sub-btn" style="color:#ff3b30;">❌ الخطأ</a>`:''}</div></div>`; }); list.innerHTML = h || '<p>قريباً..</p>'; } catch(e){} }
 function switchTab(t, el) { 
     document.querySelectorAll('.content-tab').forEach(c => c.classList.add('hidden')); 
@@ -953,17 +1316,8 @@ async function saveFoodPrefs() {
 }
 
 // --- GOAL CHANGE REQUESTS (ADMIN) ---
-async function approveGoalChange(id, newGoal) {
-    await db.collection('users').doc(id).update({ goal: newGoal, pendingGoal: null });
-    sendNotificationTo(id, "تم قبول طلبك! 🔥", `نظامك الجديد بقى: ${newGoal} .. بالتوفيق يا وحش!`);
-    loadAdmin();
-}
+// Removed duplicate goal change handlers that were causing conflicts.
 
-async function rejectGoalChange(id) {
-    await db.collection('users').doc(id).update({ pendingGoal: null });
-    sendNotificationTo(id, "طلب مرفوض 🚧", "للأسف الكابتن رفض طلب تغيير النظام حالياً، اسأله عن السبب.");
-    loadAdmin();
-}
 
 // --- KNOWLEDGE MANAGEMENT ---
 async function saveKnowledge() {
@@ -993,6 +1347,63 @@ async function loadKnowledgeAdmin() {
 
 async function deleteKnowledge(id) {
     if(confirm('حذف؟')) { await db.collection('knowledge').doc(id).delete(); loadKnowledgeAdmin(); }
+}
+
+async function forceSeedKnowledge() {
+    const res = await Swal.fire({
+        title: 'إعادة تعيين بنك المعلومات؟',
+        text: "سيتم مسح كل النصائح الحالية وإضافة النصائح الأساسية (المنقذة) فوراً!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'نعم، أعد التعيين 🔄',
+        cancelButtonText: 'إلغاء',
+        background: '#121212',
+        color: '#fff',
+        target: document.getElementById('admin-info-card')
+    });
+
+    if (res.isConfirmed) {
+        Swal.fire({ 
+            title: 'جاري التحديث...', 
+            allowOutsideClick: false, 
+            target: document.getElementById('admin-info-card'),
+            didOpen: () => Swal.showLoading() 
+        });
+        try {
+            // مسح القديم
+            const snap = await db.collection('knowledge').get();
+            const batch = db.batch();
+            snap.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+
+            // إضافة الأساسيات
+            const defaults = [
+                { q: "أهمية شرب المياة أثناء التمرين 💧", a: "شرب المياة بيحافظ على رطوبة عضلاتك وبيمنع التشنجات، لازم تشرب على الأقل 2 لتر خلال يومك." },
+                { q: "إزاي تستفيد من الـ Creatine؟ 🧪", a: "الكرياتين بيزود القوة والحجم، جرعته اليومية 5 جرام ولازم تشرب معاه مياة كتير." },
+                { q: "ليه النوم مهم لبناء العضلات؟ 😴", a: "العضلات بتكبر وإنت نايم! جسمك بيفرز هرمون النمو خلال النوم العميق، لازم تنام 7-8 ساعات." },
+                { q: "القاعدة الذهبية للتغذية 🥗", a: "عشان تشوف نتيجة، لازم 70% من مجهودك يكون في المطبخ! البروتين هو حجر الأساس لبناء العضلات." }
+            ];
+
+            for (const item of defaults) {
+                await db.collection('knowledge').add({ ...item, ts: Date.now() });
+            }
+
+            Swal.fire({
+                title: 'تمت إعادة التعيين بنجاح ✅',
+                icon: 'success',
+                target: document.getElementById('admin-info-card')
+            });
+            loadKnowledgeAdmin();
+            openInfoBank(); // تحديث العرض للمستخدمين
+        } catch (e) {
+            Swal.fire({
+                title: 'خطأ',
+                text: 'فشل التحديث، تأكد من الاتصال',
+                icon: 'error',
+                target: document.getElementById('admin-info-card')
+            });
+        }
+    }
 }
 
 // --- TECHNIQUES MANAGEMENT ---
@@ -1067,8 +1478,10 @@ async function loadNotifications() {
 
         list.innerHTML = (arr.length ? h + `<button onclick="clearNotifications()" style="width:100%; padding:10px; background:rgba(255,59,48,0.1); border:1px solid #ff3b30; color:#ff3b30; border-radius:10px; margin-top:10px; font-weight:bold;">🗑️ مسح كل الإشعارات</button>` : '<p style="text-align:center; padding:30px; color:#444;">مفيش إشعارات حالياً يا بطل! 🔥</p>');
         
-        const badge = document.getElementById('notif-badge');
-        if(badge) { badge.classList.add('hidden'); badge.innerText = "0"; }
+        const b1 = document.getElementById('notif-badge');
+        const b2 = document.getElementById('notif-badge-admin');
+        if(b1) { b1.classList.add('hidden'); b1.innerText = "0"; }
+        if(b2) { b2.classList.add('hidden'); b2.innerText = "0"; }
     } catch(e) { 
         console.error("Notif Error:", e);
         list.innerHTML = '<p style="color:red; text-align:center;">خطأ في تحميل البيانات</p>'; 
@@ -1094,18 +1507,26 @@ function listenForCustomNotifications() {
                 const d = c.doc.data(); 
                 if((d.ts || 0) > start - 10000) { 
                     Swal.fire({ toast:true, position:'top-end', title:d.title, text:d.message, icon:'info', timer:4000 }); 
-                    const badge = document.getElementById('notif-badge');
-                    if(badge) {
-                        badge.classList.remove('hidden');
-                        badge.innerText = parseInt(badge.innerText || "0") + 1;
-                    }
+                    const b1 = document.getElementById('notif-badge');
+                    const b2 = document.getElementById('notif-badge-admin');
+                    if(b1) { b1.classList.remove('hidden'); b1.innerText = parseInt(b1.innerText || "0") + 1; }
+                    if(b2) { b2.classList.remove('hidden'); b2.innerText = parseInt(b2.innerText || "0") + 1; }
                 } 
             }
         });
+        
+        // إظهار العلامة لو فيه إشعارات قديمة أصلاً في البداية
+        if(!snap.empty) {
+            const b1 = document.getElementById('notif-badge');
+            const b2 = document.getElementById('notif-badge-admin');
+            if(b1) { b1.classList.remove('hidden'); b1.innerText = snap.size; }
+            if(b2) { b2.classList.remove('hidden'); b2.innerText = snap.size; }
+        }
     });
 }
 
-window.onload = async () => {
+// تحويل لـ DOMContentLoaded عشان يفتح أسرع بكتير من window.onload
+document.addEventListener('DOMContentLoaded', async () => {
     const savedPhone = localStorage.getItem('fire_gym_phone');
     if(savedPhone) {
         try {
@@ -1117,7 +1538,7 @@ window.onload = async () => {
             } else { localStorage.removeItem('fire_gym_phone'); }
         } catch(e) { console.error("Auto Login Error:", e); }
     }
-};
+});
 
 // --- SHARE CARD LOGIC ---
 function openShareCard(workoutName) {
@@ -1199,10 +1620,26 @@ function saveBlobAsFile(blob) {
         if (isMobile) {
             const viewer = document.getElementById('full-screen-viewer');
             const img = document.getElementById('viewer-img');
+            const loadingText = document.getElementById('viewer-loading-text');
+            const dlBtn = document.getElementById('direct-download-btn');
+
             if (viewer && img) {
                 img.src = base64data;
+                if(loadingText) loadingText.style.display = 'none';
                 viewer.style.display = 'flex';
-                // إغلاق أي مودال مفتوح
+
+                // ضبط زرار التحميل المباشر
+                if(dlBtn) {
+                    dlBtn.onclick = () => {
+                        const link = document.createElement('a');
+                        link.href = base64data;
+                        link.download = `FireGym_Workout_${new Date().getTime()}.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    };
+                }
+
                 Swal.close();
                 closeShareCard();
             } else {
@@ -1225,6 +1662,89 @@ function closeFullViewer() {
     document.getElementById('full-screen-viewer').style.display = 'none';
 }
 
+async function requestGoalChange() {
+    const { value: goal } = await Swal.fire({
+        title: 'طلب تغيير النظام 🚀',
+        input: 'select',
+        inputOptions: {
+            'نظام تدريب فقط': 'نظام تدريب فقط 🏋️‍♂️',
+            'نظام تغذيه فقط': 'نظام تغذيه فقط 🥗',
+            'نظام تدريب + تغذيه': 'نظام تدريب + تغذيه 🔄',
+            'نظام VIP الملكي': 'نظام VIP الملكي ⭐'
+        },
+        inputPlaceholder: 'اختر النظام الجديد...',
+        showCancelButton: true,
+        confirmButtonText: 'إرسال الطلب ✅',
+        cancelButtonText: 'إلغاء',
+        background: '#121212',
+        color: '#fff'
+    });
+
+    if (goal) {
+        Swal.fire({ title: 'جاري إرسال طلبك...', didOpen: () => Swal.showLoading() });
+        try {
+            await db.collection('goalChanges').add({
+                userPhone: currentUser.phone,
+                userName: currentUser.name,
+                newGoal: goal,
+                ts: Date.now()
+            });
+            sendNotificationTo(ADMIN_PHONE, "طلب تغيير نظام! 🚀", `البطل ${currentUser.name} عايز يغير نظامه لـ ${goal}`);
+            Swal.fire('تم الإرسال! 🔥', 'طلبك وصل للكابتن وهيتم مراجعته وتغيير النظام قريباً.', 'success');
+        } catch (e) { Swal.fire('خطأ', 'فشل إرسال الطلب', 'error'); }
+    }
+}
+
+async function editMyInfo() {
+    const { value: f } = await Swal.fire({
+        title: 'تعديل بياناتي الحيوية ✏️',
+        background: '#121212',
+        color: '#fff',
+        confirmButtonColor: 'var(--accent)',
+        confirmButtonText: 'حفظ التعديلات ✅',
+        cancelButtonText: 'إلغاء',
+        showCancelButton: true,
+        html: `
+            <div style="text-align:right; display:flex; flex-direction:column; gap:15px; padding:10px;">
+                <div>
+                    <label style="color:#aaa; font-size:12px;">السن:</label>
+                    <input id="sw-age" type="number" class="swal2-input" style="width:90%; margin:5px 0; background:#000; color:#fff; border:1px solid #333;" value="${currentUser.age || ''}">
+                </div>
+                <div>
+                    <label style="color:#aaa; font-size:12px;">الوزن (كغم):</label>
+                    <input id="sw-weight" type="number" class="swal2-input" style="width:90%; margin:5px 0; background:#000; color:#fff; border:1px solid #333;" value="${currentUser.weight || ''}">
+                </div>
+                <div>
+                    <label style="color:#aaa; font-size:12px;">الطول (سم):</label>
+                    <input id="sw-height" type="number" class="swal2-input" style="width:90%; margin:5px 0; background:#000; color:#fff; border:1px solid #333;" value="${currentUser.height || ''}">
+                </div>
+                <div>
+                    <label style="color:#aaa; font-size:12px;">نسبة الدهون (%):</label>
+                    <input id="sw-fat" type="number" class="swal2-input" style="width:90%; margin:5px 0; background:#000; color:#fff; border:1px solid #333;" value="${currentUser.fat || ''}">
+                </div>
+            </div>
+        `,
+        preConfirm: () => {
+            return {
+                age: document.getElementById('sw-age').value,
+                weight: document.getElementById('sw-weight').value,
+                height: document.getElementById('sw-height').value,
+                fat: document.getElementById('sw-fat').value
+            }
+        }
+    });
+
+    if (f) {
+        Swal.fire({ title: 'جاري الحفظ...', didOpen: () => Swal.showLoading() });
+        try {
+            await db.collection('users').doc(currentUser.phone).update(f);
+            Swal.fire({ icon: 'success', title: 'تم التحديث! 🔥', timer: 1500 });
+        } catch (e) {
+            Swal.fire('خطأ', 'فشل تحديث البيانات', 'error');
+        }
+    }
+}
+
 async function forceUpdate() {
     Swal.fire({
         title: 'جاري التحديث الشامل...',
@@ -1236,6 +1756,9 @@ async function forceUpdate() {
     });
 
     try {
+        // حفظ بيانات الدخول قبل المسح
+        const phone = localStorage.getItem('fire_gym_phone');
+        
         // 1. مسح الكاش
         if ('caches' in window) {
             const keys = await caches.keys();
@@ -1248,13 +1771,15 @@ async function forceUpdate() {
             for (let reg of regs) await reg.unregister();
         }
 
-        // 3. مسح التخزين المحلي
-        localStorage.clear();
+        // 3. مسح التخزين المؤقت فقط (مع الحفاظ على الدخول)
         sessionStorage.clear();
+        
+        // إعادة بيانات الدخول
+        if(phone) localStorage.setItem('fire_gym_phone', phone);
 
-        // 4. ريستارت برابط جديد لكسر الكاش
-        window.location.href = window.location.origin + window.location.pathname + '?v=' + Date.now();
+        // 4. ريفريش سريع
+        window.location.reload();
     } catch (e) {
-        window.location.reload(true);
+        window.location.reload();
     }
 }
