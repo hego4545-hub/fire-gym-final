@@ -1197,19 +1197,17 @@ function saveBlobAsFile(blob) {
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         
         if (isMobile) {
-            Swal.fire({
-                title: 'جاهز للحفظ! 📸',
-                html: `
-                    <p style="font-size:13px; color:#aaa; margin-bottom:15px;">اضغط ضغطة مطولة على الصورة تحت واختار <b>"Save Image"</b> أو <b>"Download Image"</b></p>
-                    <img src="${base64data}" style="width:100%; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.5); border:1px solid #333; -webkit-touch-callout: default !important; -webkit-user-select: auto !important; user-select: auto !important;">
-                `,
-                background: '#121212',
-                color: '#fff',
-                showConfirmButton: true,
-                confirmButtonText: 'تم ✅',
-                confirmButtonColor: 'var(--primary)',
-                width: '90%'
-            });
+            const viewer = document.getElementById('full-screen-viewer');
+            const img = document.getElementById('viewer-img');
+            if (viewer && img) {
+                img.src = base64data;
+                viewer.style.display = 'flex';
+                // إغلاق أي مودال مفتوح
+                Swal.close();
+                closeShareCard();
+            } else {
+                window.open(base64data, '_blank');
+            }
         } else {
             const link = document.createElement('a');
             link.href = base64data;
@@ -1217,15 +1215,12 @@ function saveBlobAsFile(blob) {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
-            Swal.fire({
-                icon: 'success',
-                title: 'تم الحفظ! 📸',
-                text: 'الصورة بقت جاهزة في التحميلات عندك 🔥',
-                background: '#121212',
-                color: '#fff'
-            });
+            Swal.fire({ icon: 'success', title: 'تم الحفظ! 📸', background: '#121212', color: '#fff' });
         }
     };
     reader.readAsDataURL(blob);
+}
+
+function closeFullViewer() {
+    document.getElementById('full-screen-viewer').style.display = 'none';
 }
