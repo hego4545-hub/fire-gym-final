@@ -1145,30 +1145,42 @@ function closeShareCard() {
 async function downloadShareCard() {
     const card = document.getElementById('share-card');
     const btn = event.target;
-    btn.innerText = "جاري التحميل... ⏳";
+    btn.innerText = "جاري التحضير... ⏳";
     btn.disabled = true;
 
     try {
         const canvas = await html2canvas(card, {
-            scale: 2,
+            scale: 3, // جودة أعلى للمشاركة
             backgroundColor: '#000',
             useCORS: true,
             logging: false
         });
         
-        const link = document.createElement('a');
-        link.download = `FireGym_Workout_${new Date().getTime()}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        
-        Swal.fire({
-            icon: 'success',
-            title: 'تم حفظ الصورة! 📸',
-            text: 'تقدر ترفعها ستوري على انستجرام دلوقت 🔥',
-            background: '#121212',
-            color: '#fff',
-            confirmButtonColor: 'var(--primary)'
-        });
+        canvas.toBlob(async (blob) => {
+            if (!blob) throw new Error("Canvas to Blob failed");
+            
+            const file = new File([blob], `FireGym_Workout_${new Date().getTime()}.png`, { type: 'image/png' });
+
+            // استخدام خاصية المشاركة لو متاحة (أفضل بكتير للموبايل)
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'تمرينة Fire Gym 🔥',
+                        text: 'عاش يا بطل! دي تمرينة النهاردة من تطبيق Fire Gym'
+                    });
+                } catch (err) {
+                    // لو المستخدم كنسل المشاركة أو حصل خطأ بسيط
+                    console.log("Share cancelled or failed:", err);
+                    // نحاول نحملها بالطريقة العادية كـ fallback
+                    saveBlobAsFile(blob);
+                }
+            } else {
+                // الطريقة العادية للديسك توب أو الموبايلات القديمة
+                saveBlobAsFile(blob);
+            }
+        }, 'image/png');
+
     } catch (e) {
         console.error(e);
         Swal.fire('خطأ', 'فشل في توليد الصورة، جرب تاخد سكرين شوت 📸', 'error');
@@ -1176,4 +1188,41 @@ async function downloadShareCard() {
         btn.innerText = "حفظ الصورة 📥";
         btn.disabled = false;
     }
+}
+
+function saveBlobAsFile(blob) {
+    const url = URL.createObjectURL(blob);
+    
+    // لو إحنا على موبايل، الأضمن نفتح الصورة في صفحة جديدة ونخلي المستخدم يحفظها بلمسة مطولة
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        Swal.fire({
+            title: 'جاهز للحفظ! 📸',
+            text: 'اضغط ضغطة مطولة على الصورة اللي هتظهر واختار "Save Image"',
+            icon: 'info',
+            background: '#121212',
+            color: '#fff',
+            confirmButtonText: 'فتح الصورة'
+        }).then(() => {
+            window.open(url, '_blank');
+        });
+    } else {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `FireGym_Workout_${new Date().getTime()}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'تم الحفظ! 📸',
+            text: 'الصورة بقت جاهزة في التحميلات عندك 🔥',
+            background: '#121212',
+            color: '#fff'
+        });
+    }
+    
+    setTimeout(() => URL.revokeObjectURL(url), 10000); // وقت أطول عشان يلحق يحمل
 }
