@@ -1142,5 +1142,14 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="scripts_bundle.js?v=7.0.5"></script>
 
+    <!-- Full Screen Image Viewer (Fallback for Mobile) -->
+    <div id="full-screen-viewer" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000; z-index:300000; display:none; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
+        <button onclick="closeFullViewer()" style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.1); border:none; color:#fff; padding:10px 20px; border-radius:15px; font-weight:bold; z-index:300001;">إغلاق X</button>
+        <p style="color:#aaa; font-size:12px; margin-bottom:15px; text-align:center;">عاش يا بطل! اضغط ضغطة مطولة على الصورة عشان تحفظها 🔥</p>
+        <img id="viewer-img" style="max-width:100%; max-height:80%; border-radius:15px; box-shadow:0 0 50px rgba(255,59,48,0.3); -webkit-touch-callout: default !important;">
+        <button onclick="closeFullViewer()" class="btn-full" style="margin-top:20px; max-width:200px;">الرجوع للأبلكيشن</button>
+    </div>
+
 </body>
+
 </html>
