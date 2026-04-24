@@ -1224,3 +1224,37 @@ function saveBlobAsFile(blob) {
 function closeFullViewer() {
     document.getElementById('full-screen-viewer').style.display = 'none';
 }
+
+async function forceUpdate() {
+    Swal.fire({
+        title: 'جاري التحديث الشامل...',
+        text: 'بنمحى الكاش وبنجيبلك أحدث نسخة من السيرفر 🔥',
+        background: '#121212',
+        color: '#fff',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    try {
+        // 1. مسح الكاش
+        if ('caches' in window) {
+            const keys = await caches.keys();
+            for (let key of keys) await caches.delete(key);
+        }
+
+        // 2. إلغاء السيرفس وركر
+        if ('serviceWorker' in navigator) {
+            const regs = await navigator.serviceWorker.getRegistrations();
+            for (let reg of regs) await reg.unregister();
+        }
+
+        // 3. مسح التخزين المحلي
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // 4. ريستارت برابط جديد لكسر الكاش
+        window.location.href = window.location.origin + window.location.pathname + '?v=' + Date.now();
+    } catch (e) {
+        window.location.reload(true);
+    }
+}
