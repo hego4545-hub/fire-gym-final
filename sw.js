@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fire-gym-v7.2.2';
+const CACHE_NAME = 'fire-gym-v9.3.0';
 const ASSETS = [
   './',
   './index.html',
@@ -35,9 +35,10 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  // استراتيجية "الشبكة أولاً" لضمان وصول التحديثات
   e.respondWith(
-    caches.match(e.request).then((res) => {
-      return res || fetch(e.request);
+    fetch(e.request).catch(() => {
+      return caches.match(e.request);
     })
   );
 });
