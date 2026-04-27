@@ -1,10 +1,10 @@
-const CACHE_NAME = 'fire-gym-v9.3.0';
+const CACHE_NAME = 'fire-gym-v9.4.0';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './firegym_auth.js',
-  './scripts_bundle.js',
+  './fire_bundle_v94.js',
   'https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap',
   'https://cdn.jsdelivr.net/npm/sweetalert2@11',
   'https://cdn.jsdelivr.net/npm/chart.js',
