@@ -19,10 +19,12 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// تفعيل العمل بدون إنترنت (Offline Persistence)
+// تفعيل العمل بدون إنترنت (تم إيقافه مؤقتاً لحل مشكلة الانهيار في الموبايلات الحديثة)
+/*
 db.enablePersistence().catch(err => {
     console.warn("Persistence failed:", err.code);
 });
+*/
 
 let currentUser = null; let activeTarget = null; let currentPlanData = {}; let finalBase64 = "";
 let allUsersData = []; let editingCat = ""; let lastViewedCat = "";
