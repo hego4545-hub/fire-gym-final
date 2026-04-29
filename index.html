@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Fire Gym | Universal Pro</title>
+    <!-- تم إزالة الـ Manifest لحل مشاكل الـ 500 في الموبايلات الحديثة -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        // نظام التحديث اليدوي (تم إيقاف التحديث التلقائي لمنع مشاكل الـ WebView)
+
+        // 🛑 تنظيف الكاش مرة واحدة عند الفتح
+        if (!sessionStorage.getItem('cleaned')) {
+            if ('caches' in window) {
+                caches.keys().then(names => { for (let name of names) caches.delete(name); });
+            }
+            sessionStorage.setItem('cleaned', 'true');
+        }
+        
+        // 🔙 منع زرار الرجوع بطريقة خفيفة
+        history.pushState(null, null, location.href);
+        window.onpopstate = function() { history.pushState(null, null, location.href); };
+
+        // 🚀 منع رعشة الدخول
+        if (localStorage.getItem('fire_gym_phone')) {
+            document.documentElement.classList.add('user-logged-in');
+        }
+
+    </script>
+    <style>
+        /* قوة إضافية لضمان عدم ظهور شاشة الدخول لو مسجل */
+        html.user-logged-in #auth-section { display: none !important; visibility: hidden !important; opacity: 0 !important; }
+        html.user-logged-in #app-content { display: block !important; visibility: visible !important; opacity: 1 !important; }
+
+        :root { 
+            --primary: #c62828; 
+            --primary-glow: rgba(198, 40, 40, 0.2);
+            --primary-dark: #8b1a1a; 
+            --bg: #0a0a0a; 
+            --surface: rgba(20, 20, 20, 0.8); 
+            --text: #e0e0e0; 
+            --text-muted: #777777; 
+            --accent: #b8860b; 
+            --success: #2e7d32; 
+            --glass: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.05);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background: var(--bg) url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat fixed; 
+            color: var(--text); 
+            overflow-x: hidden; 
+            font-size: 16px; 
+            min-height: 100vh; 
+            line-height: 1.6;
+        }
+        body::before { 
+            content: ""; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.95) 100%); 
+            z-index: -1; 
+        }
+        .hidden { display: none !important; }
+        .card { 
+            background: var(--surface); 
+            backdrop-filter: blur(25px); 
+            -webkit-backdrop-filter: blur(25px); 
+            padding: 25px; 
+            border-radius: 24px; 
+            border: 1px solid var(--glass-border); 
+            position: relative; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            border-color: rgba(255,59,48,0.2);
+        }
+        
+        /* تصميم لوحة الدخول الأسطورية الجديدة */
+        #auth-section { 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 25px; 
+            background: radial-gradient(circle at center, rgba(229,57,53,0.15) 0%, transparent 70%);
+        }
+        .auth-card { 
+            background: rgba(10, 10, 10, 0.85); 
+            padding: 45px 35px; 
+            border-radius: 35px; 
+            width: 100%; 
+            max-width: 440px; 
+            text-align: center; 
+            border: 1px solid rgba(255, 59, 48, 0.3); 
+            backdrop-filter: blur(30px); 
+            box-shadow: 0 30px 70px rgba(0,0,0,0.8); 
+            animation: fadeInScale 0.6s ease-out;
+        }
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        #history-tab, #user-tab, #eval-tab, #me-tab, #admin-tab { background: transparent; padding: 20px; padding-top: 40px; }
+        #system-banner { background-image: none !important; }
+        
+        .input-group { margin: 25px 0; text-align: right; }
+        .input-group label { 
+            display: block; 
+            margin-bottom: 10px; 
+            color: #ccc; 
+            font-size: 13px; 
+            font-weight: 700; 
+            letter-spacing: 0.5px;
+            padding-right: 5px;
+        }
+        .input-group input, .input-group select { 
+            width: 100%; 
+            padding: 18px; 
+            border-radius: 18px; 
+            border: 1px solid #333; 
+            background: rgba(255,255,255,0.03); 
+            color: #fff; 
+            font-size: 16px; 
+            outline: none; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .input-group input:focus { 
+            border-color: var(--primary); 
+            background: rgba(255,59,48,0.05);
+            box-shadow: 0 0 20px rgba(255,59,48,0.15); 
+        }
+
+        /* Premium Registration Bottom Sheet for Mobile */
+        @media (max-width: 600px) {
+            .auth-card { padding: 35px 20px; border-radius: 25px; margin: 10px; width: 95%; }
+            .auth-bottom-sheet {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100% !important;
+                max-width: none !important;
+                border-radius: 40px 40px 0 0 !important;
+                margin: 0 !important;
+                padding: 30px 20px 40px !important;
+                max-height: 90vh;
+                overflow-y: auto;
+                animation: slideUpSheet 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                z-index: 10002;
+                border: 1px solid rgba(255, 59, 48, 0.3);
+                border-bottom: none;
+            }
+            @keyframes slideUpSheet {
+                from { transform: translateY(100%); }
+                to { transform: translateY(0); }
+            }
+            h1 { font-size: 36px !important; }
+            h2 { font-size: 28px !important; }
+            .btn-full { padding: 18px; font-size: 17px; border-radius: 18px; }
+            .card { padding: 15px !important; border-radius: 20px !important; margin-bottom: 15px !important; }
+            .tracker-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .bottom-tabs { bottom: 10px; left: 10px; right: 10px; padding: 12px 5px; border-radius: 25px; }
+            .tab span { font-size: 24px; }
+            .tab { font-size: 9px; }
+            .workout-table th, .workout-table td { padding: 10px 5px !important; font-size: 11px !important; }
+            #system-banner { height: 160px !important; border-radius: 20px !important; }
+            .input-group input, .input-group select { padding: 15px; font-size: 15px; }
+            .modal-content { width: 95% !important; padding: 20px !important; }
+        }
+
+        /* Premium Exercise Cards */
+        .exercise-card:active { transform: scale(0.98); }
+        .exercise-card.done { 
+            background: rgba(76, 217, 100, 0.05) !important; 
+            border-color: rgba(76, 217, 100, 0.2) !important; 
+        }
+        .exercise-card.done h4 { color: var(--success) !important; }
+        
+        /* Custom Checkbox */
+        .checkbox-wrapper { position: relative; width: 30px; height: 30px; }
+        .custom-checkbox { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+        .checkbox-wrapper label {
+            position: absolute; top: 0; left: 0; height: 30px; width: 30px;
+            background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .custom-checkbox:checked + label { 
+            background: var(--success); 
+            border-color: var(--success); 
+            box-shadow: 0 0 15px rgba(76, 217, 100, 0.4);
+        }
+        .checkbox-wrapper label::after {
+            content: ""; position: absolute; display: none;
+            left: 10px; top: 5px; width: 6px; height: 12px;
+            border: solid white; border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+        }
+        .custom-checkbox:checked + label::after { display: block; }
+        
+        header { padding: 40px 20px 20px; background: none; text-align: center; }
+        .main-sections { padding: 15px; padding-bottom: 150px; }
+        .content-tab { min-height: calc(100vh - 100px); }
+        #app-content { overflow-y: visible !important; }
+        
+        .btn-full { 
+            width: 100%; 
+            padding: 20px; 
+            border-radius: 22px; 
+            border: none; 
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+            color: #fff; 
+            font-size: 19px; 
+            font-weight: 900; 
+            cursor: pointer; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            margin-top: 15px; 
+            box-shadow: 0 8px 15px rgba(255,59,48,0.25); 
+            text-transform: uppercase; 
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-full::after {
+            content: "";
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        .btn-full:hover::after { left: 100%; }
+        .btn-full:hover { 
+            transform: translateY(-4px) scale(1.02); 
+            box-shadow: 0 12px 30px rgba(255,59,48,0.45); 
+        }
+        .btn-full:active { transform: scale(0.96); }
+        
+        /* Pulsing Glow Animation */
+        .pulse-glow {
+            animation: pulse-glow 2s infinite;
+        }
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 var(--primary-glow); }
+            70% { box-shadow: 0 0 0 15px transparent; }
+            100% { box-shadow: 0 0 0 0 transparent; }
+        }
+        
+        .tab { 
+            color: #666; 
+            text-decoration: none; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 8px; 
+            font-size: 10px; 
+            font-weight: 900; 
+            transition: 0.4s; 
+            flex: 1; 
+        }
+        .tab.active { 
+            color: var(--primary); 
+            filter: drop-shadow(0 0 12px var(--primary-glow)); 
+            transform: translateY(-5px);
+        }
+        .tab span { font-size: 28px; transition: 0.3s; }
+        .tab.active span { transform: scale(1.2); }
+        
+        .bottom-tabs { 
+            position: fixed; 
+            bottom: 20px; 
+            left: 20px; 
+            right: 20px;
+            background: rgba(15, 15, 15, 0.85); 
+            backdrop-filter: blur(25px); 
+            -webkit-backdrop-filter: blur(25px);
+            display: flex; 
+            justify-content: space-around; 
+            padding: 15px 5px 15px; 
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.1); 
+            z-index: 1000; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+        
+        .modal { 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.92); 
+            z-index: 10000; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+            overflow-y:auto; 
+            backdrop-filter: blur(10px);
+        }
+        
+        /* ضمان ظهور تنبيهات SweetAlert فوق أي مودال */
+        .swal2-container {
+            z-index: 30000 !important;
+        }
+        
+        .history-item { 
+            margin-bottom: 25px; 
+            padding: 22px; 
+            background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); 
+            border-radius: 28px; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+        .history-item:hover { border-color: rgba(255,59,48,0.3); transform: translateY(-3px); }
+        .del-btn { 
+            position: absolute; 
+            left: 20px; 
+            top: 20px; 
+            color: #ff3b30; 
+            cursor: pointer; 
+            font-size: 18px;
+            opacity: 0.4;
+            transition: 0.3s;
+        }
+        .del-btn:hover { opacity: 1; transform: scale(1.2); }
+
+        /* شريط تمرير ناعم واحترافي */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* جداول السجل النظيفة */
+        .log-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 11px; color: #ccc; }
+        .log-table td { padding: 10px 5px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .log-table tr:last-child td { border-bottom: none; }
+        .log-table b { color: var(--accent); }
+            position:relative; 
+            transition: all 0.3s ease; 
+        }
+        .history-item:hover { 
+            background: rgba(255,255,255,0.04); 
+            transform: scale(1.02);
+            border-color: rgba(255,255,255,0.1);
+        }
+        
+        .del-btn { position:absolute; left:15px; top:15px; color:#ff3b30; cursor:pointer; font-style:normal; font-size:20px; opacity:0.3; transition:0.2s; }
+        .del-btn:hover { opacity:1; transform:scale(1.2); }
+        
+        .log-img { width: 100%; border-radius: 18px; margin-top: 15px; border: 1px solid #333; display:block; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        
+        #rest-timer-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); z-index: 99999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        #rest-seconds { font-size: 18vw; font-weight: 900; color: var(--primary); text-shadow: 0 0 40px var(--primary-glow); }
+        
+        .tracker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .track-btn { 
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); 
+            border: 1px solid rgba(255,255,255,0.08); 
+            padding: 25px 15px; 
+            border-radius: 24px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            font-weight: 800; 
+        }
+        .track-btn:hover { background: rgba(255,255,255,0.08); transform: translateY(-3px); border-color: rgba(255,255,255,0.2); }
+        .track-btn:active { transform: scale(0.94); }
+        .track-btn b { display: block; font-size: 32px; margin-bottom: 10px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
+        
+        .workout-card-input { 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid #222; 
+            border-radius: 22px; 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            border-right: 5px solid var(--primary); 
+            position: relative; 
+            transition: 0.3s;
+        }
+        .workout-card-input:hover { border-right-width: 10px; background: rgba(255,59,48,0.02); }
+        .workout-card-input input { 
+            background: #000 !important; 
+            border: 1px solid #333 !important; 
+            color: #fff !important; 
+            padding: 14px !important; 
+            border-radius: 12px !important; 
+            width: 100%; 
+            text-align: center; 
+            font-size: 15px; 
+            font-weight: 800; 
+            transition: 0.3s;
+        }
+        .workout-card-input input:focus { border-color: var(--primary) !important; box-shadow: 0 0 15px var(--primary-glow); }
+        
+        .sub-btn { 
+            padding: 16px !important; 
+            font-size: 15px !important; 
+            font-weight: 900 !important; 
+            cursor: pointer; 
+            border: 1px solid rgba(255,255,255,0.05) !important; 
+            transition: all 0.3s; 
+            color: #fff; 
+            border-radius: 18px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .sub-btn:hover { background: rgba(255,255,255,0.1) !important; transform: translateY(-2px); }
+        .sub-btn:active { transform: scale(0.96); }
+
+        .menu-item-whatsapp { transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); -webkit-tap-highlight-color: transparent; }
+        .menu-item-whatsapp:active { background: rgba(0,0,0,0.08); transform: scale(0.95); }
+    
+        @keyframes cinematicEntrance {
+            0% { opacity: 0; transform: translateY(-20px) scale(0.95); filter: blur(10px); }
+            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+        .pulse-dot {
+            animation: pulseDot 2s infinite;
+        }
+        @keyframes pulseDot {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Share Card Styles - Premium Mobile Version */
+        #share-card-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.98); z-index: 200000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); padding: 20px;
+        }
+        #share-card {
+            width: 100%; max-width: 360px; aspect-ratio: 9/16;
+            background: #000;
+            border-radius: 40px; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 40px 100px rgba(0,0,0,1);
+            padding: 30px; text-align: center;
+        }
+        #share-card::before {
+            content: ""; position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(from 0deg, transparent, var(--primary), transparent 30%, transparent);
+            animation: rotateGlow 3s linear infinite;
+            z-index: 0;
+        }
+        #share-card::after {
+            content: ""; position: absolute; inset: 3px;
+            background: #050505; border-radius: 37px; z-index: 1;
+        }
+        #share-card-content { 
+            position: relative; z-index: 2; width: 100%; height: 100%; 
+            display: flex; flex-direction: column; align-items: center; justify-content: space-around;
+            padding: 20px 0;
+        }
+        
+        @keyframes rotateGlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .share-photo-container {
+            width: 110px !important; height: 110px !important; border-radius: 50% !important;
+            border: 3px solid var(--primary);
+            overflow: hidden; flex-shrink: 0 !important;
+            box-shadow: 0 0 25px var(--primary-glow);
+            background: #111;
+        }
+        .share-photo-container img { width: 100%; height: 100%; object-fit: cover; }
+        .share-fire { font-size: 55px; filter: drop-shadow(0 0 20px var(--primary)); margin: 10px 0; animation: flame 1.5s ease-in-out infinite alternate; }
+        @keyframes flame {
+            0% { transform: scale(1) translateY(0); }
+            100% { transform: scale(1.1) translateY(-8px); }
+        }
+        .share-name { font-size: 32px; font-weight: 900; color: #fff; margin-bottom: 5px; text-transform: uppercase; }
+        .share-text { font-size: 17px; color: #ccc; font-weight: 600; line-height: 1.4; margin-bottom: 10px; direction: rtl; }
+        .share-badge { 
+            background: linear-gradient(45deg, var(--primary), var(--primary-dark)); 
+            color: #fff; padding: 10px 25px; border-radius: 25px; 
+            font-size: 14px; font-weight: 900; text-transform: uppercase;
+            box-shadow: 0 5px 15px var(--primary-glow);
+            display: inline-block; direction: rtl;
+        }
+        .share-logo-tags { margin-top: 20px; direction: ltr; }
+        .share-tags { color: #444; font-size: 9px; font-weight: bold; letter-spacing: 1px; margin-bottom: 10px; }
+        .share-logo { font-weight: 900; color: rgba(255,255,255,0.05); letter-spacing: 5px; font-size: 10px; text-transform: uppercase; }
+        .user-admin-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.15); background: linear-gradient(135deg, #161616, #0a0a0a) !important; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .user-admin-card:active { transform: scale(0.97); }
+    </style>
+
+</head>
+
+<body>
+    <!-- Rest Timer Overlay -->
+    <div id="rest-timer-overlay" onclick="stopRestTimer()" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.9); z-index:99999; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(20px);">
+        <div style="position:relative; width:280px; height:280px; display:flex; align-items:center; justify-content:center;">
+            <svg width="280" height="280" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="3" />
+                <circle id="rest-progress-circle" cx="50" cy="50" r="45" fill="none" stroke="var(--primary)" stroke-width="4" 
+                    stroke-dasharray="282.7" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 50 50)" 
+                    style="transition: stroke-dashoffset 1s linear; filter: drop-shadow(0 0 10px var(--primary-glow));" />
+            </svg>
+            <div style="position:absolute; text-align:center;">
+                <p style="color:#777; font-size:14px; margin-bottom:5px; font-weight:bold; letter-spacing:2px;">REST</p>
+                <h1 id="rest-seconds" style="font-size:85px; color:#fff; font-weight:900; line-height:1; text-shadow:0 0 20px rgba(0,0,0,0.5);">60</h1>
+                <p style="color:var(--primary); font-size:12px; margin-top:5px; font-weight:bold;">ثانية</p>
+            </div>
+        </div>
+        <p style="color:#444; margin-top:40px; font-size:12px; font-weight:bold; letter-spacing:1px; animation: pulse 2s infinite;">إضغط في أي مكان للإلغاء</p>
+    </div>
+
+    <!-- Auth Section -->
+    <div id="auth-section">
+        <div class="auth-card" id="login-form">
+            <h1 style="color:var(--primary); font-weight:900; font-size:42px; letter-spacing:-1px;">FIRE GYM</h1>
+            <p style="color:var(--text-muted); margin-bottom:20px;">الأبطال وصلوا 🔥</p>
+            
+            <div class="input-group">
+                <label>رقم الموبايل</label>
+                <input type="tel" id="login-phone" placeholder="01xxxxxxxxx">
+            </div>
+            
+            <div class="input-group">
+                <label>كلمة المرور</label>
+                <input type="password" id="login-pass" placeholder="******">
+            </div>
+            
+            <div style="text-align:left; margin-bottom:15px;">
+                <a href="https://wa.me/201100896637?text=يا%20كوتش%20نسيت%20كلمة%20السر%20بتاعتي" target="_blank" style="color:var(--accent); font-size:12px; text-decoration:none; font-weight:bold;">نسيت كلمة السر؟ 🤨</a>
+            </div>
+            
+            <button class="btn-full pulse-glow" onclick="login()">دخول للأبلكيشن 🔥</button>
+            <p style="margin-top:20px; color:#777;">مش مشترك؟ <a href="javascript:void(0)" onclick="toggleAuth('register')" style="color:var(--primary); font-weight:bold; text-decoration:none; border-bottom:1px solid var(--primary);">سجل بياناتك هنا</a></p>
+            
+            <button onclick="localStorage.clear(); sessionStorage.clear(); location.reload(true);" style="margin-top:25px; background:#222; border:1px solid #333; color:#fff; padding:10px; border-radius:10px; font-size:11px; width:100%; cursor:pointer;">🔄 تحديث إجباري (حل مشاكل تسجيل الدخول)</button>
+        </div>
+
+        <div class="auth-card auth-bottom-sheet hidden" id="register-form">
+            <div style="width:40px; height:5px; background:rgba(255,255,255,0.1); border-radius:10px; margin:0 auto 20px;"></div>
+            <h2 style="margin-bottom:20px; color:var(--primary);">بيانات البطل 🔥</h2>
+            <div class="input-group"><label>الاسم بالكامل</label><input type="text" id="reg-name"></div>
+            <div class="input-group"><label>رقم الموبايل</label><input type="tel" id="reg-phone"></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div class="input-group"><label>السن</label><input type="number" id="reg-age"></div>
+                <div class="input-group"><label>الطول (سم)</label><input type="number" id="reg-height"></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div class="input-group"><label>الوزن (كجم)</label><input type="number" id="reg-weight"></div>
+                <div class="input-group"><label>نسبة الدهون %</label><input type="number" id="reg-fat"></div>
+            </div>
+            <div class="input-group">
+                <label>هدفك</label>
+                <select id="reg-goal">
+                    <option value="نظام تدريب">نظام تدريب 🏋️‍♂️</option>
+                    <option value="نظام تغذيه">نظام تغذيه 🥗</option>
+                    <option value="نظام VIP">نظام VIP ⭐</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>مدة الاشتراك 🗓️</label>
+                <select id="reg-duration">
+                    <option value="1">اشتراك شهري (1 شهر) 🗓️</option>
+                    <option value="3">اشتراك ربع سنوي (3 شهور) 🔋</option>
+                    <option value="12">اشتراك سنوي (12 شهر) 🔥</option>
+                </select>
+            </div>
+            <div class="input-group"><label>اختر كلمة سر</label><input type="password" id="reg-pass" placeholder="******"></div>
+            <button class="btn-full" onclick="register()">إرسال طلب اشتراك ✅</button>
+            <p style="margin-top:15px;"><a href="javascript:void(0)" onclick="toggleAuth('login')" style="color:var(--text-muted); text-decoration:none;">رجوع لتسجيل الدخول</a></p>
+        </div>
+    </div>
+
+    <!-- App Content Section -->
+    <div id="app-content" class="hidden">
+        <div class="main-sections">
+            <!-- 1. تبويب الرئيسية -->
+            <div id="user-tab" class="content-tab hidden">
+                <header style="padding: 40px 0 20px; text-align: center; background: none; border-bottom: none; position: relative;">
+                    <!-- جرس الإشعارات (ستايل فيس بوك) -->
+                    <div onclick="openNotifModal()" style="position:absolute; top:30px; left:20px; font-size:26px; cursor:pointer;" id="notif-bell-container">
+                        🔔<span id="notif-badge" class="hidden" style="position:absolute; top:-5px; right:-5px; background:var(--primary); color:#fff; font-size:10px; padding:2px 5px; border-radius:50%; font-weight:bold; min-width:18px; border:2px solid #000;">0</span>
+                    </div>
+                    
+                    <div style="display:inline-block; font-size:10px; color:var(--accent); font-weight:bold; background:rgba(0,0,0,0.5); padding:4px 15px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); margin-bottom:15px;">V.9.4.0 ELITE 🔥</div>
+                    <h2 style="font-size:36px; font-weight:900; letter-spacing:-1.5px; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">يا كابتن <span id="user-display-name" style="color:var(--primary);">بطلنا</span> 🔥</h2>
+                    
+                    <!-- ملاحظة الكابتن بتصميم سنمائي تحت الاسم -->
+                    <div id="captain-notes-box" class="hidden" style="margin: 15px auto; max-width: 90%; background: rgba(255,179,0,0.05); border: 1px solid rgba(255,179,0,0.2); border-radius: 20px; padding: 15px; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: cinematicEntrance 1s ease-out;">
+                        <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:5px;">
+                            <span style="font-size:12px; color:var(--accent); font-weight:bold; text-transform:uppercase; letter-spacing:2px;">Captain's Message</span>
+                            <span class="pulse-dot" style="width:6px; height:6px; background:var(--accent); border-radius:50%;"></span>
+                        </div>
+                        <p id="captain-notes-text" style="font-size:16px; font-weight:bold; color:#fff; line-height:1.4; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin:0;"></p>
+                    </div>
+                    <!-- مقولة اليوم التحفيزية -->
+                    <div id="motivation-quote-box" style="margin: 5px auto 15px; max-width: 85%; min-height: 40px; display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(255,255,255,0.03); border-radius: 15px; padding: 10px 20px; border: 1px solid rgba(255,255,255,0.05); animation: fadeIn 1.5s ease-in-out;">
+                        <span style="font-size: 18px;">🔥</span>
+                        <p id="motivation-text" style="margin: 0; font-size: 13px; color: #aaa; font-style: italic; font-weight: bold; line-height: 1.3;">"الوحوش مش بتعرف المستحيل.. ابدأ تمرينك!"</p>
+                    </div>
+                </header>
+                <!-- بنر النظام المخصص (تصغير المستطيل) -->
+                <div id="system-banner" style="width:100%; height:130px; border-radius:25px; margin-bottom:20px; background-size:cover; background-position:center; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,0.05); box-shadow:0 10px 25px rgba(0,0,0,0.4);">
+                    <div style="position:absolute; bottom:0; left:0; width:100%; height:100%; background:linear-gradient(90deg, rgba(0,0,0,0.85) 0%, transparent 60%); padding:20px; display:flex; justify-content:flex-end; align-items:center;">
+                        <div style="text-align:right;">
+                            <div id="system-title-badge" style="background:var(--primary); color:#fff; padding:3px 10px; border-radius:8px; font-size:10px; font-weight:900; margin-bottom:5px; display:inline-block; text-transform:uppercase; letter-spacing:1px;"></div>
+                            <h3 id="system-main-title" style="margin:0; font-size:20px; font-weight:900; text-shadow:2px 2px 10px rgba(0,0,0,0.8); color:#fff; letter-spacing: -0.5px;"></h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>سجل نشاطك 🏃‍♂️</h3>
+                    <div class="tracker-grid" id="main-tracker-grid"></div>
+                </div>
+
+                <!-- لوحة الأبطال (Leaderboard Mini) -->
+                <div class="card" style="background: linear-gradient(135deg, #1a1a1a, #000); border: 1px solid rgba(255,179,0,0.1); overflow:hidden;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h3 style="margin:0; font-size:16px;">أبطال الفاير جيم 🏆</h3>
+                        <small style="color:var(--accent); cursor:pointer; font-weight:bold;" onclick="openLeaderboard()">عرض الكل ➔</small>
+                    </div>
+                    <div id="mini-leaderboard" style="display:flex; gap:12px; overflow-x:auto; padding-bottom:5px; scrollbar-width: none;">
+                        <p style="color:#444; font-size:12px; width:100%; text-align:center;">جاري البحث عن الأبطال... 🔍</p>
+                    </div>
+                </div>
+
+                <div class="card" style="background:linear-gradient(135deg,#1e1e1e,#0d47a1); border:none; box-shadow:0 10px 20px rgba(13,71,161,0.3);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3>شرب المية 💧</h3> <span id="water-count" style="font-size:32px; font-weight:900;">0</span>
+                        <button onclick="updateWater(1)" style="background:#fff; color:#000; border:none; padding:12px 25px; border-radius:15px; font-weight:bold; box-shadow:0 5px 15px rgba(255,255,255,0.2);">+1 كوب</button>
+                    </div>
+                </div>
+
+                <div class="card" style="border-left:5px solid var(--accent);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 id="plan-title-display">جدول تمرينك 🏋️‍♂️</h3>
+                        <small style="color:var(--accent); font-weight:bold;">تحت إشراف الكابتن 👨‍🏫</small>
+                    </div>
+                    
+                    <div id="vip-toggle-container" class="hidden" style="background:#000; padding:5px; border-radius:20px; display:flex; margin:20px 0; border:1px solid #333;">
+                        <button id="btn-show-workout" class="sub-btn" style="flex:1; margin:0; border-radius:15px; background:var(--primary);" onclick="switchVipMode('workout')">🏋️ تمرين</button>
+                        <button id="btn-show-nutrition" class="sub-btn" style="flex:1; margin:0; border-radius:15px; background:transparent; color:#777;" onclick="switchVipMode('nutrition')">🥗 تغذية</button>
+                    </div>
+
+                    <div id="user-plan-tabs" style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:15px 0;"></div>
+
+                    <!-- مكان عرض الجدول والزرار الأصفر المفقود -->
+                    <button id="workout-timer-btn" class="btn-full hidden" onclick="toggleWorkoutTimer()" style="background:var(--accent); color:#000; font-weight:bold; font-size:14px; margin-top:10px; margin-bottom:15px; border:none; border-radius:15px; padding:15px; box-shadow: 0 4px 15px rgba(255,179,0,0.3);">⏱️ وقت التمرين: <span id="workout-timer-display">00:00:00</span></button>
+
+                    <div id="user-plan-view" class="hidden">
+                        <div id="plan-cards-container"></div>
+                    </div>
+                </div>
+
+
+
+                <div id="nutrition-extras" class="hidden" style="margin-top:25px;">
+                    <div id="nutrition-nav-buttons" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
+                        <button onclick="toggleNutritionSection('food-prefs-section')" class="btn-full" style="background:rgba(76,175,80,0.1); border:1px solid #4caf50; color:#4caf50; font-size:12px; padding:12px; border-radius:15px; font-weight:bold;">🥗 تفضيلات الأكل</button>
+                        <button onclick="toggleNutritionSection('recipes-section')" class="btn-full" style="background:rgba(255,179,0,0.1); border:1px solid var(--accent); color:var(--accent); font-size:12px; padding:12px; border-radius:15px; font-weight:bold;">👨‍🍳 وصفات أون فاير</button>
+                    </div>
+
+                    <div id="food-prefs-section" class="card hidden" style="border-top:4px solid #4caf50; background:rgba(0,0,0,0.4);">
+                        <h3 style="color:#4caf50; display:flex; align-items:center; gap:10px; margin-bottom:15px;">🥗 جدول تفضيلات الأكل</h3>
+                        <p style="font-size:11px; color:#777; margin-bottom:15px;">اكتب هنا الأكلات اللي بتحبها (❤️) واللي مش بتحبها (💔) عشان الكابتن يراعيها في نظامك الدايت.</p>
+                        
+                        <div style="overflow-x:auto;">
+                            <table style="width:100%; border-collapse:collapse; background:rgba(255,255,255,0.02); border-radius:12px; overflow:hidden; border:1px solid #333;">
+                                <thead style="background:#111; font-size:11px; color:#555;">
+                                    <tr>
+                                        <th style="padding:12px; text-align:right;">الأكلة / الصنف</th>
+                                        <th style="padding:12px; width:70px;">الحالة</th>
+                                        <th style="padding:12px; width:40px;">حذف</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="food-prefs-body"></tbody>
+                            </table>
+                        </div>
+
+                        <button class="btn-full" onclick="addPrefRow()" style="background:#222; border:1px dashed #444; color:#777; margin-top:15px; padding:12px; font-size:13px;">+ إضافة صنف جديد</button>
+                        <button class="btn-full" onclick="saveFoodPrefs()" style="background:var(--success); color:#000; margin-top:15px; font-weight:bold; font-size:17px; box-shadow: 0 4px 15px rgba(76,175,80,0.3);">✅ حفظ الجدول للكابتن</button>
+                    </div>
+                    <div id="recipes-section" class="card hidden" style="border-top:4px solid var(--accent); background:rgba(0,0,0,0.4);">
+                        <h3 style="color:var(--accent); display:flex; align-items:center; gap:10px; margin-bottom:15px;">👨‍🍳 وصفات أون فاير 🔥</h3>
+                        <div id="recipes-gallery" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:15px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تبويب تقييمي -->
+            <div id="eval-tab" class="content-tab hidden" style="padding-bottom:100px;">
+                
+                <!-- Header -->
+                <div style="text-align:center; padding:30px 0 20px;">
+                    <div style="font-size:11px; color:var(--accent); font-weight:bold; text-transform:uppercase; letter-spacing:3px; margin-bottom:8px;">ATHLETE PROGRESS REPORT</div>
+                    <h2 style="font-size:28px; font-weight:900; color:#fff; margin:0;">📈 رحلة البطل <span id="eval-hero-name" style="color:var(--primary);"></span></h2>
+                    <div style="width:60px; height:3px; background:linear-gradient(to left, var(--primary), transparent); margin:12px auto 0; border-radius:10px;"></div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+                    <div style="background:linear-gradient(135deg,rgba(255,59,48,0.1),rgba(0,0,0,0.4)); padding:18px; border-radius:20px; border:1px solid rgba(255,59,48,0.2); text-align:center;">
+                        <div style="font-size:10px; color:#ff3b30; font-weight:bold; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px;">⚖️ أحدث وزن</div>
+                        <div id="eval-last-weight" style="font-size:30px; font-weight:900; color:#fff;">-- كجم</div>
+                    </div>
+                    <div style="background:linear-gradient(135deg,rgba(76,175,80,0.1),rgba(0,0,0,0.4)); padding:18px; border-radius:20px; border:1px solid rgba(76,175,80,0.2); text-align:center;">
+                        <div style="font-size:10px; color:#4caf50; font-weight:bold; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px;">✅ الالتزام</div>
+                        <div id="current-score-text" style="font-size:30px; font-weight:900; color:#fff;">-- / 10</div>
+                    </div>
+                    <div style="background:linear-gradient(135deg,rgba(255,179,0,0.1),rgba(0,0,0,0.4)); padding:18px; border-radius:20px; border:1px solid rgba(255,179,0,0.2); text-align:center;">
+                        <div style="font-size:10px; color:#ffb300; font-weight:bold; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px;">🔥 نسبة الدهون</div>
+                        <div id="eval-last-fat" style="font-size:30px; font-weight:900; color:#fff;">-- %</div>
+                    </div>
+                    <div style="background:linear-gradient(135deg,rgba(0,122,255,0.1),rgba(0,0,0,0.4)); padding:18px; border-radius:20px; border:1px solid rgba(0,122,255,0.2); text-align:center;">
+                        <div style="font-size:10px; color:#007aff; font-weight:bold; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px;">📋 جلسات مسجلة</div>
+                        <div id="eval-total-count" style="font-size:30px; font-weight:900; color:#fff;">--</div>
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <div style="background:#0a0a0a; border-radius:24px; padding:20px; border:1px solid #1a1a1a; margin-bottom:20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <b style="color:#fff; font-size:14px; font-weight:900;">📊 منحنى التطور</b>
+                        <div style="display:flex; gap:12px; font-size:10px; font-weight:bold;">
+                            <span style="display:flex; align-items:center; gap:5px; color:#ff3b30;"><span style="width:20px; height:3px; background:#ff3b30; border-radius:2px; display:inline-block;"></span>وزن</span>
+                            <span style="display:flex; align-items:center; gap:5px; color:#ffb300;"><span style="width:20px; height:3px; background:#ffb300; border-radius:2px; border-top:2px dashed #ffb300; display:inline-block;"></span>دهون</span>
+                            <span style="display:flex; align-items:center; gap:5px; color:#4caf50;"><span style="width:20px; height:3px; background:#4caf50; border-radius:2px; display:inline-block;"></span>التزام</span>
+                        </div>
+                    </div>
+                    <div style="position:relative; height:220px;">
+                        <canvas id="evalChart"></canvas>
+                    </div>
+                    <p id="eval-no-data-msg" style="display:none; text-align:center; color:#333; font-size:13px; padding:60px 20px;">مفيش تقييمات لسه 🔥<br><small>انتظر أول تقييم من الكابتن</small></p>
+                </div>
+
+                <!-- Coach Message -->
+                <div style="position:relative; background:linear-gradient(135deg, rgba(76,175,80,0.08), rgba(0,0,0,0.5)); border:1px solid rgba(76,175,80,0.15); border-radius:24px; padding:25px 20px 20px; margin-bottom:25px;">
+                    <div style="position:absolute; top:-14px; right:20px; background:linear-gradient(135deg,#2e7d32,#4caf50); color:#fff; padding:5px 18px; border-radius:20px; font-size:12px; font-weight:900; letter-spacing:1px; box-shadow:0 4px 12px rgba(76,175,80,0.4);">✨ كلام الكوتش</div>
+                    <p id="coach-note-bubble" style="color:#ddd; line-height:1.9; font-size:15px; text-align:right; font-style:italic; margin:5px 0 0;">في انتظار أول تقييم من الكابتن... 🔥</p>
+                </div>
+
+                <!-- History -->
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+                    <span style="flex:1; height:1px; background:linear-gradient(to right, #111, #333);"></span>
+                    <span style="color:#444; font-size:12px; font-weight:bold; letter-spacing:1px;">📋 التاريخ الكامل</span>
+                    <span style="flex:1; height:1px; background:linear-gradient(to left, #111, #333);"></span>
+                </div>
+                <div id="eval-history-list"></div>
+            </div>
+
+            <!-- 2. تبويب السجل -->
+            <div id="history-tab" class="content-tab hidden">
+                <div class="card" style="background:linear-gradient(135deg, #2e7d32, #1b5e20); border:none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h3 style="margin:0; color:#fff;">حاسبة السعرات الذكية 🍎</h3>
+                            <p style="margin:5px 0 0; font-size:11px; color:rgba(255,255,255,0.7);">احسب احتياج جسمك من البروتين والكربوهيدرات</p>
+                        </div>
+                        <button onclick="openMacroCalculator()" style="background:#fff; color:#1b5e20; border:none; padding:10px 20px; border-radius:12px; font-weight:bold; cursor:pointer;">ابدأ الآن</button>
+                    </div>
+                </div>
+
+                <div class="card" style="background:rgba(255,179,0,0.05); border:1px solid rgba(255,179,0,0.1);">
+                    <h3 style="color:var(--accent); margin-bottom:15px; font-size:16px;">أوسمة الإنجاز 🏅</h3>
+                    <div id="user-badges" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+                        <p style="color:#555; font-size:11px;">كمل تمارينك عشان تفتح أوسمة جديدة! 🔥</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom:20px;">إعدادات الحساب ⚙️</h3>
+                    <div id="user-history-list"></div>
+                </div>
+            </div>
+
+            <!-- 3. تبويب أنا -->
+            <div id="me-tab" class="content-tab hidden">
+                <div class="card" style="text-align:center; padding-top:40px;">
+                    <div style="width:130px; height:130px; border-radius:50%; background:#111; margin:0 auto 20px; border:5px solid var(--primary); overflow:hidden; position:relative; box-shadow:0 0 20px rgba(229,57,53,0.3);">
+                        <img id="me-photo" src="https://via.placeholder.com/150" style="width:100%; height:100%; object-fit:cover;">
+                        <input type="file" id="me-photo-upload" class="hidden" accept="image/*" onchange="uploadMePhoto(this)">
+                        <label for="me-photo-upload" style="position:absolute; bottom:0; left:0; width:100%; background:rgba(0,0,0,0.7); color:#fff; font-size:10px; padding:5px; cursor:pointer;">تغيير الصورة 📸</label>
+                    </div>
+                    <h2 id="me-name" style="font-size:24px; margin-bottom:5px;">البطل</h2>
+                    <p id="me-goal-badge" style="display:inline-block; background:var(--primary); color:#fff; padding:5px 15px; border-radius:20px; font-size:12px; font-weight:bold;"></p>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:30px;">
+                        <div style="background:#111; padding:15px; border-radius:18px; border:1px solid #333;"><small style="color:#777; display:block; margin-bottom:5px;">السن</small><b id="me-age" style="color:var(--accent); font-size:20px;">--</b></div>
+                        <div style="background:#111; padding:15px; border-radius:18px; border:1px solid #333;"><small style="color:#777; display:block; margin-bottom:5px;">الوزن</small><b id="me-weight" style="color:var(--accent); font-size:20px;">--</b></div>
+                        <div style="background:#111; padding:15px; border-radius:18px; border:1px solid #333;"><small style="color:#777; display:block; margin-bottom:5px;">الطول</small><b id="me-height" style="color:var(--accent); font-size:20px;">--</b></div>
+                        <div style="background:#111; padding:15px; border-radius:18px; border:1px solid #333;"><small style="color:#777; display:block; margin-bottom:5px;">دهون %</small><b id="me-fat" style="color:var(--accent); font-size:20px;">--</b></div>
+                    </div>
+                    
+                    <div style="background:rgba(255,59,48,0.05); padding:20px; border-radius:20px; border:1px solid rgba(255,59,48,0.2); margin-top:20px; text-align:right;">
+                        <small style="color:#aaa; display:block; margin-bottom:5px; font-size:11px;">🚀 حالة الاشتراك الحالي:</small>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <b id="me-expiry-days" style="color:#fff; font-size:18px;">-- يوم</b>
+                            <span id="me-expiry-date" style="color:var(--accent); font-size:13px; font-weight:bold;">-- / -- / ----</span>
+                        </div>
+                        <div id="expiry-progress-bar" style="width:100%; height:6px; background:#222; border-radius:10px; margin-top:12px; overflow:hidden;">
+                            <div id="expiry-progress-fill" style="width:0%; height:100%; background:var(--primary); transition:0.5s;"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top:30px; display:flex; flex-direction:column; gap:12px;">
+                        <button onclick="editMyInfo()" class="btn-full" style="background:rgba(255,255,255,0.05); border:1px solid #444; font-size:14px;">✏️ تعديل بياناتي الحيوية</button>
+                        <button id="goal-change-btn" onclick="requestGoalChange()" class="btn-full" style="background:rgba(255,179,0,0.1); border:1px solid var(--accent); color:var(--accent); font-size:14px;">🔥 طلب تغيير النظام الحالي</button>
+                        
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px; border-top:1px solid #333; pt:20px;">
+                            <button onclick="forceUpdate()" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:15px; border-radius:15px; font-size:12px; font-weight:bold;">🔄 تحديث النظام</button>
+                            <button onclick="logout()" style="background:rgba(255,0,0,0.1); color:#ff3b30; border:1px solid #ff3b30; padding:15px; border-radius:15px; font-weight:bold; font-size:12px;">🚶‍♂️ تسجيل خروج</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="admin-tab" class="content-tab hidden">
+                <header style="padding: 40px 0 20px; text-align: center; background: none; border-bottom: none; position: relative;">
+                    <!-- جرس الإشعارات للأدمن (ستايل فيس بوك) -->
+                    <div onclick="openNotifModal()" style="position:absolute; top:30px; left:20px; font-size:26px; cursor:pointer;" id="notif-bell-admin">
+                        🔔<span id="notif-badge-admin" class="hidden" style="position:absolute; top:-5px; right:-5px; background:var(--primary); color:#fff; font-size:10px; padding:2px 5px; border-radius:50%; font-weight:bold; min-width:18px; border:2px solid #000;">0</span>
+                    </div>
+
+                    <div style="font-size:11px; color:var(--accent); font-weight:bold; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px;">Management Center 🖥️</div>
+                    <h2 style="font-size:32px; font-weight:900; color:#fff;">لوحة قيادة <span style="color:var(--primary);">الكابتن</span> 🔥</h2>
+                </header>
+
+                <div class="card" style="margin-top:20px; border-right:5px solid var(--accent);">
+                    <h3 style="margin-bottom:20px; display:flex; align-items:center; gap:10px;">📊 نظرة عامة على الجيم <span style="font-size:12px; font-weight:normal; color:var(--text-muted);">(تحديث لحظي)</span></h3>
+                <div class="tracker-grid" style="grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:25px;">
+                    <!-- إجمالي المشتركين -->
+                    <div class="track-btn" style="padding:15px; border-radius:20px; position:relative; background:rgba(255,255,255,0.03);">
+                        <b id="stat-total-val" style="font-size:24px; color:#fff;">0</b>
+                        <span style="font-size:10px; color:#aaa;">عدد المشتركين 👥</span>
+                    </div>
+                    
+                    <!-- طلبات الانضمام -->
+                    <div class="track-btn" style="padding:15px; border-radius:20px; position:relative; cursor:pointer; background:rgba(255,255,255,0.03);" onclick="document.getElementById('pending-requests-modal').classList.remove('hidden')">
+                        <b id="stat-pending-val" style="font-size:24px; color:var(--primary);">0</b>
+                        <span style="font-size:10px; color:#aaa;">طلبات انضمام 🆕</span>
+                        <div id="dot-pending" class="notif-dot hidden" style="position:absolute; top:12px; right:12px; width:10px; height:10px; background:#ff3b30; border-radius:50%; box-shadow:0 0 10px #ff3b30;"></div>
+                    </div>
+
+                    <!-- اشتراكات منتهية -->
+                    <div class="track-btn" style="padding:15px; border-radius:20px; position:relative; background:rgba(255,255,255,0.03);">
+                        <b id="stat-expired-val" style="font-size:24px; color:#ff3b30;">0</b>
+                        <span style="font-size:10px; color:#aaa;">اشتراكات منتهية ⚠️</span>
+                    </div>
+
+                    <!-- طلبات تغيير النظام -->
+                    <div class="track-btn" style="padding:15px; border-radius:20px; position:relative; cursor:pointer; background:rgba(255,255,255,0.03);" onclick="document.getElementById('goal-change-modal').classList.remove('hidden')">
+                        <b id="stat-goals-val" style="font-size:24px; color:var(--accent);">0</b>
+                        <span style="font-size:10px; color:#aaa;">تغيير نظام 🚀</span>
+                        <div id="dot-goals" class="notif-dot hidden" style="position:absolute; top:12px; right:12px; width:10px; height:10px; background:#ffb300; border-radius:50%; box-shadow:0 0 10px #ffb300;"></div>
+                    </div>
+                </div>
+            </div>
+
+                <!-- تم نقل القوائم لنوافذ مستقلة لترتيب الواجهة -->
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h3 style="margin:0;">قائمة الأبطال 👥</h3>
+                        <button onclick="document.getElementById('admin-recipes-tool').classList.toggle('hidden')" style="background:none; border:1px solid var(--accent); color:var(--accent); padding:5px 12px; border-radius:10px; font-size:12px; cursor:pointer;">➕ إضافة وصفة 🔥</button>
+                    </div>
+                    <div id="admin-recipes-tool" class="hidden" style="background:rgba(255,179,0,0.05); border:1px dashed var(--accent); padding:20px; border-radius:20px; margin-bottom:25px;">
+                        <h4 style="color:var(--accent); margin-bottom:15px; display:flex; align-items:center; gap:8px;">🥗 إضافة وصفة أون فاير جديدة 🔥</h4>
+                        <input type="text" id="recipe-name" placeholder="اسم الأكلة" style="width:100%; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:10px; margin-bottom:10px;">
+                        <textarea id="recipe-desc" placeholder="المكونات والطريقة..." style="width:100%; height:80px; background:#000; border:1px solid #333; color:#fff; border-radius:10px; padding:10px; margin-bottom:10px;"></textarea>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <button onclick="document.getElementById('recipe-img').click()" style="background:#222; border:1px solid #444; color:#ccc; padding:8px 15px; border-radius:8px; font-size:12px;">📎 ارفع صورة</button>
+                            <input type="file" id="recipe-img" class="hidden" accept="image/*" onchange="processRecipeImg(this)">
+                            <button onclick="saveRecipe()" style="background:var(--accent); color:#000; border:none; padding:8px 20px; border-radius:10px; font-weight:bold;">نشر ✅</button>
+                        </div>
+                    </div>
+
+                    <!-- خانة البحث برقم الموبايل -->
+                    <div class="input-group" style="margin: 10px 0 20px;">
+                        <input type="tel" id="admin-search-phone" placeholder="🔍 ابحث برقم الموبايل..." oninput="filterAdminUsers()" style="border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid #333; padding: 15px; width: 100%; color: #fff; outline: none; transition: 0.3s;">
+                    </div>
+                    <div id="admin-user-filters" style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:20px;">
+                        <button class="sub-btn" style="background:var(--primary); font-size:9px; padding:10px 2px;" onclick="filterAdminUsers('all')">الكل</button>
+                        <button class="sub-btn" style="background:#222; font-size:9px; padding:10px 2px;" onclick="filterAdminUsers('نظام تدريب')">تدريب</button>
+                        <button class="sub-btn" style="background:#222; font-size:9px; padding:10px 2px;" onclick="filterAdminUsers('نظام تغذيه')">تغذية</button>
+                        <button class="sub-btn" style="background:#222; font-size:9px; padding:10px 2px;" onclick="filterAdminUsers('نظام تدريب + تغذيه')">مكس 🔄</button>
+                        <button class="sub-btn" style="background:#222; font-size:9px; padding:10px 2px;" onclick="filterAdminUsers('نظام VIP')">VIP</button>
+                        <button class="sub-btn" style="background:#ff3b30; font-size:9px; padding:10px 2px;" onclick="filterAdminUsers('expired')">المنتهي ⌛</button>
+                    </div>
+                    <div id="all-users-list"></div>
+                </div>
+            </div>
+            
+            <!-- تبويب مركز الدردشة للأدمن -->
+            <div id="admin-chat-tab" class="content-tab hidden">
+                <div class="card" style="margin-bottom:20px; background:linear-gradient(135deg, #111, #0a0a0a); border:1px solid #333; padding:25px;">
+                    <h2 style="color:var(--accent); margin:0 0 10px 0; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:24px;">💬</span> مركز الرسائل
+                    </h2>
+                    <p style="color:#777; font-size:12px; margin:0;">تابع أحدث محادثات الأبطال ورد عليهم فوراً</p>
+                </div>
+                
+                <div id="admin-chat-list" style="display:flex; flex-direction:column; gap:12px;">
+                    <!-- Chat items will appear here -->
+                </div>
+            </div>
+
+            <!-- تبويب التكنيك الجديد -->
+            <div id="technique-tab" class="content-tab hidden">
+                <div class="card" style="padding:20px; background:linear-gradient(135deg, #0a0a0a, #111); border:1px solid #333; margin-bottom:20px;">
+                    <h2 style="color:var(--primary); margin-bottom:15px; display:flex; align-items:center; gap:10px;">🎥 مكتبة التكنيك</h2>
+                    <p style="color:#aaa; font-size:12px; margin-bottom:20px;">دليلك الشامل للأداء الصحيح لتجنب الإصابات وتحقيق أقصى استفادة.</p>
+                    
+                    <button id="add-technique-btn" class="hidden" onclick="document.getElementById('technique-modal').classList.remove('hidden')" style="width:100%; padding:15px; background:rgba(255,179,0,0.1); border:1px dashed var(--accent); color:var(--accent); border-radius:12px; margin-bottom:20px; font-weight:bold; font-size:16px;">➕ إضافة تكنيك جديد (كابتن)</button>
+                    
+                    <div id="technique-list" style="display:grid; grid-template-columns:1fr; gap:15px;"></div>
+                </div>
+            </div>
+
+            <!-- 6. تبويب المزيد (القائمة الفرعية) -->
+            <div id="more-tab" class="content-tab hidden">
+                <div class="card" style="text-align:center; padding:30px; background:linear-gradient(135deg, #1a1a1a, #000); border:1px solid #333;">
+                    <h3 style="color:var(--accent); margin-bottom:25px; font-size:22px;">قائمة الأبطال 🚀</h3>
+                    
+                    <div style="display:grid; grid-template-columns:1fr; gap:15px;">
+                        <button class="btn-full" onclick="switchTab('eval', document.getElementById('eval-nav-hidden'))" style="background:rgba(76,175,80,0.1); border:1px solid #4caf50; color:#4caf50; display:flex; align-items:center; justify-content:center; gap:10px; padding:20px;">
+                            <span style="font-size:24px;">📈</span> تقييمي الأسبوعي
+                        </button>
+                        
+                        <button class="btn-full" onclick="switchTab('me', document.getElementById('me-nav-hidden'))" style="background:rgba(255,255,255,0.05); border:1px solid #444; color:#fff; display:flex; align-items:center; justify-content:center; gap:10px; padding:20px;">
+                            <span style="font-size:24px;">👤</span> بياناتي الشخصية
+                        </button>
+                    </div>
+
+                    <p style="margin-top:30px; font-size:11px; color:#555;">Fire Gym PWA V.9.4.0 - Official Pro</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-tabs hidden" id="bottom-nav-bar">
+            <a href="javascript:void(0)" id="home-tab-nav" class="tab active" onclick="switchTab('user', this)"><span>🏋️‍♂️</span>الرئيسية</a>
+            <a href="javascript:void(0)" class="tab" onclick="switchTab('technique', this)"><span>🎥</span>التكنيك</a>
+            <a href="javascript:void(0)" id="chat-tab-nav" class="tab" onclick="handleChatTabClick()" style="position:relative;">
+                <span>💬</span>الشات
+                <span id="chat-badge" class="hidden" style="position:absolute; top:5px; right:15px; width:10px; height:10px; background:var(--primary); border-radius:50%; border:2px solid #000; box-shadow: 0 0 10px rgba(255,0,0,0.5);"></span>
+            </a>
+            <a href="javascript:void(0)" id="history-tab-nav" class="tab" onclick="switchTab('history', this)"><span>📝</span>السجل</a>
+            <a href="javascript:void(0)" class="tab" id="more-nav" onclick="toggleMoreMenu()"><span>🎒</span>المزيد</a>
+            <a href="javascript:void(0)" id="admin-nav" class="tab hidden" onclick="switchTab('admin', this)"><span>👑</span>الأدمن</a>
+            
+            <div class="hidden">
+                <div id="eval-nav-hidden"></div>
+                <div id="me-nav-hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="more-menu-overlay" class="modal hidden" style="background:rgba(0,0,0,0.2); backdrop-filter:blur(2px); transition: 0.3s; z-index:10001;" onclick="toggleMoreMenu()">
+        <div id="more-menu-content" style="position:fixed; bottom:-100%; left:20px; width:260px; border-radius:25px; padding:10px; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); background:rgba(255,255,255,0.98); border:1px solid #eee; box-shadow:0 15px 40px rgba(0,0,0,0.2); max-height:70vh; overflow-y:auto; scrollbar-width: none; -ms-overflow-style: none;" onclick="event.stopPropagation()">
+            <!-- Hidden Scrollbar Hack -->
+            <style>#more-menu-content::-webkit-scrollbar { display: none; }</style>
+            <!-- Hidden Scrollbar Hack -->
+            <style>#more-menu-content::-webkit-scrollbar { display: none; }</style>
+            
+            <div style="width:40px; height:5px; background:#ddd; border-radius:10px; margin:0 auto 20px auto;"></div>
+            
+            <div style="display:flex; flex-direction:column; gap:5px; padding:10px;">
+                <!-- بياناتي الشخصية (أنا) -->
+                <div onclick="switchTab('me'); toggleMoreMenu();" style="display:flex; align-items:center; gap:15px; padding:12px; border-radius:15px; cursor:pointer;" class="menu-item-whatsapp">
+                    <div style="background:#2196f3; width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; box-shadow:0 4px 10px rgba(33,150,243,0.3);">👤</div>
+                    <b style="color:#333; font-size:15px; flex:1; text-align:right;">بياناتي الشخصية (أنا)</b>
+                </div>
+
+                <!-- التقييم الأسبوعي (تقييم) -->
+                <div onclick="switchTab('eval'); toggleMoreMenu();" style="display:flex; align-items:center; gap:15px; padding:12px; border-radius:15px; cursor:pointer;" class="menu-item-whatsapp">
+                    <div style="background:#4caf50; width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; box-shadow:0 4px 10px rgba(76,175,80,0.3);">📈</div>
+                    <b style="color:#333; font-size:15px; flex:1; text-align:right;">تقييمي الأسبوعي (تقييم)</b>
+                </div>
+
+                <!-- معلومات تهمك -->
+                <div onclick="openInfoBank(); toggleMoreMenu();" style="display:flex; align-items:center; gap:15px; padding:12px; border-radius:15px; cursor:pointer;" class="menu-item-whatsapp">
+                    <div style="background:#ffb300; width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; box-shadow:0 4px 10px rgba(255,179,0,0.3);">💡</div>
+                    <b style="color:#333; font-size:15px; flex:1; text-align:right;">معلومات تهمك</b>
+                </div>
+
+                <!-- إدارة بنك المعلومات (للأدمن فقط) -->
+                <div id="admin-info-menu-btn" class="hidden" onclick="document.getElementById('admin-info-modal').classList.remove('hidden'); toggleMoreMenu();" style="display:flex; align-items:center; gap:15px; padding:12px; border-radius:15px; cursor:pointer;" class="menu-item-whatsapp">
+                    <div style="background:#9c27b0; width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; box-shadow:0 4px 10px rgba(156,39,176,0.3);">📚</div>
+                    <b style="color:#333; font-size:15px; flex:1; text-align:right;">إدارة المعلومات</b>
+                </div>
+
+                <!-- تواصل مع كابتن (WhatsApp) -->
+                <a href="https://wa.me/201100896637" target="_blank" style="text-decoration:none; display:flex; align-items:center; gap:15px; padding:12px; border-radius:15px; cursor:pointer;" class="menu-item-whatsapp">
+                    <div style="background:#25d366; width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow:0 4px 10px rgba(37,211,102,0.3);">💬</div>
+                    <b style="color:#333; font-size:15px; flex:1; text-align:right;">تواصل مع كابتن (WhatsApp)</b>
+                </a>
+
+                <!-- خروج من الأبلكيشن -->
+                <div onclick="fireGymChangePass(); toggleMoreMenu();" style="display:flex; align-items:center; gap:15px; padding:12px; border-radius:15px; cursor:pointer;" class="menu-item-whatsapp">
+                    <div style="background:#ffb300; width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; box-shadow:0 4px 10px rgba(255,179,0,0.3);">🔑</div>
+                    <b style="color:#333; font-size:15px; flex:1; text-align:right;">تغير كلمة السر</b>
+                </div>
+
+                <div onclick="logout()" style="display:flex; align-items:center; gap:15px; padding:12px; border-radius:15px; cursor:pointer;" class="menu-item-whatsapp">
+                    <div style="background:#ff3b30; width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; box-shadow:0 4px 10px rgba(255,59,48,0.3);">🚪</div>
+                    <b style="color:#ff3b30; font-size:15px; flex:1; text-align:right;">خروج من الأبلكيشن</b>
+                </div>
+
+                <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
+
+                <div style="text-align:center; padding:10px;">
+                    <p style="font-size:10px; color:#999; margin:0;">Fire Gym Elite V.9.4.0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="logger-modal" class="modal hidden">
+        <div class="card" style="width:100%; max-width:400px; max-height:90vh; overflow-y:auto;">
+            <h3 id="logger-title" style="margin-bottom:15px; color:var(--accent);">تسجيل</h3>
+            <div id="category-menu" class="hidden"><div id="category-btns" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div></div>
+            <div id="log-inputs" class="hidden">
+                <div id="file-wrapper" class="hidden">
+                    <button class="btn-full" onclick="document.getElementById('log-file').click()" style="background:#333;">📸 التقاط صورة</button>
+                    <input type="file" id="log-file" accept="image/*" capture="environment" class="hidden" onchange="handleImageProcessing(this)">
+                    <img id="img-preview" class="hidden" style="width:100%; border-radius:15px; margin:15px 0;">
+                </div>
+                <input type="text" id="log-val" placeholder="اكتب القيمة..." style="width:100%; padding:14px; background:#111; border:1px solid #333; color:#fff; border-radius:12px; margin-bottom:10px;">
+                <textarea id="log-note" placeholder="ملاحظة..." style="width:100%; height:80px; padding:14px; background:#111; border:1px solid #333; color:#fff; border-radius:12px; margin-bottom:15px;"></textarea>
+                <div id="save-status" style="text-align:center; color:var(--accent); margin-bottom:10px;"></div>
+                <button class="btn-full" onclick="saveLog()">تأكيد وحفظ ✅</button>
+            </div>
+            <button class="btn-full" style="background:#444;" onclick="closeLogger()">إلغاء</button>
+        </div>
+    </div>
+
+    <div id="workout-table-modal" class="modal hidden">
+        <div class="card" style="max-width:500px; width:100%; padding:20px; overflow-y:auto; max-height:95vh;">
+            <h3 style="text-align:center; color:var(--primary); margin-bottom:20px;" id="workout-table-title">سجل تمارين اليوم</h3>
+            <div id="exercise-rows" style="display:flex; flex-direction:column; gap:10px;"></div>
+            <button class="btn-full" style="background:#222; border:1px dashed #444; color:#aaa; margin-top:15px;" onclick="addExerciseRow()">+ إضافة تمرين آخر</button>
+            <button class="btn-full" style="margin-top:15px;" onclick="saveWorkoutTable()">حفظ التمرين بالكامل 🔥</button>
+            <button class="btn-full" style="background:#444;" onclick="document.getElementById('workout-table-modal').classList.add('hidden')">إلغاء</button>
+        </div>
+    </div>
+
+
+    <div id="profile-modal" class="modal hidden">
+        <div class="card" style="width:100%; max-width:600px; max-height:95vh; overflow-y:auto; background:#1a1a1a; padding:25px; border:1px solid #333;">
+            <!-- Header section matching screenshot -->
+            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:20px;">
+                <div style="text-align:right;">
+                    <h2 id="prof-name" style="color:#fff; font-size:32px; font-weight:900; margin:0;">اسم البطل</h2>
+                    <div id="prof-sub-header" style="color:var(--accent); font-weight:bold; font-size:14px; margin-top:5px;"></div>
+                    <div id="prof-bio-strip" style="color:#777; font-size:12px; margin-top:8px;"></div>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button onclick="deleteUser()" style="background:rgba(255,59,48,0.2); border:1px solid #ff3b30; color:#ff3b30; padding:8px 15px; border-radius:12px; font-size:12px; display:flex; align-items:center; gap:5px;">🗑️ حذف</button>
+                    <button onclick="document.getElementById('profile-modal').classList.add('hidden')" style="background:#333; border:1px solid #444; color:#fff; padding:8px 15px; border-radius:12px; font-size:12px;">إغلاق</button>
+                </div>
+            </div>
+
+            <!-- Vitals Summary for Coach -->
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-bottom:20px;">
+                <div style="background:#111; padding:10px; border-radius:12px; border:1px solid #222; text-align:center;">
+                    <small style="color:#777; font-size:9px; display:block;">السن</small>
+                    <b id="admin-view-age" style="color:var(--accent); font-size:14px;">--</b>
+                </div>
+                <div style="background:#111; padding:10px; border-radius:12px; border:1px solid #222; text-align:center;">
+                    <small style="color:#777; font-size:9px; display:block;">الوزن</small>
+                    <b id="admin-view-weight" style="color:var(--accent); font-size:14px;">--</b>
+                </div>
+                <div style="background:#111; padding:10px; border-radius:12px; border:1px solid #222; text-align:center;">
+                    <small style="color:#777; font-size:9px; display:block;">الطول</small>
+                    <b id="admin-view-height" style="color:var(--accent); font-size:14px;">--</b>
+                </div>
+                <div style="background:#111; padding:10px; border-radius:12px; border:1px solid #222; text-align:center;">
+                    <small style="color:#777; font-size:9px; display:block;">الدهون %</small>
+                    <b id="admin-view-fat" style="color:var(--accent); font-size:14px;">--</b>
+                </div>
+            </div>
+
+            <!-- Subscription Expiry Section -->
+            <div style="background:rgba(255,59,48,0.05); border:1px solid rgba(255,59,48,0.2); border-radius:15px; padding:15px; margin-bottom:20px;">
+                <label style="color:var(--primary); font-weight:bold; font-size:13px; display:block; margin-bottom:10px;">📅 تاريخ انتهاء الاشتراك:</label>
+                <input type="date" id="admin-expiry-date" style="width:100%; background:#000; border:1px solid #333; color:#fff; padding:12px; border-radius:10px; margin-bottom:10px;">
+                <button onclick="saveExpiryDate()" style="width:100%; padding:10px; background:var(--primary); border:none; color:#fff; border-radius:10px; font-weight:bold; cursor:pointer;">حفظ التاريخ ✅</button>
+            </div>
+            <!-- Password Reset Section -->
+            <div style="border:2px dashed var(--accent); border-radius:15px; padding:15px; margin-bottom:20px; position:relative;">
+                <label style="color:var(--accent); font-weight:bold; font-size:13px; display:block; margin-bottom:10px;">🔑 إعادة تعيين كلمة السر (أمان):</label>
+                <div style="display:flex; gap:10px;">
+                    <button onclick="resetUserPass()" style="background:var(--success); color:#000; border:none; padding:0 15px; border-radius:10px; font-size:18px;">🗝️ حفظ</button>
+                    <input type="text" id="admin-reset-pass" placeholder="اكتب كلمة سر جديدة هنا..." style="flex:1; background:#000; border:1px solid #333; color:#fff; padding:12px; border-radius:10px; text-align:right;">
+                </div>
+            </div>
+
+            <!-- Password Reset Section -->
+
+            <!-- Captain Notes Section -->
+            <div style="background:rgba(255,179,0,0.05); border:1px solid rgba(255,179,0,0.2); border-radius:15px; padding:15px; margin-bottom:20px;">
+                <label style="color:var(--accent); font-weight:bold; font-size:13px; display:block; margin-bottom:10px;">✍️ ملاحظاتك للمشترك (تظهر له فوراً):</label>
+                <textarea id="admin-captain-notes" placeholder="اكتب ملاحظة، نصيحة، أو تشجيع..." style="width:100%; height:80px; background:#000; border:1px solid #333; color:#fff; border-radius:12px; padding:12px; margin-bottom:15px;"></textarea>
+                <button onclick="saveCaptainNotes()" style="width:100%; padding:14px; background:#e53935; border:none; color:#fff; border-radius:12px; font-weight:bold; cursor:pointer; font-size:16px;">✅ إرسال الملاحظة</button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div id="admin-food-prefs-box" class="card hidden" style="background:rgba(76,175,80,0.05); border:1px solid rgba(76,175,80,0.2); border-radius:15px; padding:15px; margin-bottom:20px;">
+                <h4 style="color:#4caf50; margin-bottom:10px; font-size:13px; display:flex; align-items:center; gap:8px;">🥗 ذوق البطل في الأكل:</h4>
+                <div id="admin-food-prefs" style="font-size:12px; color:#ccc; line-height:1.6;"></div>
+            </div>
+
+            <div id="selected-user-history" class="hidden" style="margin-bottom:20px; max-height:300px; overflow-y:auto; border:1px solid #333; padding:15px; border-radius:15px; background:rgba(0,0,0,0.2);">
+                <div id="target-history-list"></div>
+            </div>
+
+            <!-- أداة التقييم للكابتن -->
+            <div style="background:rgba(76,175,80,0.05); border:2px dashed var(--success); border-radius:20px; padding:20px; margin-bottom:25px;">
+                <h4 style="color:var(--success); margin-bottom:15px; display:flex; align-items:center; gap:8px;">🛡️ تقييم البطل للأسبوع الحالي:</h4>
+                
+                <div style="margin-bottom:15px;">
+                    <label style="display:flex; justify-content:space-between; color:#777; font-size:12px; margin-bottom:10px;">
+                        <span>درجة الالتزام العام</span>
+                        <b id="score-val-display" style="color:var(--success);">8 / 10</b>
+                    </label>
+                    <input type="range" id="admin-eval-score" min="1" max="10" value="8" style="width:100%; accent-color:var(--success);" oninput="document.getElementById('score-val-display').innerText = this.value + ' / 10'">
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
+                    <div>
+                        <label style="display:block; color:#777; font-size:12px; margin-bottom:8px;">الوزن الحالي (كجم)</label>
+                        <input type="number" id="admin-eval-weight" placeholder="0.0" style="width:100%; background:#000; border:1px solid #333; color:var(--primary); padding:12px; border-radius:12px; font-weight:bold;">
+                    </div>
+                    <div>
+                        <label style="display:block; color:#777; font-size:12px; margin-bottom:8px;">الدهون الحالية (%)</label>
+                        <input type="number" id="admin-eval-fat" placeholder="0.0" style="width:100%; background:#000; border:1px solid #333; color:var(--accent); padding:12px; border-radius:12px; font-weight:bold;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; color:#777; font-size:12px; margin-bottom:8px;">ملاحظاتك الفنية للبطل</label>
+                    <textarea id="admin-eval-note" placeholder="عاش يا بطل، محتاج تظبط مواعيد أكل الغداء..." style="width:100%; height:100px; background:#000; border:1px solid #333; color:#fff; border-radius:12px; padding:12px;"></textarea>
+                </div>
+
+                <button onclick="submitEvaluation()" style="width:100%; padding:15px; background:var(--success); color:#000; border:none; border-radius:12px; font-weight:bold; cursor:pointer; font-size:16px;">حفظ وإرسال التقييم ✅</button>
+            </div>
+
+            <!-- Plan Tabs Section -->
+            <div style="border-top:1px solid #333; padding-top:20px;">
+                <h4 style="color:#fff; margin-bottom:15px; font-size:18px;">تعديل جدول التمرين 📋 <small style="color:#777; font-size:10px;">(خاص بالكابتن)</small></h4>
+                
+                <div id="admin-workout-section">
+                    <div style="margin-bottom:10px; color:#777; font-size:12px;">📑 تمارين العضلات:</div>
+                    <div id="admin-plan-cats-workout" style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:20px;"></div>
+                </div>
+                
+                <div id="admin-nutri-section">
+                    <div style="margin-bottom:10px; color:#777; font-size:12px;">🥗 وجبات التغذية:</div>
+                    <div id="admin-plan-cats-nutri" style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:20px;"></div>
+                </div>
+            </div>
+
+            <!-- Editor Section -->
+            <div id="admin-plan-editor" class="hidden" style="margin-top:20px; border-top:2px solid var(--primary); padding-top:20px;">
+                <h4 id="editing-cat-name" style="color:var(--accent); margin-bottom:20px;"></h4>
+                <div id="admin-plan-rows"></div>
+                <button class="btn-full" style="background:#222; border:1px dashed #444; color:#aaa; margin-bottom:15px;" onclick="addAdminPlanRow()">+ إضافة عنصر جديد</button>
+                <button class="btn-full" onclick="saveAdminPlan(event)" style="background:var(--success); color:#000;">حفظ التعديلات للجدول ✅</button>
+            </div>
+
+            <button onclick="document.getElementById('profile-modal').classList.add('hidden')" style="width:100%; padding:15px; background:#444; border:none; color:#fff; border-radius:12px; margin-top:20px; font-weight:bold;">رجوع للخلف</button>
+        </div>
+    </div>
+
+    <!-- Recipe Detail Modal -->
+    <div id="recipe-detail-modal" class="modal hidden" style="z-index: 10000;">
+        <div class="card" style="width:90%; max-width:500px; padding:0; overflow:hidden; background:#0a0a0a; border:1px solid #333;">
+            <div id="recipe-detail-img" style="width:100%; height:250px; background-size:cover; background-position:center; position:relative;">
+                <button onclick="document.getElementById('recipe-detail-modal').classList.add('hidden')" style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.6); border:none; color:#fff; width:35px; height:35px; border-radius:50%; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+            </div>
+            <div style="padding:25px;">
+                <h2 id="recipe-detail-name" style="color:var(--accent); margin-bottom:15px; font-size:24px;"></h2>
+                <div style="height:2px; background:linear-gradient(to left, var(--accent), transparent); margin-bottom:20px;"></div>
+                <div id="recipe-detail-desc" style="color:#eee; line-height:1.8; font-size:15px; white-space:pre-wrap; max-height:300px; overflow-y:auto; padding-right:10px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Bank Modal -->
+    <div id="info-bank-modal" class="modal hidden" style="z-index: 10005;">
+        <div class="card" style="width:95%; max-width:500px; padding:25px; background:#0a0a0a; border:1px solid #333; max-height:85vh; overflow-y:auto; border-radius:30px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                <h2 style="color:var(--accent); margin:0; font-size:22px;">💡 بنك المعلومات</h2>
+                <button onclick="document.getElementById('info-bank-modal').classList.add('hidden')" style="background:#222; border:none; color:#fff; width:35px; height:35px; border-radius:50%;">✕</button>
+            </div>
+            <div id="info-bank-content" style="display:flex; flex-direction:column; gap:15px;"></div>
+            <p style="text-align:center; color:#555; font-size:11px; margin-top:30px;">نصائح علمية مقدمة من كباتن واخصائيي فير جيم 🔥</p>
+        </div>
+    </div>
+
+
+    <!-- Admin Info Management Modal -->
+    <div id="admin-info-modal" class="modal hidden" style="z-index: 10006;">
+        <div id="admin-info-card" class="card" style="width:95%; max-width:550px; padding:25px; background:#0a0a0a; border:1px solid #333; max-height:85vh; overflow-y:auto; border-radius:30px; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="color:var(--accent); margin:0;">📚 إدارة بنك المعلومات</h3>
+                <button onclick="document.getElementById('admin-info-modal').classList.add('hidden')" style="background:#222; border:none; color:#fff; width:35px; height:35px; border-radius:50%;">✕</button>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.03); border:1px dashed #444; padding:20px; border-radius:20px; margin-top:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:rgba(255,255,255,0.02); padding:10px; border-radius:15px; border:1px solid rgba(255,255,255,0.05);">
+                    <h4 style="color:var(--accent); margin:0; font-size:16px;">✍️ إضافة معلومة سريعة</h4>
+                    <button onclick="forceSeedKnowledge()" style="background:rgba(0,122,255,0.1); color:#007aff; border:1px solid #007aff; border-radius:10px; padding:8px 15px; font-size:11px; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:5px; transition:0.3s; box-shadow:0 0 10px rgba(0,122,255,0.2);">
+                        🔄 إعادة تعيين المحتوى
+                    </button>
+                </div>
+                <input type="text" id="info-q" placeholder="السؤال..." style="width:100%; padding:12px; background:#000; border:1px solid #333; color:#fff; border-radius:12px; margin-bottom:10px;">
+                <textarea id="info-a" placeholder="الإجابة..." style="width:100%; height:80px; background:#000; border:1px solid #333; color:#fff; border-radius:12px; padding:12px; margin-bottom:15px;"></textarea>
+                <button onclick="saveKnowledge()" style="width:100%; padding:12px; background:var(--success); color:#000; border:none; border-radius:12px; font-weight:bold;">نشر الآن ✅</button>
+                
+                <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
+                <h4 style="color:#777; margin-bottom:15px; font-size:13px;">📚 المعلومات الحالية في البنك:</h4>
+                <div id="admin-info-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Modal -->
+    <div id="chat-modal" class="modal hidden" style="z-index: 10015;">
+        <div class="card" style="width:100%; max-width:500px; height:80vh; padding:0; display:flex; flex-direction:column; background:#0a0a0a; border:1px solid #333; overflow:hidden;">
+            <div style="padding:20px; background:#111; border-bottom:1px solid #222; display:flex; justify-content:space-between; align-items:center;">
+                <h3 id="chat-title" style="color:var(--accent); margin:0; font-size:18px;">💬 الدردشة مع الكابتن</h3>
+                <button onclick="closeChat()" style="background:#222; border:none; color:#fff; width:35px; height:35px; border-radius:50%;">✕</button>
+            </div>
+            <div id="chat-messages" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px;">
+                <!-- الرسائل هتظهر هنا -->
+            </div>
+            <div style="padding:15px; background:#111; border-top:1px solid #222; display:flex; gap:10px;">
+                <input type="text" id="chat-input" placeholder="اكتب رسالتك هنا..." style="flex:1; background:#000; border:1px solid #333; color:#fff; padding:12px; border-radius:15px;">
+                <button onclick="sendMessage()" style="background:var(--primary); color:#fff; border:none; width:50px; height:50px; border-radius:15px; font-size:20px; cursor:pointer;">✈️</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exercise Editor Modal (Sub-page) -->
+    <div id="ex-editor-modal" class="modal hidden" style="z-index: 10010;">
+        <div class="card" style="width:95%; max-width:500px; padding:25px 15px; background:#0a0a0a; border:1px solid #333; max-height:90vh; overflow-y:auto; border-radius:30px; box-shadow: 0 0 50px rgba(0,0,0,1);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 id="ex-editor-name" style="color:var(--accent); margin:0; font-size:20px;">اسم التمرين</h2>
+                <button onclick="document.getElementById('ex-editor-modal').classList.add('hidden'); viewCatPlan(lastViewedCat, true);" style="background:#222; border:none; color:#fff; width:35px; height:35px; border-radius:50%;">✕</button>
+            </div>
+            
+            <div style="background:rgba(255,179,0,0.05); padding:15px; border-radius:15px; margin-bottom:20px; border:1px solid rgba(255,179,0,0.1);">
+                <p style="font-size:12px; color:#777; margin:0;">الهدف: <b id="ex-editor-sets" style="color:var(--accent);">4</b> مجموعات</p>
+                <div id="ex-editor-note-box"></div>
+            </div>
+
+            <div id="ex-editor-sets-container" style="overflow-x:auto;"></div>
+
+            <button id="ex-editor-close-btn" onclick="saveExEdit()" class="btn-full" style="background:var(--primary); margin-top:30px;">تم التعديل ✅</button>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة التكنيك (للأدمن) -->
+    <div id="technique-modal" class="modal hidden" style="z-index: 10007;">
+        <div class="card" style="width:95%; max-width:550px; padding:25px; background:#0a0a0a; border:1px solid #333; max-height:85vh; overflow-y:auto; border-radius:30px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="color:var(--accent); margin:0;">🎥 إضافة تكنيك جديد</h3>
+                <button onclick="document.getElementById('technique-modal').classList.add('hidden')" style="background:#222; border:none; color:#fff; width:35px; height:35px; border-radius:50%;">✕</button>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.03); border:1px dashed #444; padding:20px; border-radius:20px; margin-top:10px;">
+                <label style="display:block; color:#aaa; font-size:12px; margin-bottom:8px;">اسم التمرين</label>
+                <input type="text" id="tech-name" placeholder="مثال: رفرفة جانبي بالدمبل..." style="width:100%; padding:12px; background:#000; border:1px solid #333; color:#fff; border-radius:12px; margin-bottom:15px;">
+                
+                <label style="display:block; color:var(--success); font-size:12px; margin-bottom:8px;">✅ رابط الأداء الصحيح (فيديو/يوتيوب/ريلز)</label>
+                <input type="url" id="tech-correct" placeholder="https://..." style="width:100%; padding:12px; background:#000; border:1px solid #333; color:var(--success); border-radius:12px; margin-bottom:15px;">
+
+                <label style="display:block; color:#ff3b30; font-size:12px; margin-bottom:8px;">❌ رابط الأداء الخاطئ (فيديو/يوتيوب/ريلز)</label>
+                <input type="url" id="tech-wrong" placeholder="https://..." style="width:100%; padding:12px; background:#000; border:1px solid #333; color:#ff3b30; border-radius:12px; margin-bottom:20px;">
+                
+                <button onclick="saveTechnique()" style="width:100%; padding:14px; background:var(--accent); color:#000; border:none; border-radius:12px; font-weight:bold; font-size:16px;">حفظ ونشر التكنيك 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Pending Join Requests -->
+    <div id="pending-requests-modal" class="modal hidden" style="z-index: 10002;">
+        <div class="card" style="width:95%; max-width:500px; padding:25px; background:#0a0a0a; border:1px solid #333; max-height:85vh; overflow-y:auto; border-radius:30px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="color:var(--primary); margin:0;">طلبات انضمام جديدة 🆕</h3>
+                <button onclick="document.getElementById('pending-requests-modal').classList.add('hidden')" style="background:#222; border:none; color:#fff; width:35px; height:35px; border-radius:50%;">✕</button>
+            </div>
+            <div id="pending-users-list-modal"></div>
+        </div>
+    </div>
+
+    <!-- Modal: Goal Change Requests -->
+    <div id="goal-change-modal" class="modal hidden" style="z-index: 10002;">
+        <div class="card" style="width:95%; max-width:500px; padding:25px; background:#0a0a0a; border:1px solid #333; max-height:85vh; overflow-y:auto; border-radius:30px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="color:#ffb300; margin:0;">طلبات تغيير النظام 🚀</h3>
+                <button onclick="document.getElementById('goal-change-modal').classList.add('hidden')" style="background:#222; border:none; color:#fff; width:35px; height:35px; border-radius:50%;">✕</button>
+            </div>
+            <div id="goal-change-list-modal"></div>
+        </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div id="notif-modal" class="modal hidden" style="z-index: 10008;">
+        <div class="card" style="width:95%; max-width:500px; padding:25px; background:#0a0a0a; border:1px solid #333; max-height:85vh; overflow-y:auto; border-radius:30px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="color:var(--accent); margin:0; display:flex; align-items:center; gap:10px;">🔔 التنبيهات والرسائل</h3>
+                <button onclick="closeNotifModal()" style="background:#222; border:none; color:#fff; width:35px; height:35px; border-radius:50%;">✕</button>
+            </div>
+            <div id="static-notif-list-view" style="display:flex; flex-direction:column; gap:12px;"></div>
+            <p style="text-align:center; color:#444; font-size:11px; margin-top:20px;">سيتم حذف التنبيهات القديمة تلقائياً لتوفير المساحة 🛠️</p>
+        </div>
+    </div>
+
+
+    <!-- Share Card Design -->
+    <div id="share-card-overlay">
+        <div id="share-card">
+            <div id="share-card-content">
+                <div class="share-photo-container">
+                    <img id="share-user-img" src="https://via.placeholder.com/150" alt="User">
+                </div>
+                <div class="share-fire">🔥</div>
+                <div class="share-name" id="share-user-name">اسم البطل</div>
+                <div class="share-text" id="share-workout-text">خلصت تمرينة النهاردة<br>مع <span style="color:var(--primary);">Fire Gym</span></div>
+                <div class="share-badge" id="share-random-phrase">Official Athlete</div>
+                <div class="share-logo-tags">
+                    <div class="share-tags">#FIRE_GYM #NO_LIMITS #WORKOUT</div>
+                    <div class="share-logo">FIRE GYM ELITE</div>
+                </div>
+            </div>
+        </div>
+        <div style="display:flex; gap:12px; margin-top:25px; width:100%; max-width:360px;">
+            <button class="btn-full" onclick="downloadShareCard()" style="background:#fff; color:#000; flex:2; font-size:16px; margin:0; border-radius:18px;">حفظ الصورة 📥</button>
+            <button class="btn-full" onclick="closeShareCard()" style="background:#222; border:1px solid #444; flex:1; font-size:16px; margin:0; border-radius:18px;">إلغاء</button>
+        </div>
+    </div>
+
+    <!-- Scripts (Firebase 9 Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <!-- مودال لوحة الصدارة الكاملة -->
+    <div id="leaderboard-modal" class="modal hidden">
+        <div class="modal-content" style="max-width:450px; background:linear-gradient(180deg, #1a1a1a, #070707); border:1px solid #333; padding:0; overflow:hidden;">
+            <div style="background:linear-gradient(135deg, var(--primary), var(--primaryDark)); padding:25px; text-align:center; position:relative;">
+                <span class="close" onclick="document.getElementById('leaderboard-modal').classList.add('hidden')" style="position:absolute; top:15px; right:20px; color:#fff;">&times;</span>
+                <h2 style="margin:0; color:#fff; font-size:24px;">لوحة الشرف 🏆</h2>
+                <p style="margin:5px 0 0; color:rgba(255,255,255,0.7); font-size:12px;">أقوى أبطال Fire Gym التزاماً هذا الشهر</p>
+            </div>
+            <div id="full-leaderboard-list" style="padding:20px; max-height:450px; overflow-y:auto;">
+                <!-- قائمة الأبطال هنا -->
+            </div>
+            <div style="padding:15px; border-top:1px solid #222; text-align:center;">
+                <p style="font-size:11px; color:#555; margin:0;">يتم تحديث الترتيب بناءً على تقييمات الكابتن ⚡</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال حاسبة السعرات والماكروز -->
+    <div id="macro-modal" class="modal hidden">
+        <div class="modal-content" style="max-width:500px; background:#121212; padding:0; overflow:hidden; border-radius:30px;">
+            <div style="background:#2e7d32; padding:30px; text-align:center; position:relative;">
+                <span class="close" onclick="document.getElementById('macro-modal').classList.add('hidden')" style="position:absolute; top:15px; right:20px; color:#fff;">&times;</span>
+                <h2 style="margin:0; color:#fff;">حاسبة السعرات والماكروز 🍎</h2>
+                <p style="margin:5px 0 0; color:rgba(255,255,255,0.8); font-size:12px;">بناءً على معادلة Mifflin-St Jeor العالمية</p>
+            </div>
+            
+            <div style="padding:25px;" id="macro-form">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:20px;">
+                    <div>
+                        <label style="display:block; color:#777; font-size:12px; margin-bottom:5px;">العمر</label>
+                        <input type="number" id="macro-age" placeholder="مثلاً: 25" style="width:100%; background:#1a1a1a; border:1px solid #333; color:#fff; padding:12px; border-radius:12px;">
+                    </div>
+                    <div>
+                        <label style="display:block; color:#777; font-size:12px; margin-bottom:5px;">النوع</label>
+                        <select id="macro-gender" style="width:100%; background:#1a1a1a; border:1px solid #333; color:#fff; padding:12px; border-radius:12px;">
+                            <option value="male">ذكر 👨</option>
+                            <option value="female">أنثى 👩</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label style="display:block; color:#777; font-size:12px; margin-bottom:5px;">مستوى النشاط البدني</label>
+                    <select id="macro-activity" style="width:100%; background:#1a1a1a; border:1px solid #333; color:#fff; padding:12px; border-radius:12px;">
+                        <option value="1.2">خامل (بدون تمرين)</option>
+                        <option value="1.375">نشاط خفيف (1-3 أيام)</option>
+                        <option value="1.55">نشاط متوسط (3-5 أيام)</option>
+                        <option value="1.725">نشاط عالي (6-7 أيام)</option>
+                        <option value="1.9">نشاط فائق (رياضي محترف)</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom:25px;">
+                    <label style="display:block; color:#777; font-size:12px; margin-bottom:5px;">هدفك الحالي</label>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+                        <button class="macro-goal-btn active" onclick="setMacroGoal('cut', this)" style="background:#2e7d32; color:#fff; border:none; padding:10px; border-radius:10px; font-size:11px; font-weight:bold;">تنشيف 🔥</button>
+                        <button class="macro-goal-btn" onclick="setMacroGoal('maintain', this)" style="background:#222; color:#777; border:none; padding:10px; border-radius:10px; font-size:11px; font-weight:bold;">ثبات ⚖️</button>
+                        <button class="macro-goal-btn" onclick="setMacroGoal('bulk', this)" style="background:#222; color:#777; border:none; padding:10px; border-radius:10px; font-size:11px; font-weight:bold;">تضخيم 💪</button>
+                    </div>
+                </div>
+
+                <button onclick="calculateMacros()" class="btn-full" style="background:#2e7d32; color:#fff; font-weight:bold; font-size:18px; padding:15px; border-radius:15px; box-shadow: 0 10px 20px rgba(46,125,50,0.3);">احسب احتياجي الآن 🚀</button>
+            </div>
+
+            <div id="macro-result" class="hidden" style="padding:25px; background:linear-gradient(180deg, #121212, #000);">
+                <div style="text-align:center; margin-bottom:25px;">
+                    <small style="color:#777; display:block; margin-bottom:5px;">احتياجك اليومي من السعرات</small>
+                    <b id="result-calories" style="font-size:42px; color:#4caf50; display:block; line-height:1;">2400</b>
+                    <small style="color:#4caf50;">سعرة حرارية</small>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:25px;">
+                    <div style="background:#1a1a1a; padding:15px; border-radius:15px; text-align:center; border-top:3px solid #e53935;">
+                        <small style="color:#777; font-size:10px; display:block;">بروتين</small>
+                        <b id="result-protein" style="color:#fff; font-size:18px;">150g</b>
+                    </div>
+                    <div style="background:#1a1a1a; padding:15px; border-radius:15px; text-align:center; border-top:3px solid #2196f3;">
+                        <small style="color:#777; font-size:10px; display:block;">كربوهيدرات</small>
+                        <b id="result-carbs" style="color:#fff; font-size:18px;">250g</b>
+                    </div>
+                    <div style="background:#1a1a1a; padding:15px; border-radius:15px; text-align:center; border-top:3px solid #ffb300;">
+                        <small style="color:#777; font-size:10px; display:block;">دهون</small>
+                        <b id="result-fats" style="color:#fff; font-size:18px;">60g</b>
+                    </div>
+                </div>
+
+                <button onclick="document.getElementById('macro-result').classList.add('hidden'); document.getElementById('macro-form').classList.remove('hidden');" 
+                        style="width:100%; background:none; border:1px solid #333; color:#555; padding:10px; border-radius:10px; font-size:12px;">إعادة الحساب 🔄</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- تم إزالة مودال الفيديوهات مؤقتاً للتحقق من استقرار التطبيق -->
+
+
+    <script src="fire_bundle_v94.js"></script>
+
+    <div id="full-screen-viewer" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000; z-index:9999999; display:none; flex-direction:column; align-items:center; justify-content:center; padding:20px; overflow:hidden;">
+        <button onclick="closeFullViewer()" style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.2); border:none; color:#fff; padding:12px 25px; border-radius:15px; font-weight:bold; z-index:10000000;">إغلاق X</button>
+        
+        <div id="viewer-loading-text" style="color:var(--primary); font-weight:bold; margin-bottom:15px;">جاري معالجة الصورة... 🔥</div>
+
+        <div style="position:relative; width:100%; display:flex; justify-content:center; align-items:center; margin-bottom:20px;">
+            <img id="viewer-img" style="max-width:100%; max-height:65vh; border-radius:15px; box-shadow:0 0 50px rgba(255,59,48,0.5); display:block;">
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:12px; width:100%; max-width:300px;">
+            <button id="direct-download-btn" class="btn-full" style="background:var(--success); color:#000; font-weight:900; font-size:16px; border:none; box-shadow:0 10px 20px rgba(76,175,80,0.3);">📥 حفظ في المعرض (Gallery)</button>
+            <p style="color:#777; font-size:11px; text-align:center;">لو الزرار ما اشتغلش، اضغط ضغطة مطولة على الصورة</p>
+            <button onclick="closeFullViewer()" class="btn-full" style="background:rgba(255,255,255,0.1); border:1px solid #444; font-size:14px;">الرجوع للأبلكيشن</button>
+        </div>
+    </div>
+
+</body>
+
+</html>
